@@ -1,41 +1,29 @@
 import 'package:flutter/material.dart';
-import 'sidebar.dart';
-import 'utils.dart';
 import 'package:sidebarx/sidebarx.dart';
 
+import 'views/dashboardView.dart';
+import 'views/feedView.dart';
+import 'views/amicsView.dart';
+import 'views/opcionsView.dart';
+
 class ScreensExample extends StatelessWidget {
-  const ScreensExample({Key? key, required this.controller}) : super(key: key);
+  const ScreensExample({super.key, required this.controller});
 
   final SidebarXController controller;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        final pageTitle = getTitleByIndex(controller.selectedIndex);
         switch (controller.selectedIndex) {
-          case 0:
-            return ListView.builder(
-              padding: const EdgeInsets.only(top: 10),
-              itemBuilder: (context, index) => Container(
-                height: 100,
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).canvasColor,
-                  boxShadow: const [BoxShadow()],
-                ),
-              ),
-            );
-          default:
-            return Text(pageTitle, style: theme.textTheme.headlineSmall);
+          case 0: return const DashboardView();
+          case 1: return const FeedView();
+          case 2: return const AmicsView();
+          case 3: return const OpcionsView();
+          default: return const Center(child: Text('Not found'));
         }
       },
     );
   }
 }
-
-
