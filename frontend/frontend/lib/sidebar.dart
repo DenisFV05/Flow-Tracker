@@ -35,16 +35,18 @@ class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sideb
           border: Border.all(
             color: actionColor.withOpacity(0.37),
           ),
-          gradient: const LinearGradient(
-            colors: [accentCanvasColor, canvasColor],
-          ),
+          // gradient: const LinearGradient(
+          //   colors: [accentCanvasColor, canvasColor],
+          // ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.28),
               blurRadius: 30,
             )
           ],
+          color: canvasColor, // <-- aquí defines un color plano
         ),
+
         iconTheme: IconThemeData(
           color: Colors.white.withOpacity(0.7),
           size: 20,
@@ -57,13 +59,34 @@ class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sideb
       extendedTheme: const SidebarXTheme(width: 200, decoration: BoxDecoration(color: canvasColor)),
       footerDivider: divider,
       headerBuilder: (context, extended) => SizedBox(
-        height: 100,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-                  child: Image.asset('assets/images/placeholder.png'),
-
+      height: 100,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(extended ? 8 : 4),
+                decoration: BoxDecoration(
+                  color: bgIcons, 
+                  borderRadius: BorderRadius.circular(extended ? 12 : 8),
+                ),
+                child: Icon(
+                  Icons.local_fire_department_outlined, 
+                  color: white,
+                  size: extended ? 35 : 25,
+                ),
+                
+              ),
+              if (extended) 
+                const SizedBox(width: 8),
+            ],
+          ),
+          
         ),
       ),
+    ),
       items: [
         SidebarXItem(icon: Icons.dashboard, label: 'Dashboard', onTap: () => debugPrint('Home')),
         const SidebarXItem(icon: Icons.feed_outlined, label: 'Feed'),
