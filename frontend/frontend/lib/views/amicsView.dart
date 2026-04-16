@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils.dart'; 
 
 class AmicsView extends StatelessWidget {
   const AmicsView({super.key});

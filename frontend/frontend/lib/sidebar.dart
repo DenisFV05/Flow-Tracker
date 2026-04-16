@@ -3,7 +3,7 @@ import 'package:sidebarx/sidebarx.dart';
 import 'utils.dart';
 
 class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sidebarx/example
-  const ExampleSidebarX({Key? key, required this.controller}) : super(key: key);
+  const ExampleSidebarX({super.key, required this.controller});
 
   final SidebarXController controller;
 

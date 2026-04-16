@@ -1,64 +1,83 @@
 import 'package:flutter/material.dart';
-import 'sidebar.dart';
-import 'screens.dart';
-import 'utils.dart';
-import 'package:sidebarx/sidebarx.dart';
+import 'views/login_screen.dart';
+import 'views/home_screen.dart';
+import 'utils/settings_manager.dart';
 
 void main() {
-  runApp(SidebarXExampleApp());
+  runApp(const MyApp());
 }
 
-class SidebarXExampleApp extends StatelessWidget {
-  SidebarXExampleApp({Key? key}) : super(key: key);
-
-  final _controller = SidebarXController(selectedIndex: 0, extended: true);
-  final _key = GlobalKey<ScaffoldState>();
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SidebarX Example',
       debugShowCheckedModeBanner: false,
+      title: 'Flow Tracker',
       theme: ThemeData(
-        primaryColor: primaryColor,
-        canvasColor: canvasColor,
-        scaffoldBackgroundColor: scaffoldBackgroundColor,
-        textTheme: const TextTheme(
-          headlineSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 46,
-            fontWeight: FontWeight.w800,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    // Splash visual mínimo
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    final settings = await SettingsManager.loadSettings();
+
+    final serverUrl = settings['serverUrl'];
+    final token = settings['token'];
+
+    if (!mounted) return;
+
+    // 🔐 Si hay token → ir a Home
+    if (token != null && token.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HomeScreen(
+            serverUrl: serverUrl ?? 'http://localhost:3000',
+            token: token,
           ),
         ),
+      );
+      return;
+    }
+
+    // ❌ Si no hay token → Login
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const LoginScreen(),
       ),
-      home: Builder(
-        builder: (context) {
-          final isSmallScreen = MediaQuery.of(context).size.width < 600;
-          return Scaffold(
-            key: _key,
-            appBar: isSmallScreen
-                ? AppBar(
-                    backgroundColor: canvasColor,
-                    title: Text(getTitleByIndex(_controller.selectedIndex)),
-                    leading: IconButton(
-                      onPressed: () => _key.currentState?.openDrawer(),
-                      icon: const Icon(Icons.menu),
-                    ),
-                  )
-                : null,
-            drawer: ExampleSidebarX(controller: _controller),
-            body: Row(
-              children: [
-                if (!isSmallScreen) ExampleSidebarX(controller: _controller),
-                Expanded(
-                  child: Center(
-                    child: ScreensExample(controller: _controller),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
