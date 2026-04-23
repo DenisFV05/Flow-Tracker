@@ -6,6 +6,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.routes');
 const habitsRoutes = require('./routes/habits.routes');
 const tagsRoutes = require('./routes/tags.routes');
+const profileRoutes = require('./routes/profile.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitsRoutes);
 app.use('/api/tags', tagsRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Start server
 app.listen(PORT, () => {
