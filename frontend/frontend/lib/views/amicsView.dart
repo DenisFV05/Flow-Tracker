@@ -70,7 +70,6 @@ class AmicsView extends StatelessWidget {
 
                       const SizedBox(width: 16),
 
-                      /// RESUM STATS
                       const Expanded(
                         flex: 1,
                         child: Column(

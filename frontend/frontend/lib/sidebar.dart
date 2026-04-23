@@ -44,7 +44,7 @@ class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sideb
               blurRadius: 30,
             )
           ],
-          color: canvasColor, // <-- aquí defines un color plano
+          color: canvasColor,
         ),
 
         iconTheme: IconThemeData(
