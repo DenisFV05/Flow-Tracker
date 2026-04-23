@@ -59,6 +59,7 @@ router.post('/login', async (req, res) => {
         if (!validPassword) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
+        console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
         const token = jwt.sign(
             { userId: user.id, email: user.email },
@@ -76,7 +77,7 @@ router.post('/login', async (req, res) => {
         });
 
         } catch (error) {
-            console.log(error); // 👈 AÑADE ESTO
+            console.log(error); 
             return res.status(500).json({ error: 'Server error' });
         }
 
