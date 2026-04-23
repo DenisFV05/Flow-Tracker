@@ -1,3 +1,4 @@
+import 'package:flowTracker/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'inputEstil.dart';
 import 'package:flowTracker/utils.dart';
@@ -18,6 +19,8 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  bool _isLoading = false;
+  String _errorMessage = '';
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
   bool _acceptedTerms = false;
@@ -32,18 +35,50 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
     super.dispose();
   }
 
-  void _register() {
-    if (!_formKey.currentState!.validate()) return;
+Future<void> _register() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    if (!_acceptedTerms) {
+  if (!_acceptedTerms) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Has d’acceptar els termes')),
+    );
+    return;
+  }
+
+  setState(() {
+    _isLoading = true;
+    _errorMessage = '';
+  });
+
+  try {
+    final authService = AuthService('http://localhost:3000');
+
+    await authService.register(
+      _emailController.text,
+      _passwordController.text,
+      _nameController.text,
+      _usernameController.text,
+    );
+
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Has d’acceptar els termes')),
+        const SnackBar(content: Text('Compte creat correctament')),
       );
-      return;
+
+      Navigator.pop(context); 
     }
 
-    print("Registre OK");
+  } catch (e) {
+    setState(() {
+      _errorMessage = e.toString();
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

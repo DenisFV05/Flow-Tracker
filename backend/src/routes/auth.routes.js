@@ -7,7 +7,7 @@ const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { email, password,name,username } = req.body;
 
         const existingUser = await prisma.user.findUnique({
             where: { email }
@@ -21,16 +21,18 @@ router.post('/register', async (req, res) => {
 
         const user = await prisma.user.create({
             data: {
-                name,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+                name,
+                username
             }
         });
 
         return res.status(201).json({
             id: user.id,
             email: user.email,
-            name: user.name
+            name: user.name,
+            username: user.username
         });
 
         } catch (error) {

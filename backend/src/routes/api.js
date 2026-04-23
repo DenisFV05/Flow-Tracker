@@ -9,10 +9,12 @@ const prisma = new PrismaClient();
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password,name, username } = req.body;
+
+    const normalizedEmail = email.toLowerCase().trim();
 
     const existing = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     });
 
     if (existing) {
@@ -23,22 +25,26 @@ router.post('/register', async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
-        name
+        name,
+        username
       }
     });
 
     return res.status(201).json({
       id: user.id,
       email: user.email,
-      name: user.name
+      name: user.name,
+      username: user.username
     });
 
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 
 
@@ -48,8 +54,10 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     });
 
     if (!user) {
@@ -73,11 +81,12 @@ router.post('/login', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name
+        username: user.username
       }
     });
 
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'Server error' });
   }
 });
