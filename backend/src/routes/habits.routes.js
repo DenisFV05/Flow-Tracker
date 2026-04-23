@@ -5,6 +5,66 @@ const authMiddleware = require('../middleware/auth');
 
 router.use(authMiddleware);
 
+function calculateStreak(logs) {
+    if (!logs || logs.length === 0) return 0;
+
+    const completedDates = logs
+        .filter(log => log.completed)
+        .map(log => new Date(log.date).toISOString().split('T')[0])
+        .sort()
+        .reverse();
+
+    if (completedDates.length === 0) return 0;
+
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+    if (completedDates[0] !== today && completedDates[0] !== yesterday) {
+        return 0;
+    }
+
+    let streak = 1;
+    let currentDate = new Date(completedDates[0]);
+
+    for (let i = 1; i < completedDates.length; i++) {
+        const prevDate = new Date(currentDate.getTime() - 86400000).toISOString().split('T')[0];
+        if (completedDates[i] === prevDate) {
+            streak++;
+            currentDate = new Date(completedDates[i]);
+        } else {
+            break;
+        }
+    }
+
+    return streak;
+}
+
+function calculateMaxStreak(logs) {
+    if (!logs || logs.length === 0) return 0;
+
+    const completedDates = logs
+        .filter(log => log.completed)
+        .map(log => new Date(log.date).toISOString().split('T')[0])
+        .sort();
+
+    if (completedDates.length === 0) return 0;
+
+    let maxStreak = 1;
+    let currentStreak = 1;
+
+    for (let i = 1; i < completedDates.length; i++) {
+        const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
+        if (completedDates[i] === prevDate) {
+            currentStreak++;
+            maxStreak = Math.max(maxStreak, currentStreak);
+        } else {
+            currentStreak = 1;
+        }
+    }
+
+    return maxStreak;
+}
+
 router.post('/', async (req, res) => {
     try {
         const { name, description, tags } = req.body;
@@ -181,6 +241,12 @@ router.post('/:id/log', async (req, res) => {
         const logDate = new Date(date);
         logDate.setHours(0, 0, 0, 0);
 
+        const beforeLogs = await prisma.activityLog.findMany({
+            where: { habitId: id },
+            orderBy: { date: 'desc' }
+        });
+        const prevStreak = calculateStreak(beforeLogs);
+
         const log = await prisma.activityLog.upsert({
             where: {
                 habitId_date: {
@@ -198,6 +264,26 @@ router.post('/:id/log', async (req, res) => {
                 completed: completed !== false
             }
         });
+
+        if (completed !== false) {
+            const allLogs = await prisma.activityLog.findMany({
+                where: { habitId: id },
+                orderBy: { date: 'desc' }
+            });
+            const newStreak = calculateStreak(allLogs);
+            const ACHIEVEMENT_MILESTONES = [7, 14, 30, 60, 90, 180, 365];
+            
+            if (ACHIEVEMENT_MILESTONES.includes(newStreak) && newStreak > prevStreak) {
+                await prisma.post.create({
+                    data: {
+                        userId,
+                        type: 'achievement',
+                        content: `${newStreak} días seguidos de ${habit.name}!`,
+                        habitId: id
+                    }
+                });
+            }
+        }
 
         res.json(log);
     } catch (error) {
@@ -269,66 +355,6 @@ router.get('/:id/logs', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
-function calculateStreak(logs) {
-    if (!logs || logs.length === 0) return 0;
-
-    const completedDates = logs
-        .filter(log => log.completed)
-        .map(log => new Date(log.date).toISOString().split('T')[0])
-        .sort()
-        .reverse();
-
-    if (completedDates.length === 0) return 0;
-
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-    if (completedDates[0] !== today && completedDates[0] !== yesterday) {
-        return 0;
-    }
-
-    let streak = 1;
-    let currentDate = new Date(completedDates[0]);
-
-    for (let i = 1; i < completedDates.length; i++) {
-        const prevDate = new Date(currentDate.getTime() - 86400000).toISOString().split('T')[0];
-        if (completedDates[i] === prevDate) {
-            streak++;
-            currentDate = new Date(completedDates[i]);
-        } else {
-            break;
-        }
-    }
-
-    return streak;
-}
-
-function calculateMaxStreak(logs) {
-    if (!logs || logs.length === 0) return 0;
-
-    const completedDates = logs
-        .filter(log => log.completed)
-        .map(log => new Date(log.date).toISOString().split('T')[0])
-        .sort();
-
-    if (completedDates.length === 0) return 0;
-
-    let maxStreak = 1;
-    let currentStreak = 1;
-
-    for (let i = 1; i < completedDates.length; i++) {
-        const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
-        if (completedDates[i] === prevDate) {
-            currentStreak++;
-            maxStreak = Math.max(maxStreak, currentStreak);
-        } else {
-            currentStreak = 1;
-        }
-    }
-
-    return maxStreak;
-}
 
 router.get('/:id/stats', async (req, res) => {
     try {
