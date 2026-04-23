@@ -1,3 +1,4 @@
+import 'package:flowTracker/services/auth_storage.dart';
 import 'package:flutter/material.dart';
 import '../utils/settings_manager.dart';
 import 'package:flowTracker/services/auth_service.dart';
@@ -50,12 +51,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authService = AuthService(_serverUrlController.text);
+      final storage = AuthStorage();
 
       final token = await authService.login(
         _usernameController.text,
         _passwordController.text,
       );
-
+      await storage.saveToken(token);
+        
       await SettingsManager.saveSettings(
         serverUrl: _serverUrlController.text,
         token: token,

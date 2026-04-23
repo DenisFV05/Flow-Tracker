@@ -6,14 +6,14 @@ import 'package:flowTracker/utils.dart';
 import 'package:flowTracker/models/habit.dart';
 import 'package:flowTracker/models/habitsProvider.dart';
 
-class CrearHabitForm extends StatefulWidget {
-  const CrearHabitForm({super.key});
+class editarHabit extends StatefulWidget {
+  const editarHabit({super.key});
 
   @override
-  State<CrearHabitForm> createState() => _CrearHabitFormState();
+  State<editarHabit> createState() => _editarHabitFormState();
 }
 
-class _CrearHabitFormState extends State<CrearHabitForm> {
+class _editarHabitFormState extends State<editarHabit> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();

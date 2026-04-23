@@ -1,30 +1,60 @@
 import 'package:flutter/material.dart';
-import '../models/habit.dart';
-import '../models/mockHabits.dart';
+import '../services/habits_service.dart';
 
 class HabitProvider extends ChangeNotifier {
-  List<Habit> _habits = mockHabits;
+  final HabitsApi api =
+      HabitsApi("https://flow-tracker.ieti.site");
 
-  List<Habit> get habits => _habits;
+  List<dynamic> habits = [];
+  bool loading = false;
+  String? error;
 
-  void addHabit(Habit habit) {
-    _habits.add(habit);
-    notifyListeners();
-  }
+  // -------------------------
+  // 📥 LOAD HABITS
+  // -------------------------
+  Future<void> loadHabits() async {
+    try {
+      loading = true;
+      error = null;
+      notifyListeners();
 
-  void toggleHabit(String id) {
-    final index = _habits.indexWhere((h) => h.id == id);
-
-    if (index != -1) {
-      _habits[index] = _habits[index].copyWith(
-        completedToday: !_habits[index].completedToday,
-      );
+      habits = await api.getHabits();
+    } catch (e) {
+      error = e.toString();
+      print("LOAD HABITS ERROR: $e");
+    } finally {
+      loading = false;
       notifyListeners();
     }
   }
 
-  void removeHabit(String id) {
-    _habits.removeWhere((h) => h.id == id);
-    notifyListeners();
+  // -------------------------
+  // ➕ ADD HABIT
+  // -------------------------
+  Future<void> addHabit(
+    String name,
+    String description,
+    List<String> tags,
+  ) async {
+    try {
+      await api.createHabit(name, description, tags);
+      await loadHabits();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  // -------------------------
+  // 🔁 TOGGLE HABIT
+  // -------------------------
+  Future<void> toggleHabit(String id, bool completed) async {
+    try {
+      await api.toggleHabit(id, completed);
+      await loadHabits();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
   }
 }
