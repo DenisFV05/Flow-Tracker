@@ -1,35 +1,77 @@
 class Habit {
   final String id;
-  final String title;
-  final String subtitle;
-  final List<String> tags;
-  final double progress;
-  final bool completedToday;
+  final String name;
+  final String? description;
+  final List<Tag> tags;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  bool completedToday;
 
   Habit({
     required this.id,
-    required this.title,
-    required this.subtitle,
+    required this.name,
+    this.description,
     required this.tags,
-    required this.progress,
-    required this.completedToday,
+    required this.createdAt,
+    required this.updatedAt,
+    this.completedToday = false,
   });
+
+  factory Habit.fromJson(Map<String, dynamic> json) {
+    return Habit(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'],
+      tags: json['tags'] != null
+          ? (json['tags'] as List).map((t) => Tag.fromJson(t)).toList()
+          : [],
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'tags': tags.map((t) => t.name).toList(),
+      };
 
   Habit copyWith({
     String? id,
-    String? title,
-    String? subtitle,
-    List<String>? tags,
-    double? progress,
+    String? name,
+    String? description,
+    List<Tag>? tags,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     bool? completedToday,
   }) {
     return Habit(
       id: id ?? this.id,
-      title: title ?? this.title,
-      subtitle: subtitle ?? this.subtitle,
+      name: name ?? this.name,
+      description: description ?? this.description,
       tags: tags ?? this.tags,
-      progress: progress ?? this.progress,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       completedToday: completedToday ?? this.completedToday,
+    );
+  }
+}
+
+class Tag {
+  final String id;
+  final String name;
+
+  Tag({required this.id, required this.name});
+
+  factory Tag.fromJson(Map<String, dynamic> json) {
+    return Tag(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
     );
   }
 }

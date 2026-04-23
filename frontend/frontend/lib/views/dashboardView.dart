@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-
-import '../models/mockHabits.dart';
+import 'package:provider/provider.dart';
+import '../models/habitsProvider.dart';
 import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
 import '../widgets/stats/quickStats.dart';
 import '../widgets/SectionTitle.dart';
-import 'package:provider/provider.dart';
-import '../models/habitsProvider.dart';
 
 class DashboardView extends StatelessWidget {
-  const DashboardView({super.key});
+  final String serverUrl;
+
+  const DashboardView({super.key, required this.serverUrl});
 
   @override
   Widget build(BuildContext context) {

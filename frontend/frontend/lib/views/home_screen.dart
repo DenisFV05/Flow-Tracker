@@ -1,70 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../models/habitsProvider.dart';
+import '../services/api_service.dart';
 import '../utils/storage.dart';
 import 'login_screen.dart';
+import 'dashboardView.dart';
+import 'amicsView.dart';
+import 'feedView.dart';
+import 'opcionsView.dart';
 
 class HomeScreen extends StatefulWidget {
   final String serverUrl;
-  final String token;
 
-  const HomeScreen({
-    super.key,
-    required this.serverUrl,
-    required this.token,
-  });
+  const HomeScreen({super.key, required this.serverUrl});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Map<String, dynamic>? _user;
-  bool _loading = true;
-  String _error = '';
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HabitProvider>().loadHabits();
+    });
   }
 
-  // 🔐 Ejemplo de ruta protegida futura
-  Future<void> _loadProfile() async {
-    try {
-      final response = await http.get(
-        Uri.parse('${widget.serverUrl}/api/auth/profile'),
-        headers: {
-          'Authorization': 'Bearer ${widget.token}',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _user = jsonDecode(response.body)['user'];
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _error = 'Error cargando perfil';
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _loading = false;
-      });
-    }
-  }
-
-  // 🚪 LOGOUT LOCAL
   Future<void> _logout() async {
     await Storage.clear();
-
     if (!mounted) return;
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -75,36 +42,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flow Tracker'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          )
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          DashboardView(serverUrl: widget.serverUrl),
+          const AmicsView(),
+          const FeedView(),
+          const OpcionsView(),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error.isNotEmpty
-              ? Center(child: Text(_error))
-              : Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Usuario logueado:',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 20),
-                      Text('ID: ${_user?['userId'] ?? ''}'),
-                      Text('Email: ${_user?['email'] ?? ''}'),
-                      const SizedBox(height: 20),
-                      const Text('🎯 Backend conectado correctamente'),
-                    ],
-                  ),
-                ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (i) => setState(() => _selectedIndex = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: 'Avui'),
+          NavigationDestination(icon: Icon(Icons.people), label: 'Amics'),
+          NavigationDestination(icon: Icon(Icons.dynamic_feed), label: 'Feed'),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Perfil'),
+        ],
+      ),
     );
   }
 }
