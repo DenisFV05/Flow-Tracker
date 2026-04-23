@@ -20,7 +20,13 @@ class ScreensExample extends StatelessWidget {
           case 0: return const DashboardView();
           case 1: return const FeedView();
           case 2: return const AmicsView();
-          case 3: return const OpcionsView();
+          case 3:
+            return OpcionsView(
+              onLogout: () {
+                // aquí luego conectas logout real
+                print("Logout");
+              },
+            );
           default: return const Center(child: Text('Not found'));
         }
       },

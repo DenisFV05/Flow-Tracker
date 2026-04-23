@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'inputEstil.dart';
-import 'login_screen.dart';
 
 class CrearCuentaScreen extends StatefulWidget {
-  const CrearCuentaScreen({super.key});
+  final String serverUrl;
+
+  const CrearCuentaScreen({super.key, required this.serverUrl});
 
   @override
   State<CrearCuentaScreen> createState() => _CrearCuentaScreenState();
@@ -12,7 +13,7 @@ class CrearCuentaScreen extends StatefulWidget {
 
 class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _serverUrlController = TextEditingController(text: 'http://localhost:3000');
+  final _serverUrlController = TextEditingController();
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -23,6 +24,12 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   String _errorMessage = '';
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _serverUrlController.text = widget.serverUrl;
+  }
 
   @override
   void dispose() {
@@ -72,6 +79,9 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text("Crear compte"),
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -135,9 +145,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                     decoration: inputEstil.base("Contrasenya", "Contrasenya").copyWith(
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -152,14 +160,10 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: !_confirmPasswordVisible,
-                    decoration:
-                        inputEstil.base("Confirma", "Confirma contrasenya")
-                            .copyWith(
+                    decoration: inputEstil.base("Confirma", "Confirma contrasenya").copyWith(
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _confirmPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                          _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -168,8 +172,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                         },
                       ),
                     ),
-                    validator: (v) =>
-                        v != _passwordController.text ? 'No coincideix' : null,
+                    validator: (v) => v != _passwordController.text ? 'No coincideix' : null,
                   ),
                   const SizedBox(height: 24),
                   if (_errorMessage.isNotEmpty)
