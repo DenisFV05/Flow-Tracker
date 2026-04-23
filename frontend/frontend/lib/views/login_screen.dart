@@ -110,7 +110,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // URL servidor
                     TextFormField(
                       controller: _serverUrlController,
                       decoration: const InputDecoration(
@@ -126,8 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _usernameController,
                       decoration: inputEstil.base(
-                        "Correu / Usuari",
-                        "Introdueix el teu correu o nom d'usuari",
+                        "Correu",
+                        "Introdueix el teu correu",
                       ),
                       validator: (value) =>
                           value!.isEmpty ? 'Requerit' : null,

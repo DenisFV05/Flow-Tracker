@@ -15,18 +15,18 @@ class QuickStats extends StatelessWidget {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Total habits tracked: ",
+          Text("Habits totals rastrejats: ",
               style: TextStyle(fontWeight: FontWeight.bold)),
           Text("4", style: TextStyle(fontWeight: FontWeight.bold)),
 
           SizedBox(height: 10),
 
-          Text("Completed today: ",
+          Text("Completats avui: ",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
               )),
-          Text("2/4",
+          Text("2/6",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
@@ -34,16 +34,16 @@ class QuickStats extends StatelessWidget {
 
           SizedBox(height: 10),
 
-          Text("This week: ",
+          Text("Aquesta setmana: ",
               style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("21/28",
+          Text("20/30",
               style: TextStyle(fontWeight: FontWeight.bold)),
 
           SizedBox(height: 10),
 
-          Text("This month: ",
+          Text("Aquest mes: ",
               style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("89/112",
+          Text("100/112",
               style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),

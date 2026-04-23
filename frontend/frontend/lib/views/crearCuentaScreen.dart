@@ -2,7 +2,7 @@ import 'package:flowTracker/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'inputEstil.dart';
 import 'package:flowTracker/utils.dart';
-
+import 'login_screen.dart';
 class CrearCuentaScreen extends StatefulWidget {
   const CrearCuentaScreen({super.key});
 
@@ -51,7 +51,7 @@ Future<void> _register() async {
   });
 
   try {
-    final authService = AuthService('http://localhost:3000');
+    final authService = AuthService('https://flow-tracker.ieti.site');
 
     await authService.register(
       _emailController.text,
@@ -65,7 +65,10 @@ Future<void> _register() async {
         const SnackBar(content: Text('Compte creat correctament')),
       );
 
-      Navigator.pop(context); 
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
     }
 
   } catch (e) {
@@ -126,7 +129,7 @@ Future<void> _register() async {
                         child: TextFormField(
                           controller: _nameController,
                           decoration:
-                              inputEstil.base("Nom complet", "John Doe"),
+                              inputEstil.base("Nom complet", "Insereix el teu nom"),
                           validator: (v) =>
                               v!.isEmpty ? "Requerit" : null,
                         ),
@@ -136,7 +139,7 @@ Future<void> _register() async {
                         child: TextFormField(
                           controller: _usernameController,
                           decoration:
-                              inputEstil.base("Nom d'usuari", "johndoe"),
+                              inputEstil.base("Nom d'usuari", "Insereix el teu username"),
                           validator: (v) =>
                               v!.isEmpty ? "Requerit" : null,
                         ),
@@ -149,7 +152,7 @@ Future<void> _register() async {
                   TextFormField(
                     controller: _emailController,
                     decoration:
-                        inputEstil.base("Correu electrònic", "you@example.com"),
+                        inputEstil.base("Correu electrònic", "elteumail@mail.com"),
                     validator: (v) =>
                         v!.isEmpty ? "Requerit" : null,
                   ),

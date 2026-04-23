@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'views/login_screen.dart';
 import 'views/home_screen.dart';
 import 'utils/settings_manager.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'views/login_screen.dart';
-import 'views/home_screen.dart';
-import 'utils/settings_manager.dart';
 
 import 'models/habitsProvider.dart';
 
@@ -51,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initApp() async {
-    // Splash visual mínimo
     await Future.delayed(const Duration(milliseconds: 800));
 
     final settings = await SettingsManager.loadSettings();

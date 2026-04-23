@@ -8,13 +8,13 @@ class StatsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: const [
-        Expanded(child: StatCard(title: "Current Streak", value: "12")),
+        Expanded(child: StatCard(title: "Ratxa actual", value: "1")),
         SizedBox(width: 10),
-        Expanded(child: StatCard(title: "Today Progress", value: "2/4")),
+        Expanded(child: StatCard(title: "Progres d'avui", value: "2/6")),
         SizedBox(width: 10),
-        Expanded(child: StatCard(title: "Weekly Rate", value: "78%")),
+        Expanded(child: StatCard(title: "Ritme Setmanal", value: "50%")),
         SizedBox(width: 10),
-        Expanded(child: StatCard(title: "Achievements", value: "8")),
+        Expanded(child: StatCard(title: "Assoliments", value: "8")),
       ],
     );
   }

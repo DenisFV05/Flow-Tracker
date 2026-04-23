@@ -7,7 +7,7 @@ import '../widgets/stats/quickStats.dart';
 import '../widgets/SectionTitle.dart';
 import 'package:provider/provider.dart';
 import '../models/habitsProvider.dart';
-
+import 'crearHabit.dart';
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
 
@@ -22,9 +22,9 @@ class DashboardView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {showCrearHabitPopup(context);},
               icon: const Icon(Icons.add),
-              label: const Text("Add Habit"),
+              label: const Text("Afegir habit"),
             ),
           )
         ],
@@ -37,23 +37,22 @@ class DashboardView extends StatelessWidget {
             const StatsGrid(),
             const SizedBox(height: 20),
 
-            /// ---------- RESPONSIVE SECTION ----------
             LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 700;
 
-                /// ================= DESKTOP / TABLET =================
+                /// DESKTOP
                 if (isWide) {
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// LEFT - HABITS
+                      /// HABITS
                       Expanded(
                         flex: 2,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SectionTitle(title: "Today's Habits"),
+                            const SectionTitle(title: "Habits d'avui"),
                             const SizedBox(height: 10),
 
                             ...habits.map(
@@ -75,13 +74,13 @@ class DashboardView extends StatelessWidget {
 
                       const SizedBox(width: 16),
 
-                      /// RIGHT - QUICK STATS
+                      /// RESUM STATS
                       const Expanded(
                         flex: 1,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SectionTitle(title: "Quick Stats"),
+                            SectionTitle(title: "Resum d'stats"),
                             SizedBox(height: 10),
                             QuickStats(),
                           ],
@@ -91,11 +90,11 @@ class DashboardView extends StatelessWidget {
                   );
                 }
 
-                /// ================= MOBILE =================
+                /// MOVIL
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionTitle(title: "Today's Habits"),
+                    const SectionTitle(title: "Habits d'avui"),
                     const SizedBox(height: 10),
 
                     ...habits.map(
@@ -114,7 +113,7 @@ class DashboardView extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    const SectionTitle(title: "Quick Stats"),
+                    const SectionTitle(title: "Resum d'stats"),
                     const SizedBox(height: 10),
                     const QuickStats(),
                   ],
@@ -126,4 +125,26 @@ class DashboardView extends StatelessWidget {
       ),
     );
   }
+}
+void showCrearHabitPopup(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 500,
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(16),
+            child: CrearHabitForm(),
+          ),
+        ),
+      );
+    },
+  );
 }
