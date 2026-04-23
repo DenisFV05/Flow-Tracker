@@ -92,6 +92,7 @@ class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sideb
         const SidebarXItem(icon: Icons.feed_outlined, label: 'Feed'),
         const SidebarXItem(icon: Icons.people, label: 'Amics'),
         const SidebarXItem(icon: Icons.settings,label: 'Opcions'),
+        const SidebarXItem(icon: Icons.person,label: 'Perfil'),
 
       ],
     );

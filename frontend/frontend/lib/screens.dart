@@ -1,3 +1,4 @@
+import 'package:flowTracker/views/perfilView.dart';
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
@@ -21,6 +22,7 @@ class ScreensExample extends StatelessWidget {
           case 1: return const FeedView();
           case 2: return const AmicsView();
           case 3: return const OpcionsView();
+          case 4: return const perfilView();
           default: return const Center(child: Text('Not found'));
         }
       },
