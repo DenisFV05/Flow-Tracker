@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/habitsProvider.dart';
+import '../providers/habitsProvider.dart';
 
 class OpcionsView extends StatelessWidget {
   final VoidCallback onLogout;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/habitsProvider.dart';
+import '../providers/habitsProvider.dart';
 import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
 import '../widgets/SectionTitle.dart';

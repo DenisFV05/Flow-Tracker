@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../utils/settings_manager.dart';
-import '../models/habitsProvider.dart';
+import '../providers/habitsProvider.dart';
 import 'home_screen.dart';
 import 'crearCuentaScreen.dart';
 import 'inputEstil.dart';
