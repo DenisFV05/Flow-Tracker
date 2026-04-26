@@ -22,17 +22,20 @@ class _DashboardViewState extends State<DashboardView> {
   void initState() {
     super.initState();
 
-    // Cargar datos al abrir pantalla
-    Future.microtask(() {
-      context.read<HabitProvider>().loadHabits();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HabitProvider>().loadDashboard();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<HabitProvider>();
+
     final habits = provider.habits;
     final loading = provider.loading;
+
+    final dashboardStats = provider.dashboardStats;
+    final habitStats = provider.habitStats;
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +48,7 @@ class _DashboardViewState extends State<DashboardView> {
               icon: const Icon(Icons.add),
               label: const Text("Afegir habit"),
             ),
-          )
+          ),
         ],
       ),
 
@@ -56,19 +59,29 @@ class _DashboardViewState extends State<DashboardView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const StatsGrid(),
+                  /// =========================
+                  /// 📊 STATS GLOBALES
+                  /// =========================
+                  StatsGrid(
+                    totalHabits: dashboardStats['totalHabits'] ?? 0,
+                    todayCompleted: dashboardStats['todayCompleted'] ?? 0,
+                    totalToday: dashboardStats['todayTotal'] ?? 0,
+                    longestStreak: dashboardStats['longestStreak'] ?? 0,
+                  ),
+
                   const SizedBox(height: 20),
 
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final isWide = constraints.maxWidth > 700;
 
-                      // 🖥️ DESKTOP
                       if (isWide) {
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // HABITS
+                            /// =========================
+                            /// 🧠 HABITS
+                            /// =========================
                             Expanded(
                               flex: 2,
                               child: Column(
@@ -77,24 +90,42 @@ class _DashboardViewState extends State<DashboardView> {
                                   const SectionTitle(title: "Habits d'avui"),
                                   const SizedBox(height: 10),
 
+                                  if (habits.isEmpty)
+                                    const Padding(
+                                      padding: EdgeInsets.all(24),
+                                      child: Text(
+                                        "Encara no tens hàbits 👀",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+
                                   ...habits.map((habit) {
+                                    final stats =
+                                        habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+
+                                    final progress =
+                                        ((stats['completionRate'] ?? 0) / 100)
+                                            .toDouble();
+
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 12),
                                       child: HabitCard(
-                                        title: habit['name'],
-                                        subtitle: habit['description'],
-                                        progress: 0.5,
+                                        title: habit['name'] ?? '',
+                                        subtitle: habit['description'] ?? '',
+                                        progress: progress,
+                                        streak: stats['currentStreak'] ?? 0,
+                                        tags: habit['tags'] ?? [],
                                         color: Colors.orange,
                                         onTap: () {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) => HabitDetailView(habit: habit),
+                                              builder: (_) =>
+                                                  HabitDetailView(habit: habit),
                                             ),
                                           );
                                         },
-                                      )
-
+                                      ),
                                     );
                                   }),
                                 ],
@@ -103,13 +134,15 @@ class _DashboardViewState extends State<DashboardView> {
 
                             const SizedBox(width: 16),
 
-                            // STATS
+                            /// =========================
+                            /// ⚡ QUICK STATS
+                            /// =========================
                             const Expanded(
                               flex: 1,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SectionTitle(title: "Resum d'stats"),
+                                  SectionTitle(title: "Resum"),
                                   SizedBox(height: 10),
                                   QuickStats(),
                                 ],
@@ -119,28 +152,57 @@ class _DashboardViewState extends State<DashboardView> {
                         );
                       }
 
-                      // 📱 MOBILE
+                      /// =========================
+                      /// 📱 MOBILE
+                      /// =========================
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SectionTitle(title: "Habits d'avui"),
                           const SizedBox(height: 10),
 
+                          if (habits.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.all(24),
+                              child: Text(
+                                "Encara no tens hàbits 👀",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+
                           ...habits.map((habit) {
+                            final stats =
+                                habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+
+                            final progress =
+                                ((stats['completionRate'] ?? 0) / 100)
+                                    .toDouble();
+
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: HabitCard(
                                 title: habit['name'] ?? '',
                                 subtitle: habit['description'] ?? '',
-                                progress: 0.5,
+                                progress: progress,
+                                streak: stats['currentStreak'] ?? 0,
+                                tags: habit['tags'] ?? [],
                                 color: Colors.orange,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          HabitDetailView(habit: habit),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           }),
 
                           const SizedBox(height: 20),
 
-                          const SectionTitle(title: "Resum d'stats"),
+                          const SectionTitle(title: "Resum"),
                           const SizedBox(height: 10),
                           const QuickStats(),
                         ],
@@ -154,7 +216,9 @@ class _DashboardViewState extends State<DashboardView> {
   }
 }
 
-/// Popup creación hábito
+/// =========================
+/// ➕ POPUP CREAR HABIT
+/// =========================
 void showCrearHabitPopup(BuildContext context) {
   showDialog(
     context: context,
@@ -164,12 +228,9 @@ void showCrearHabitPopup(BuildContext context) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: const Padding(
-            padding: EdgeInsets.all(16),
-            child: CrearHabitForm(),
-          ),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: CrearHabitForm(),
         ),
       );
     },

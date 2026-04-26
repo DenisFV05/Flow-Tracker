@@ -8,9 +8,7 @@ class HabitsApi {
 
   HabitsApi(this.baseUrl);
 
-  // -------------------------
-  // 🔐 HEADERS CON TOKEN
-  // -------------------------
+  // Construye headers incluyendo el token de autenticación si existe
   Future<Map<String, String>> _headers() async {
     final token = await _storage.getToken();
 
@@ -20,17 +18,12 @@ class HabitsApi {
     };
   }
 
-  // -------------------------
-  // 📥 GET HABITS
-  // -------------------------
+  // Obtiene la lista de hábitos del usuario
   Future<List<dynamic>> getHabits() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/habits'),
       headers: await _headers(),
     );
-
-    print('STATUS GET HABITS: ${res.statusCode}');
-    print('BODY: ${res.body}');
 
     if (res.statusCode != 200) {
       throw Exception('Error fetching habits: ${res.body}');
@@ -39,9 +32,7 @@ class HabitsApi {
     return jsonDecode(res.body);
   }
 
-  // -------------------------
-  // ➕ CREATE HABIT
-  // -------------------------
+  // Crea un nuevo hábito
   Future<void> createHabit(
     String name,
     String description,
@@ -57,17 +48,12 @@ class HabitsApi {
       }),
     );
 
-    print('STATUS CREATE: ${res.statusCode}');
-    print('BODY: ${res.body}');
-
     if (res.statusCode != 201) {
       throw Exception('Error creating habit: ${res.body}');
     }
   }
 
-  // -------------------------
-  // 📝 UPDATE HABIT
-  // -------------------------
+  // Actualiza un hábito existente
   Future<void> updateHabit(
     String id,
     String name,
@@ -82,28 +68,24 @@ class HabitsApi {
       }),
     );
 
-    if (res.statusCode != 200) {
+    if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('Error updating habit: ${res.body}');
     }
   }
 
-  // -------------------------
-  // ❌ DELETE HABIT
-  // -------------------------
+  // Elimina un hábito por su id
   Future<void> deleteHabit(String id) async {
     final res = await http.delete(
       Uri.parse('$baseUrl/api/habits/$id'),
       headers: await _headers(),
     );
 
-    if (res.statusCode != 200) {
+    if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('Error deleting habit: ${res.body}');
     }
   }
 
-  // -------------------------
-  // 📌 TOGGLE / LOG HABIT
-  // -------------------------
+  // Registra o actualiza el estado de completado de un hábito
   Future<void> toggleHabit(String id, bool completed) async {
     final res = await http.post(
       Uri.parse('$baseUrl/api/habits/$id/log'),
@@ -114,22 +96,34 @@ class HabitsApi {
       }),
     );
 
-    if (res.statusCode != 200) {
+    if (res.statusCode != 200 && res.statusCode != 201) {
       throw Exception('Error logging habit: ${res.body}');
     }
   }
 
-  // -------------------------
-  // 📊 STATS HABIT
-  // -------------------------
-  Future<Map<String, dynamic>> getStats(String id) async {
+  // Obtiene estadísticas de un hábito concreto
+  Future<Map<String, dynamic>> getHabitStats(String id) async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/habits/$id/stats'),
       headers: await _headers(),
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching stats: ${res.body}');
+      throw Exception('Error fetching habit stats: ${res.body}');
+    }
+
+    return jsonDecode(res.body);
+  }
+
+  // Obtiene estadísticas generales del perfil del usuario
+  Future<Map<String, dynamic>> getProfileStats() async {
+    final res = await http.get(
+      Uri.parse('$baseUrl/api/profile/stats'),
+      headers: await _headers(),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('Error fetching profile stats: ${res.body}');
     }
 
     return jsonDecode(res.body);

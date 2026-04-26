@@ -6,31 +6,44 @@ class HabitProvider extends ChangeNotifier {
       HabitsApi("https://flow-tracker.ieti.site");
 
   List<dynamic> habits = [];
+
+  Map<String, dynamic> dashboardStats = {};
+
+  Map<String, dynamic> habitStats = {};
+
   bool loading = false;
   String? error;
 
-  // -------------------------
-  // 📥 LOAD HABITS
-  // -------------------------
-  Future<void> loadHabits() async {
+  Future<void> loadDashboard() async {
     try {
       loading = true;
       error = null;
       notifyListeners();
 
+      // cargar hábitos
       habits = await api.getHabits();
+
+      // cargar stats globales
+      dashboardStats = await api.getProfileStats();
+
+      // cargar stats por cada hábito
+      for (final habit in habits) {
+        final habitId = habit['id'];
+
+        final stats = await api.getHabitStats(habitId);
+
+        habitStats[habitId] = stats;
+      }
+
     } catch (e) {
       error = e.toString();
-      print("LOAD HABITS ERROR: $e");
+      print("DASHBOARD ERROR: $e");
     } finally {
       loading = false;
       notifyListeners();
     }
   }
 
-  // -------------------------
-  // ➕ ADD HABIT
-  // -------------------------
   Future<void> addHabit(
     String name,
     String description,
@@ -38,20 +51,17 @@ class HabitProvider extends ChangeNotifier {
   ) async {
     try {
       await api.createHabit(name, description, tags);
-      await loadHabits();
+      await loadDashboard();
     } catch (e) {
       error = e.toString();
       notifyListeners();
     }
   }
 
-  // -------------------------
-  // 🔁 TOGGLE HABIT
-  // -------------------------
   Future<void> toggleHabit(String id, bool completed) async {
     try {
       await api.toggleHabit(id, completed);
-      await loadHabits();
+      await loadDashboard();
     } catch (e) {
       error = e.toString();
       notifyListeners();

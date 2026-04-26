@@ -2,19 +2,50 @@ import 'package:flutter/material.dart';
 import 'StatCard.dart';
 
 class StatsGrid extends StatelessWidget {
-  const StatsGrid({super.key});
+  final int totalHabits;
+  final int todayCompleted;
+  final int totalToday;
+  final int longestStreak;
+
+  const StatsGrid({
+    super.key,
+    required this.totalHabits,
+    required this.todayCompleted,
+    required this.totalToday,
+    required this.longestStreak,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const [
-        Expanded(child: StatCard(title: "Ratxa actual", value: "1")),
-        SizedBox(width: 10),
-        Expanded(child: StatCard(title: "Progres d'avui", value: "2/6")),
-        SizedBox(width: 10),
-        Expanded(child: StatCard(title: "Ritme Setmanal", value: "50%")),
-        SizedBox(width: 10),
-        Expanded(child: StatCard(title: "Assoliments", value: "8")),
+      children: [
+        Expanded(
+          child: StatCard(
+            title: "Habits",
+            value: "$totalHabits",
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: StatCard(
+            title: "Avui",
+            value: "$todayCompleted/$totalToday",
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: StatCard(
+            title: "Ritme",
+            value: "${totalToday == 0 ? 0 : ((todayCompleted / totalToday) * 100).toStringAsFixed(0)}%",
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: StatCard(
+            title: "🔥 Streak",
+            value: "$longestStreak",
+          ),
+        ),
       ],
     );
   }
