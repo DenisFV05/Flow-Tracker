@@ -1,20 +1,55 @@
 import 'package:flutter/material.dart';
 
-import '../models/mockHabits.dart';
-import '../widgets/habits/HabitCard.dart';
-import '../widgets/stats/StatsGrid.dart';
-import '../widgets/stats/quickStats.dart';
 import '../widgets/SectionTitle.dart';
-import 'package:provider/provider.dart';
-import '../models/habitsProvider.dart';
+import '../widgets/stats/quickStats.dart';
 import 'crearHabit.dart';
+
+/// =======================
+/// MOCK FRIEND MODEL
+/// =======================
+class MockFriend {
+  final String name;
+  final String username;
+  final double progress;
+  final bool activeToday;
+
+  MockFriend({
+    required this.name,
+    required this.username,
+    required this.progress,
+    required this.activeToday,
+  });
+}
+
+/// =======================
+/// MOCK DATA
+/// =======================
+final List<MockFriend> mockFriends = [
+  MockFriend(
+    name: "Anna",
+    username: "anna_dev",
+    progress: 0.7,
+    activeToday: true,
+  ),
+  MockFriend(
+    name: "Marc",
+    username: "marc_flutter",
+    progress: 0.4,
+    activeToday: false,
+  ),
+  MockFriend(
+    name: "Laia",
+    username: "laia_code",
+    progress: 0.9,
+    activeToday: true,
+  ),
+];
+
 class AmicsView extends StatelessWidget {
   const AmicsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final habits = context.watch<HabitProvider>().habits;
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text("Amics"),
@@ -22,105 +57,146 @@ class AmicsView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: ElevatedButton.icon(
-              onPressed: () {showCrearHabitPopup(context);},
-              icon: const Icon(Icons.add),
+              onPressed: () {
+                showCrearHabitPopup(context);
+              },
+              icon: const Icon(Icons.person_add),
               label: const Text("Afegir amic"),
             ),
           )
         ],
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 700;
 
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 700;
+            if (isWide) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// ======================
+                  /// 👥 FRIENDS LIST
+                  /// ======================
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionTitle(title: "Els teus amics"),
+                        const SizedBox(height: 10),
 
-                /// DESKTOP
-                if (isWide) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SectionTitle(title: "Els teus amics"),
-                            const SizedBox(height: 10),
-
-                            ...habits.map(
-                              (habit) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: HabitCard(
-                                  title: habit.title,
-                                  subtitle: habit.subtitle,
-                                  progress: habit.progress,
-                                  color: Colors.green,
-                                ),
+                        ...mockFriends.map((friend) {
+                          return Card(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                child: Text(friend.name[0]),
+                              ),
+                              title: Text(friend.name),
+                              subtitle: Text("@${friend.username}"),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "${(friend.progress * 100).toInt()}%",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.circle,
+                                    size: 10,
+                                    color: friend.activeToday
+                                        ? Colors.green
+                                        : Colors.grey,
+                                  )
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  /// ======================
+                  /// 📊 RIGHT PANEL
+                  /// ======================
+                  const Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionTitle(title: "Resum social"),
+                        SizedBox(height: 10),
+                        QuickStats(),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            /// ======================
+            /// 📱 MOBILE
+            /// ======================
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SectionTitle(title: "Els teus amics"),
+                const SizedBox(height: 10),
+
+                ...mockFriends.map((friend) {
+                  return Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: Text(friend.name[0]),
                       ),
-
-                      const SizedBox(width: 16),
-
-                      const Expanded(
-                        flex: 1,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SectionTitle(title: "SOLICITUTS D'AMISTAT"),
-                            SizedBox(height: 10),
-                            QuickStats(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                }
-
-                /// MOVIL
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionTitle(title: "Habits d'avui"),
-                    const SizedBox(height: 10),
-
-                    ...habits.map(
-                      (habit) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: HabitCard(
-                          title: habit.title,
-                          subtitle: habit.subtitle,
-                          progress: habit.progress,
-                          color: habit.completedToday
-                              ? Colors.green
-                              : Colors.orange,
-                        ),
+                      title: Text(friend.name),
+                      subtitle: Text("@${friend.username}"),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${(friend.progress * 100).toInt()}%",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Icon(
+                            Icons.circle,
+                            size: 10,
+                            color: friend.activeToday
+                                ? Colors.green
+                                : Colors.grey,
+                          )
+                        ],
                       ),
                     ),
+                  );
+                }),
 
-                    const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-                    const SectionTitle(title: "Resum d'stats"),
-                    const SizedBox(height: 10),
-                    const QuickStats(),
-                  ],
-                );
-              },
-            ),
-          ],
+                const SectionTitle(title: "Resum social"),
+                const SizedBox(height: 10),
+                const QuickStats(),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
+
+/// =======================
+/// POPUP
+/// =======================
 void showCrearHabitPopup(BuildContext context) {
   showDialog(
     context: context,
@@ -130,14 +206,9 @@ void showCrearHabitPopup(BuildContext context) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 500,
-          ),
-          child: const Padding(
-            padding: EdgeInsets.all(16),
-            child: CrearHabitForm(),
-          ),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: CrearHabitForm(),
         ),
       );
     },
