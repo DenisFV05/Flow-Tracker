@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/habitsProvider.dart';
+import '../../models/habitsProvider.dart';
+import 'StatCard.dart';
 
 class QuickStats extends StatelessWidget {
   const QuickStats({super.key});
@@ -14,6 +15,7 @@ class QuickStats extends StatelessWidget {
     final todayCompleted = stats['todayCompleted'] ?? 0;
     final todayTotal = stats['todayTotal'] ?? 0;
     final longestStreak = stats['longestStreak'] ?? 0;
+    final rate = todayTotal == 0 ? 0 : ((todayCompleted / todayTotal) * 100).toDouble();
 
     return Container(
       width: double.infinity,
@@ -25,32 +27,31 @@ class QuickStats extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Habits totals rastrejats: ",
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("$totalHabits", style: const TextStyle(fontWeight: FontWeight.bold)),
-
-          const SizedBox(height: 10),
-
-          const Text("Completats avui: ",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              )),
-          Text("$todayCompleted/$todayTotal",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              )),
-
-          const SizedBox(height: 10),
-
-          const Text("Aquesta setmana: ",
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("${(todayTotal == 0 ? 0 : ((todayCompleted / todayTotal) * 100).toStringAsFixed(0)}%",
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+          const Text("Resum",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 12),
+          StatCard(
+            title: "Habits",
+            value: "$totalHabits",
+          ),
+          const SizedBox(height: 8),
+          StatCard(
+            title: "Avui",
+            value: "$todayCompleted/$todayTotal",
+          ),
+          const SizedBox(height: 8),
+          StatCard(
+            title: "Ritme",
+            value: "${rate.toStringAsFixed(0)}%",
+          ),
+          const SizedBox(height: 8),
+          StatCard(
+            title: "🔥 Streak",
+            value: "$longestStreak",
+          ),
         ],
       ),
     );
   }
 }
-}
+
