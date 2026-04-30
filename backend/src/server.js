@@ -27,6 +27,17 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+app.use((req, res, next) => {
+    const now = new Date();
+
+    const readableTime = now.toLocaleString('es-ES', {
+        dateStyle: 'short',
+        timeStyle: 'medium'
+    });
+
+    console.log(`[${readableTime}] ${req.method} ${req.originalUrl}`);
+    next();
+});
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitsRoutes);
