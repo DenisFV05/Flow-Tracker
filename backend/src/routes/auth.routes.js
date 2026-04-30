@@ -5,9 +5,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
-router.post('/register', async (req, res) => {
+const { validateRegister, validateLogin } = require('../middleware/validation');
+
+router.post('/register', validateRegister, async (req, res) => {
     try {
-        const { email, password,name,username } = req.body;
+        const { email, password, name, username } = req.body;
 
         const existingUser = await prisma.user.findUnique({
             where: { email }
@@ -15,6 +17,14 @@ router.post('/register', async (req, res) => {
 
         if (existingUser) {
             return res.status(400).json({ error: 'User already exists' });
+        }
+
+        const existingUsername = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        if (existingUsername) {
+            return res.status(400).json({ error: 'Username already taken' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,24 +35,24 @@ router.post('/register', async (req, res) => {
                 password: hashedPassword,
                 name,
                 username
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                username: true
             }
         });
 
-        return res.status(201).json({
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            username: user.username
-        });
+        return res.status(201).json(user);
 
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ error: 'Server error' });
-        }
-
+    } catch (error) {
+        console.error('Register error:', error);
+        return res.status(500).json({ error: 'Server error' });
+    }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', validateLogin, async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -59,7 +69,6 @@ router.post('/login', async (req, res) => {
         if (!validPassword) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
         const token = jwt.sign(
             { userId: user.id, email: user.email },
@@ -72,15 +81,15 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                name: user.name
+                name: user.name,
+                username: user.username
             }
         });
 
-        } catch (error) {
-            console.log(error); 
-            return res.status(500).json({ error: 'Server error' });
-        }
-
+    } catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).json({ error: 'Server error' });
+    }
 });
 router.get('/profile', authMiddleware, (req, res) => {
     res.json({

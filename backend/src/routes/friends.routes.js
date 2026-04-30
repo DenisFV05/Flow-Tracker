@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
+const { validateFriendRequest } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
@@ -162,7 +163,7 @@ router.get('/sent', async (req, res) => {
     }
 });
 
-router.post('/request', async (req, res) => {
+router.post('/request', validateFriendRequest, async (req, res) => {
     try {
         const userId = req.user.id;
         const { username } = req.body;

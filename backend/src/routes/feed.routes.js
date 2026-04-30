@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
+const { validatePost } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
@@ -102,7 +103,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', validatePost, async (req, res) => {
     try {
         const userId = req.user.id;
         const { content } = req.body;

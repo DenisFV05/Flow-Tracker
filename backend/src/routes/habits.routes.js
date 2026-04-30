@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
+const { validateHabit } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
@@ -65,7 +66,7 @@ function calculateMaxStreak(logs) {
     return maxStreak;
 }
 
-router.post('/', async (req, res) => {
+router.post('/', validateHabit, async (req, res) => {
     try {
         const { name, description, tags } = req.body;
         const userId = req.user.id;
