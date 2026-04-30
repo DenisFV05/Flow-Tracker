@@ -69,9 +69,10 @@ class HabitCard extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: tags.map((tag) {
+                  final name = tag is Map ? tag['name'] ?? '' : tag.toString();
                   return Chip(
                     label: Text(
-                      tag['name'] ?? '',
+                      name,
                       style: const TextStyle(fontSize: 12),
                     ),
                     visualDensity: VisualDensity.compact,

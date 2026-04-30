@@ -17,6 +17,8 @@ class StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rate = totalToday == 0 ? 0 : ((todayCompleted / totalToday) * 100).toStringAsFixed(0);
+    
     return Row(
       children: [
         Expanded(
@@ -36,7 +38,7 @@ class StatsGrid extends StatelessWidget {
         Expanded(
           child: StatCard(
             title: "Ritme",
-            value: "${totalToday == 0 ? 0 : ((todayCompleted / totalToday) * 100).toStringAsFixed(0)}%",
+            value: "$rate%",
           ),
         ),
         const SizedBox(width: 10),
