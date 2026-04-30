@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import 'inputEstil.dart';
 import 'package:flowTracker/utils.dart';
-import 'package:flowTracker/models/habit.dart';
 import 'package:flowTracker/models/habitsProvider.dart';
 
 class editarHabit extends StatefulWidget {
