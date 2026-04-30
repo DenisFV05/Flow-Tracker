@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/habitsProvider.dart';
 
 class QuickStats extends StatelessWidget {
   const QuickStats({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<HabitProvider>();
+    final stats = provider.dashboardStats;
+
+    final totalHabits = stats['totalHabits'] ?? 0;
+    final todayCompleted = stats['todayCompleted'] ?? 0;
+    final todayTotal = stats['todayTotal'] ?? 0;
+    final longestStreak = stats['longestStreak'] ?? 0;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -12,41 +22,35 @@ class QuickStats extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Habits totals rastrejats: ",
+          const Text("Habits totals rastrejats: ",
               style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("4", style: TextStyle(fontWeight: FontWeight.bold)),
+          Text("$totalHabits", style: const TextStyle(fontWeight: FontWeight.bold)),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
-          Text("Completats avui: ",
+          const Text("Completats avui: ",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
               )),
-          Text("2/6",
-              style: TextStyle(
+          Text("$todayCompleted/$todayTotal",
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
               )),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
-          Text("Aquesta setmana: ",
+          const Text("Aquesta setmana: ",
               style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("20/30",
-              style: TextStyle(fontWeight: FontWeight.bold)),
-
-          SizedBox(height: 10),
-
-          Text("Aquest mes: ",
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          Text("100/112",
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text("${(todayTotal == 0 ? 0 : ((todayCompleted / todayTotal) * 100).toStringAsFixed(0)}%",
+              style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
+}
 }

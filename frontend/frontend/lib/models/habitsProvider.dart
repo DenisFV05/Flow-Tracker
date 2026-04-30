@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import '../services/habits_service.dart';
 import '../services/feed_service.dart';
+import '../services/profile_service.dart';
 
 class HabitProvider extends ChangeNotifier {
   final HabitsApi api =
       HabitsApi("https://flow-tracker.ieti.site");
   final FeedApi feedApi =
       FeedApi("https://flow-tracker.ieti.site");
+  final ProfileApi profileApi =
+      ProfileApi("https://flow-tracker.ieti.site");
 
   List<dynamic> habits = [];
 
@@ -16,6 +19,9 @@ class HabitProvider extends ChangeNotifier {
 
   List<dynamic> feedPosts = [];
   String? feedNextCursor;
+
+  Map<String, dynamic> userProfile = {};
+  bool profileLoading = false;
 
   bool loading = false;
   String? error;
@@ -64,6 +70,33 @@ class HabitProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print("FEED ERROR: $e");
+    }
+  }
+
+  Future<void> loadProfile() async {
+    try {
+      profileLoading = true;
+      notifyListeners();
+
+      userProfile = await profileApi.getProfile();
+    } catch (e) {
+      print("PROFILE ERROR: $e");
+    } finally {
+      profileLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateProfile({String? name, String? avatar}) async {
+    try {
+      userProfile = await profileApi.updateProfile(
+        name: name,
+        avatar: avatar,
+      );
+      notifyListeners();
+    } catch (e) {
+      print("UPDATE PROFILE ERROR: $e");
+      rethrow;
     }
   }
 
