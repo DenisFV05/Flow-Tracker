@@ -87,7 +87,7 @@ class _DashboardViewState extends State<DashboardView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SectionTitle(title: "Habits d'avui"),
+                                  SectionTitle(title: "Habits d'avui"),
                                   const SizedBox(height: 10),
 
                                   if (habits.isEmpty)
@@ -137,7 +137,7 @@ class _DashboardViewState extends State<DashboardView> {
                             /// =========================
                             /// ⚡ QUICK STATS
                             /// =========================
-                            const Expanded(
+                            Expanded(
                               flex: 1,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +158,7 @@ class _DashboardViewState extends State<DashboardView> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SectionTitle(title: "Habits d'avui"),
+                          SectionTitle(title: "Habits d'avui"),
                           const SizedBox(height: 10),
 
                           if (habits.isEmpty)
@@ -202,7 +202,7 @@ class _DashboardViewState extends State<DashboardView> {
 
                           const SizedBox(height: 20),
 
-                          const SectionTitle(title: "Resum"),
+                          SectionTitle(title: "Resum"),
                           const SizedBox(height: 10),
                           const QuickStats(),
                         ],

@@ -160,4 +160,3 @@ class _perfilViewState extends State<perfilView> {
     );
   }
 }
-}

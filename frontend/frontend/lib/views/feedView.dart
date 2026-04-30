@@ -48,7 +48,7 @@ class _FeedViewState extends State<FeedView> {
   Future<void> _likePost(String postId) async {
     try {
       final feedApi = FeedApi("https://flow-tracker.ieti.site");
-      await feedApi.likepost(postId);
+      await feedApi.likePost(postId);
       await _loadFeed();
     } catch (e) {
       if (mounted) {
@@ -78,7 +78,7 @@ class _FeedViewState extends State<FeedView> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
-                        color: canvasColor,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: ListTile(

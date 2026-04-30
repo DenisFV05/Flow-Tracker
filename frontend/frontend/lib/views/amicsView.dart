@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/friends_service.dart';
 import '../models/habitsProvider.dart';
 import 'inputEstil.dart';
+import '../widgets/SectionTitle.dart';
 
 class AmicsView extends StatefulWidget {
   const AmicsView({super.key});
@@ -94,7 +95,7 @@ class _AmicsViewState extends State<AmicsView> {
             padding: const EdgeInsets.only(right: 12),
             child: ElevatedButton.icon(
               onPressed: () => _showSearchDialog(),
-              icon: const Icon(Icons.person_add),
+              icon: Icon(Icons.person_add),
               label: const Text("Afegir amic"),
             ),
           )
@@ -116,15 +117,12 @@ class _AmicsViewState extends State<AmicsView> {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              /// ======================
-                              /// 👥 FRIENDS LIST
-                              /// ======================
                               Expanded(
                                 flex: 2,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const SectionTitle(title: "Els teus amics"),
+                                    SectionTitle(title: "Els teus amics"),
                                     const SizedBox(height: 10),
                                     if (friends.isEmpty)
                                       const Padding(
@@ -150,15 +148,12 @@ class _AmicsViewState extends State<AmicsView> {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              /// ======================
-                              /// 📊 RIGHT PANEL - REQUESTS
-                              /// ======================
                               Expanded(
                                 flex: 1,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const SectionTitle(title: "Sol·licituds"),
+                                    SectionTitle(title: "Sol·licituds"),
                                     const SizedBox(height: 10),
                                     if (requests.isEmpty)
                                       const Padding(
@@ -181,11 +176,11 @@ class _AmicsViewState extends State<AmicsView> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               IconButton(
-                                                icon: const Icon(Icons.check, color: Colors.green),
+                                                icon: Icon(Icons.check, color: Colors.green),
                                                 onPressed: () => _respondRequest(req['id'], 'accept'),
                                               ),
                                               IconButton(
-                                                icon: const Icon(Icons.close, color: Colors.red),
+                                                icon: Icon(Icons.close, color: Colors.red),
                                                 onPressed: () => _respondRequest(req['id'], 'reject'),
                                               ),
                                             ],
@@ -200,13 +195,10 @@ class _AmicsViewState extends State<AmicsView> {
                           );
                         }
 
-                        /// ======================
-                        /// 📱 MOBILE
-                        /// ======================
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SectionTitle(title: "Els teus amics"),
+                            SectionTitle(title: "Els teus amics"),
                             const SizedBox(height: 10),
                             if (friends.isEmpty)
                               const Padding(
@@ -229,7 +221,7 @@ class _AmicsViewState extends State<AmicsView> {
                               );
                             }),
                             const SizedBox(height: 20),
-                            const SectionTitle(title: "Sol·licituds"),
+                            SectionTitle(title: "Sol·licituds"),
                             const SizedBox(height: 10),
                             if (requests.isEmpty)
                               const Padding(
@@ -252,11 +244,11 @@ class _AmicsViewState extends State<AmicsView> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        icon: const Icon(Icons.check, color: Colors.green),
+                                        icon: Icon(Icons.check, color: Colors.green),
                                         onPressed: () => _respondRequest(req['id'], 'accept'),
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.close, color: Colors.red),
+                                        icon: Icon(Icons.close, color: Colors.red),
                                         onPressed: () => _respondRequest(req['id'], 'reject'),
                                       ),
                                     ],
