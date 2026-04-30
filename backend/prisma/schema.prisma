@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String  @id @default(uuid())
+  name      String
+  username  String  @unique
+  email     String  @unique
+  password  String
+  role      String  @default("user")
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  habits           Habit[]
+  tags             Tag[]
+  logs             ActivityLog[]
+  sentRequests     Friendship[] @relation("FriendshipRequester")
+  receivedRequests Friendship[] @relation("FriendshipReceiver")
+  posts            Post[]
+  likes            Like[]
+}
+
+model Tag {
+  id     String @id @default(uuid())
+  name   String
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  habits Habit[]
+
+  @@unique([name, userId])
+}
+
+model Habit {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  tags        Tag[]
+  logs        ActivityLog[]
+  createdAt   DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime  @db.Date
+  completed Boolean  @default(false)
+  createdAt DateTime  @default(now())
+
+  @@unique([habitId, date])
+}
+
+model Friendship {
+  id          String   @id @default(uuid())
+  requesterId  String
+  receiverId  String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  requester   User     @relation("FriendshipRequester", fields: [requesterId], references: [id])
+  receiver   User     @relation("FriendshipReceiver", fields: [receiverId], references: [id])
+
+  @@unique([requesterId, receiverId])
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String
+  content   String?
+  habitId   String?
+  createdAt DateTime @default(now())
+  likes     Like[]
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
