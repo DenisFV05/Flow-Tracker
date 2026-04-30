@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const prisma = require('../prisma');
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -15,9 +16,16 @@ const authMiddleware = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId }
+        });
 
-        req.user = decoded; // { userId, email, iat, exp }
+        if (!user) {
+            return res.status(401).json({ error: 'User not found' });
+        }
 
+        req.user = user;
         next();
     } catch (error) {
         return res.status(401).json({ error: 'Invalid or expired token' });
