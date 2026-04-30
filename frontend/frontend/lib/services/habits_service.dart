@@ -128,4 +128,50 @@ class HabitsApi {
 
     return jsonDecode(res.body);
   }
+
+  // Obtiene el heatmap de un hábito para un año
+  Future<Map<String, dynamic>> getHabitHeatmap(String id, {int? year}) async {
+    final queryParams = <String, String>{
+      if (year != null) 'year': year.toString(),
+    };
+
+    final uri = Uri.parse('$baseUrl/api/habits/$id/heatmap')
+        .replace(queryParameters: queryParams);
+
+    final res = await http.get(uri, headers: await _headers());
+
+    if (res.statusCode != 200) {
+      throw Exception('Error fetching heatmap: ${res.body}');
+    }
+
+    return jsonDecode(res.body);
+  }
+
+  // Obtiene datos semanales de un hábito
+  Future<Map<String, dynamic>> getHabitWeekly(String id) async {
+    final res = await http.get(
+      Uri.parse('$baseUrl/api/habits/$id/weekly'),
+      headers: await _headers(),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('Error fetching weekly data: ${res.body}');
+    }
+
+    return jsonDecode(res.body);
+  }
+
+  // Obtiene datos mensuales de un hábito
+  Future<Map<String, dynamic>> getHabitMonthly(String id) async {
+    final res = await http.get(
+      Uri.parse('$baseUrl/api/habits/$id/monthly'),
+      headers: await _headers(),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('Error fetching monthly data: ${res.body}');
+    }
+
+    return jsonDecode(res.body);
+  }
 }
