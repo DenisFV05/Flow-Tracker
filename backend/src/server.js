@@ -54,5 +54,8 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    const time = new Date().toLocaleTimeString('es-ES');
+
+    console.log(`[${time}] Server running on port ${PORT}`);
 });
+
