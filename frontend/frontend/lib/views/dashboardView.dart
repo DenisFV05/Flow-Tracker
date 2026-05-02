@@ -1,3 +1,4 @@
+import 'package:flowTracker/services/habits_service.dart';
 import 'package:flowTracker/widgets/habits/HabitDetailView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -125,6 +126,12 @@ class _DashboardViewState extends State<DashboardView> {
                                             ),
                                           );
                                         },
+                                          onDelete: () async {
+                                            final id = habit['id'].toString();
+
+                                            await context.read<HabitProvider>().deleteHabit(id);
+                                          }
+
                                       ),
                                     );
                                   }),

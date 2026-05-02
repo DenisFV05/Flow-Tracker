@@ -114,6 +114,22 @@ class HabitProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteHabit(String id) async {
+    try {
+      await api.deleteHabit(id);
+
+      habits.removeWhere((h) => h['id'].toString() == id);
+
+      habitStats.remove(id); // opcional pero recomendable
+
+      notifyListeners();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
+
   Future<void> toggleHabit(String id, bool completed) async {
     try {
       await api.toggleHabit(id, completed);
