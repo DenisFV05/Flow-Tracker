@@ -2,6 +2,7 @@ import 'package:flowTracker/services/habits_service.dart';
 import 'package:flowTracker/widgets/habits/HabitDetailView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'editarHabit.dart';
 
 import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
@@ -117,23 +118,41 @@ class _DashboardViewState extends State<DashboardView> {
                                         streak: stats['currentStreak'] ?? 0,
                                         tags: habit['tags'] ?? [],
                                         color: Colors.orange,
+
                                         onTap: () {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) =>
-                                                  HabitDetailView(habit: habit),
+                                              builder: (_) => HabitDetailView(habit: habit),
                                             ),
                                           );
                                         },
-                                          onDelete: () async {
-                                            final id = habit['id'].toString();
 
-                                            await context.read<HabitProvider>().deleteHabit(id);
-                                          }
+                                        onDelete: () async {
+                                          final id = habit['id'].toString();
 
+                                          await context
+                                              .read<HabitProvider>()
+                                              .deleteHabit(id);
+                                        },
+
+                                        onEdit: () async {
+                                          await showDialog(
+                                            context: context,
+                                            builder: (_) => Editarhabit(
+                                              habitId: habit['id'].toString(),
+                                              initialName: habit['name'] ?? '',
+                                              initialDescription:
+                                                  habit['description'] ?? '',
+                                              initialTags: (habit['tags'] as List<dynamic>)
+                                                  .map((tag) => tag['name'].toString())
+                                                  .toList(),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     );
+
                                   }),
                                 ],
                               ),

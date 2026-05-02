@@ -58,6 +58,8 @@ class HabitsApi {
     String id,
     String name,
     String description,
+    List<String> tags,
+
   ) async {
     final res = await http.put(
       Uri.parse('$baseUrl/api/habits/$id'),
@@ -65,6 +67,8 @@ class HabitsApi {
       body: jsonEncode({
         "name": name,
         "description": description,
+        'tags': tags,
+
       }),
     );
 

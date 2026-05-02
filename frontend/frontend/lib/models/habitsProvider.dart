@@ -113,6 +113,27 @@ class HabitProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  Future<void> updateHabit(
+    String id,
+    String name,
+    String description,
+    List<String> tags,
+  ) async {
+    try {
+      await api.updateHabit(
+        id,
+        name,
+        description,
+        tags,
+      );
+
+      await loadDashboard();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
 
   Future<void> deleteHabit(String id) async {
     try {
