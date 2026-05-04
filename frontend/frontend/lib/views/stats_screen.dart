@@ -1,357 +1,367 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../widgets/tag_bar_chart.dart';
+import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-/// Pantalla d'estadístiques d'etiquetes.
-/// Mostra una barra lateral amb les etiquetes disponibles
-/// i un gràfic de barres amb CustomPainter per comparar-les.
+import '../models/habitsProvider.dart';
+import '../widgets/SectionTitle.dart';
+import 'package:flowTracker/utils.dart';
+
 class StatsScreen extends StatefulWidget {
-  final String serverUrl;
-  final String token;
-
-  const StatsScreen({
-    super.key,
-    required this.serverUrl,
-    required this.token,
-  });
+  const StatsScreen({super.key});
 
   @override
   State<StatsScreen> createState() => _StatsScreenState();
 }
 
 class _StatsScreenState extends State<StatsScreen> {
-  Map<String, int> _tagData = {};
-  Set<String> _selectedTags = {};
-  bool _isLoading = true;
-  String _errorMessage = '';
-
-  // Paleta de colors per a les etiquetes
-  static const List<Color> _palette = [
-    Color(0xFF6366F1), // Indigo
-    Color(0xFFEC4899), // Pink
-    Color(0xFF14B8A6), // Teal
-    Color(0xFFF59E0B), // Amber
-    Color(0xFF8B5CF6), // Violet
-    Color(0xFFEF4444), // Red
-    Color(0xFF06B6D4), // Cyan
-    Color(0xFF22C55E), // Green
-    Color(0xFFF97316), // Orange
-    Color(0xFF3B82F6), // Blue
-    Color(0xFFA855F7), // Purple
-    Color(0xFF10B981), // Emerald
-    Color(0xFFE11D48), // Rose
-    Color(0xFF0EA5E9), // Sky
-    Color(0xFFD946EF), // Fuchsia
-  ];
-
-  Map<String, Color> _tagColors = {};
-
   @override
   void initState() {
     super.initState();
-    _loadStats();
-  }
-
-  /// Assignar colors únics a cada etiqueta
-  void _assignColors() {
-    int index = 0;
-    _tagColors = {};
-    for (final tag in _tagData.keys) {
-      _tagColors[tag] = _palette[index % _palette.length];
-      index++;
-    }
-  }
-
-  /// Carregar estadístiques del servidor
-  Future<void> _loadStats() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
-
-    try {
-      final response = await http.get(
-        Uri.parse('${widget.serverUrl}/api/admin/estadistiques/tags'),
-        headers: {'Authorization': 'Bearer ${widget.token}'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == 'OK') {
-          final tagsData = data['data']['tags'] as List;
-          final Map<String, int> tagMap = {};
-          for (final item in tagsData) {
-            tagMap[item['tag'] as String] = item['count'] as int;
-          }
-          setState(() {
-            _tagData = tagMap;
-            // Seleccionar les 5 primeres per defecte
-            _selectedTags = tagMap.keys.take(5).toSet();
-            _assignColors();
-            _isLoading = false;
-          });
-        } else {
-          setState(() {
-            _errorMessage = data['message'] ?? 'Error al carregar estadístiques';
-            _isLoading = false;
-          });
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'Error del servidor: ${response.statusCode}';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error de connexió: $e';
-        _isLoading = false;
-      });
-    }
-  }
-
-  /// Alternar selecció d'una etiqueta
-  void _toggleTag(String tag) {
-    setState(() {
-      if (_selectedTags.contains(tag)) {
-        _selectedTags.remove(tag);
-      } else {
-        _selectedTags.add(tag);
-      }
-    });
-  }
-
-  /// Seleccionar totes les etiquetes
-  void _selectAll() {
-    setState(() {
-      _selectedTags = _tagData.keys.toSet();
-    });
-  }
-
-  /// Deseleccionar totes les etiquetes
-  void _deselectAll() {
-    setState(() {
-      _selectedTags = {};
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HabitProvider>().loadDashboard();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<HabitProvider>();
+    final loading = provider.loading;
+    final habits = provider.habits;
+    final habitStats = provider.habitStats;
+    final dashboardStats = provider.dashboardStats;
+
+    if (loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final overallRate = dashboardStats['overallCompletionRate'] ?? 0;
+    final totalHabits = dashboardStats['totalHabits'] ?? 0;
+    final longestStreak = dashboardStats['longestStreak'] ?? 0;
+    final completedLogs = dashboardStats['completedLogs'] ?? 0;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📊 Estadístiques d\'Etiquetes'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Actualitzar',
-            onPressed: _loadStats,
-          ),
-        ],
+        title: const Text('Estadístiques'),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage.isNotEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      body: habits.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.analytics_outlined, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No hi ha dades encara',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Crea hàbits i marca\'ls per veure estadístiques',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(_errorMessage, style: const TextStyle(color: Colors.red)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadStats,
-                        child: const Text('Reintentar'),
+                      Expanded(
+                        child: _summaryCard(
+                          'Percentatge global',
+                          '${overallRate.toStringAsFixed(1)}%',
+                          Icons.percent,
+                          bgIcons,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _summaryCard(
+                          'Hàbits totals',
+                          '$totalHabits',
+                          Icons.track_changes,
+                          Colors.blue,
+                        ),
                       ),
                     ],
                   ),
-                )
-              : _tagData.isEmpty
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.analytics_outlined, size: 64, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'No hi ha dades d\'etiquetes',
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Envia imatges per analitzar i generar etiquetes',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _summaryCard(
+                          'Ratxa màxima',
+                          '$longestStreak dies',
+                          Icons.local_fire_department,
+                          Colors.orange,
+                        ),
                       ),
-                    )
-                  : Row(
-                      children: [
-                        // Barra lateral amb etiquetes
-                        _buildSidebar(),
-                        // Gràfic principal
-                        Expanded(child: _buildChart()),
-                      ],
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _summaryCard(
+                          'Dies completats',
+                          '$completedLogs',
+                          Icons.check_circle,
+                          Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  SectionTitle(title: 'Progrés per hàbit'),
+                  const SizedBox(height: 12),
+
+                  ...habits.map((habit) {
+                    final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+                    final rate = stats['completionRate'] ?? 0.0;
+                    final streak = stats['currentStreak'] ?? 0;
+                    final completed = stats['completedDays'] ?? 0;
+                    final total = stats['totalDays'] ?? 0;
+
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              habit['name'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if ((habit['description'] ?? '').isNotEmpty)
+                              Text(
+                                habit['description'],
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            const SizedBox(height: 12),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '$rate% completat',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: LinearProgressIndicator(
+                                          value: rate / 100,
+                                          minHeight: 8,
+                                          backgroundColor: bgIcons.withOpacity(0.2),
+                                          color: bgIcons,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Column(
+                                  children: [
+                                    Text(
+                                      '$completed/$total',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      'dies',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 16),
+                                Column(
+                                  children: [
+                                    const Icon(
+                                      Icons.local_fire_department,
+                                      color: Colors.orange,
+                                      size: 20,
+                                    ),
+                                    Text(
+                                      '$streak',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      'ratxa',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+
+                  const SizedBox(height: 24),
+
+                  SectionTitle(title: 'Comparativa de ratxes'),
+                  const SizedBox(height: 12),
+
+                  SizedBox(
+                    height: 250,
+                    child: _buildStreaksBarChart(habits, habitStats),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 
-  /// Construir la barra lateral amb les etiquetes
-  Widget _buildSidebar() {
+  Widget _summaryCard(String label, String value, IconData icon, Color color) {
     return Container(
-      width: 250,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        border: Border(right: BorderSide(color: Colors.grey.shade300)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(blurRadius: 8, color: Colors.black12),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Capçalera
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Etiquetes',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_selectedTags.length} de ${_tagData.length} seleccionades',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                ),
-              ],
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          // Botons seleccionar/deseleccionar tot
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: _selectAll,
-                    icon: const Icon(Icons.check_box, size: 16),
-                    label: const Text('Tot', style: TextStyle(fontSize: 12)),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: _deselectAll,
-                    icon: const Icon(Icons.check_box_outline_blank, size: 16),
-                    label: const Text('Cap', style: TextStyle(fontSize: 12)),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                    ),
-                  ),
-                ),
-              ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
             ),
           ),
-          const Divider(),
-          // Llista d'etiquetes
-          Expanded(
-            child: ListView.builder(
-              itemCount: _tagData.length,
-              itemBuilder: (context, index) {
-                final tag = _tagData.keys.elementAt(index);
-                final count = _tagData[tag]!;
-                final color = _tagColors[tag] ?? Colors.grey;
-                final isSelected = _selectedTags.contains(tag);
+        ],
+      ),
+    );
+  }
 
-                return ListTile(
-                  dense: true,
-                  leading: Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: isSelected ? color : Colors.transparent,
-                      border: Border.all(color: color, width: 2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+  Widget _buildStreaksBarChart(List<dynamic> habits, Map<String, dynamic> habitStats) {
+    if (habits.isEmpty) {
+      return const Center(child: Text('No hi ha dades'));
+    }
+
+    final spots = <FlSpot>[];
+    final labels = <int, String>{};
+
+    for (int i = 0; i < habits.length; i++) {
+      final habit = habits[i];
+      final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+      final streak = stats['currentStreak'] ?? 0;
+      spots.add(FlSpot(i.toDouble(), streak.toDouble()));
+      final name = habit['name'] ?? '';
+      labels[i] = name.length > 6 ? '${name.substring(0, 6)}...' : name;
+    }
+
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: (spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) + 1).toDouble(),
+        barTouchData: BarTouchData(
+          enabled: true,
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              return BarTooltipItem(
+                '${habits[group.x.toInt()]['name']}\n',
+                const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                children: [
+                  TextSpan(
+                    text: '${rod.toY.toInt()} dies',
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
-                  title: Text(
-                    tag,
-                    style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? Colors.black : Colors.grey.shade600,
-                    ),
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.15) : Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                ],
+              );
+            },
+          ),
+        ),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                final index = value.toInt();
+                if (labels.containsKey(index)) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      count.toString(),
-                      style: TextStyle(
-                        color: isSelected ? color : Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                      labels[index]!,
+                      style: const TextStyle(fontSize: 9),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  onTap: () => _toggleTag(tag),
-                );
+                  );
+                }
+                return const Text('');
               },
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  /// Construir el gràfic de barres amb CustomPainter
-  Widget _buildChart() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Títol del gràfic
-          Row(
-            children: [
-              const Icon(Icons.bar_chart, size: 28),
-              const SizedBox(width: 8),
-              const Text(
-                'Comparativa d\'Etiquetes',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-              // Info
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${_tagData.values.fold(0, (a, b) => a + b)} anàlisis totals',
-                  style: TextStyle(color: Colors.blue.shade700, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          // Gràfic
-          Expanded(
-            child: CustomPaint(
-              size: Size.infinite,
-              painter: TagBarChartPainter(
-                tagData: _tagData,
-                tagColors: _tagColors,
-                selectedTags: _selectedTags,
-              ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10));
+                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10));
+              },
             ),
           ),
-        ],
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        borderData: FlBorderData(show: false),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: 1,
+        ),
+        barGroups: spots.map((spot) {
+          return BarChartGroupData(
+            x: spot.x.toInt(),
+            barRods: [
+              BarChartRodData(
+                toY: spot.y,
+                color: bgIcons,
+                width: 20,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          );
+        }).toList(),
       ),
     );
   }

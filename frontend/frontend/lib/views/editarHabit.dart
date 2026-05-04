@@ -5,49 +5,82 @@ import 'inputEstil.dart';
 import 'package:flowTracker/utils.dart';
 import 'package:flowTracker/models/habitsProvider.dart';
 
-class editarHabit extends StatefulWidget {
-  const editarHabit({super.key});
+class EditarHabit extends StatefulWidget {
+  final dynamic habit;
+
+  const EditarHabit({super.key, required this.habit});
 
   @override
-  State<editarHabit> createState() => _editarHabitFormState();
+  State<EditarHabit> createState() => _EditarHabitFormState();
 }
 
-class _editarHabitFormState extends State<editarHabit> {
+class _EditarHabitFormState extends State<EditarHabit> {
   final _formKey = GlobalKey<FormState>();
 
-  final _nameController = TextEditingController();
-  final _descripcioController = TextEditingController();
-  final _customTagController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _descripcioController;
+  late final TextEditingController _tagController;
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final habit = widget.habit;
+    _nameController = TextEditingController(text: habit['name'] ?? '');
+    _descripcioController = TextEditingController(text: habit['description'] ?? '');
+    final tags = habit['tags'] as List<dynamic>? ?? [];
+    _tagController = TextEditingController(
+      text: tags.isNotEmpty ? tags.map((t) => t is Map ? t['name'] : t.toString()).join(', ') : '',
+    );
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descripcioController.dispose();
-    _customTagController.dispose();
+    _tagController.dispose();
     super.dispose();
   }
 
-void _crearHabit() async {
-  if (_formKey.currentState!.validate()) {
-    final name = _nameController.text;
-    final description = _descripcioController.text;
-    final tag = _customTagController.text;
+  Future<void> _updateHabit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
 
     try {
-      await context.read<HabitProvider>().addHabit(
+      final name = _nameController.text;
+      final description = _descripcioController.text;
+      final tagString = _tagController.text;
+      final tags = tagString
+          .split(',')
+          .map((t) => t.trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+
+      await context.read<HabitProvider>().editHabit(
+        widget.habit['id'],
         name,
         description,
-        [tag],
+        tags,
       );
 
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Hàbit actualitzat correctament')),
+        );
+        Navigator.pop(context);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error creando hábito")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error actualitzant hàbit: $e')),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -59,18 +92,17 @@ void _crearHabit() async {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Crear habit nou",
+              "Editar hàbit",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text("Omple els camps per crear un nou habit"),
+            const Text("Modifica les dades de l'hàbit"),
             const SizedBox(height: 20),
 
-            /// NOM
             TextFormField(
               controller: _nameController,
               decoration: inputEstil.base(
-                "NOM DE L'HABIT",
+                "NOM DE L'HÀBIT",
                 "Escriu un nom",
               ),
               validator: (value) =>
@@ -79,25 +111,24 @@ void _crearHabit() async {
 
             const SizedBox(height: 12),
 
-            /// DESCRIPCIÓN
             TextFormField(
               controller: _descripcioController,
               decoration: inputEstil.base(
                 "DESCRIPCIÓ",
                 "Escriu una descripció",
               ),
+              maxLines: 3,
               validator: (value) =>
                   value!.isEmpty ? "Requerit" : null,
             ),
 
             const SizedBox(height: 12),
 
-            /// TAG
             TextFormField(
-              controller: _customTagController,
+              controller: _tagController,
               decoration: inputEstil.base(
-                "ETIQUETA CUSTOM",
-                "Crea una etiqueta",
+                "ETIQUETES",
+                "Separa amb comes (ex: esport, salut)",
               ),
               validator: (value) =>
                   value!.isEmpty ? "Requerit" : null,
@@ -105,28 +136,34 @@ void _crearHabit() async {
 
             const SizedBox(height: 25),
 
-            /// BOTONES
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: _isLoading ? null : () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
+                    foregroundColor: Colors.grey,
+                    side: const BorderSide(color: Colors.grey),
                   ),
-                  child: const Text("CANCELAR"),
+                  child: const Text("CANCEL·LAR"),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: _crearHabit,
+                  onPressed: _isLoading ? null : _updateHabit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: bgIcons,
                     foregroundColor: white,
                   ),
-                  child: const Text("CREAR"),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text("GUARDAR"),
                 ),
               ],
             ),

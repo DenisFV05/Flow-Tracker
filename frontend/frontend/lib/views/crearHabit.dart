@@ -17,37 +17,62 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
 
   final _nameController = TextEditingController();
   final _descripcioController = TextEditingController();
-  final _customTagController = TextEditingController();
+  final _tagsController = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _nameController.dispose();
     _descripcioController.dispose();
-    _customTagController.dispose();
+    _tagsController.dispose();
     super.dispose();
   }
 
-void _crearHabit() async {
-  if (_formKey.currentState!.validate()) {
-    final name = _nameController.text;
-    final description = _descripcioController.text;
-    final tag = _customTagController.text;
+  Future<void> _crearHabit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
 
     try {
+      final name = _nameController.text;
+      final description = _descripcioController.text;
+      final tagString = _tagsController.text;
+      final tags = tagString
+          .split(',')
+          .map((t) => t.trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+
+      if (tags.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Afegeix almenys una etiqueta")),
+        );
+        return;
+      }
+
       await context.read<HabitProvider>().addHabit(
         name,
         description,
-        [tag],
+        tags,
       );
 
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Hàbit creat correctament")),
+        );
+        Navigator.pop(context);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error creando hábito")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error creant hàbit: $e")),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -59,18 +84,17 @@ void _crearHabit() async {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Crear habit nou",
+              "Crear hàbit nou",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text("Omple els camps per crear un nou habit"),
+            const Text("Omple els camps per crear un nou hàbit"),
             const SizedBox(height: 20),
 
-            /// NOM
             TextFormField(
               controller: _nameController,
               decoration: inputEstil.base(
-                "NOM DE L'HABIT",
+                "NOM DE L'HÀBIT",
                 "Escriu un nom",
               ),
               validator: (value) =>
@@ -79,25 +103,24 @@ void _crearHabit() async {
 
             const SizedBox(height: 12),
 
-            /// DESCRIPCIÓN
             TextFormField(
               controller: _descripcioController,
               decoration: inputEstil.base(
                 "DESCRIPCIÓ",
                 "Escriu una descripció",
               ),
+              maxLines: 3,
               validator: (value) =>
                   value!.isEmpty ? "Requerit" : null,
             ),
 
             const SizedBox(height: 12),
 
-            /// TAG
             TextFormField(
-              controller: _customTagController,
+              controller: _tagsController,
               decoration: inputEstil.base(
-                "ETIQUETA CUSTOM",
-                "Crea una etiqueta",
+                "ETIQUETES",
+                "Separa amb comes (ex: esport, salut)",
               ),
               validator: (value) =>
                   value!.isEmpty ? "Requerit" : null,
@@ -105,28 +128,34 @@ void _crearHabit() async {
 
             const SizedBox(height: 25),
 
-            /// BOTONES
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: _isLoading ? null : () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
                     side: const BorderSide(color: Colors.red),
                   ),
-                  child: const Text("CANCELAR"),
+                  child: const Text("CANCEL·LAR"),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: _crearHabit,
+                  onPressed: _isLoading ? null : _crearHabit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: bgIcons,
                     foregroundColor: white,
                   ),
-                  child: const Text("CREAR"),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text("CREAR"),
                 ),
               ],
             ),

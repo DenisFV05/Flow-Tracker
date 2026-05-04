@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../services/friends_service.dart';
-import '../models/habitsProvider.dart';
 import 'inputEstil.dart';
 import '../widgets/SectionTitle.dart';
 
@@ -14,6 +12,7 @@ class AmicsView extends StatefulWidget {
 }
 
 class _AmicsViewState extends State<AmicsView> {
+  final FriendsApi _friendsApi = FriendsApi();
   List<dynamic> friends = [];
   List<dynamic> requests = [];
   bool loading = true;
@@ -32,11 +31,9 @@ class _AmicsViewState extends State<AmicsView> {
         error = null;
       });
 
-      final friendsApi = FriendsApi("https://flow-tracker.ieti.site");
-
       final results = await Future.wait([
-        friendsApi.getFriends(),
-        friendsApi.getRequests(),
+        _friendsApi.getFriends(),
+        _friendsApi.getRequests(),
       ]);
 
       setState(() {
@@ -54,12 +51,14 @@ class _AmicsViewState extends State<AmicsView> {
 
   Future<void> _sendRequest(String username) async {
     try {
-      final friendsApi = FriendsApi("https://flow-tracker.ieti.site");
-      await friendsApi.sendRequest(username);
+      await _friendsApi.sendRequest(username);
       await _loadData();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Friend request sent!')),
+          const SnackBar(
+            content: Text('Sol·licitud enviada!'),
+            duration: Duration(seconds: 2),
+          ),
         );
       }
     } catch (e) {
@@ -73,8 +72,20 @@ class _AmicsViewState extends State<AmicsView> {
 
   Future<void> _respondRequest(String id, String action) async {
     try {
-      final friendsApi = FriendsApi("https://flow-tracker.ieti.site");
-      await friendsApi.respondRequest(id, action);
+      await _friendsApi.respondRequest(id, action);
+      await _loadData();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeFriend(String id) async {
+    try {
+      await _friendsApi.removeFriend(id);
       await _loadData();
     } catch (e) {
       if (mounted) {
@@ -87,28 +98,54 @@ class _AmicsViewState extends State<AmicsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Amics"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: ElevatedButton.icon(
-              onPressed: () => _showSearchDialog(),
-              icon: Icon(Icons.person_add),
-              label: const Text("Afegir amic"),
-            ),
-          )
-        ],
-      ),
-      body: loading
+    return Container(
+      color: const Color(0xFFF5F7FA),
+      child: loading
           ? const Center(child: CircularProgressIndicator())
           : error != null
-              ? Center(child: Text(error!))
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'No s\'han pogut carregar les dades',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              error!,
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: _loadData,
+                              child: const Text('Reintentar'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               : RefreshIndicator(
                   onRefresh: _loadData,
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         final isWide = constraints.maxWidth > 700;
@@ -122,72 +159,114 @@ class _AmicsViewState extends State<AmicsView> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SectionTitle(title: "Els teus amics"),
-                                    const SizedBox(height: 10),
-                                    if (friends.isEmpty)
-                                      const Padding(
-                                        padding: EdgeInsets.all(24),
-                                        child: Text(
-                                          "Encara no tens amics 👀",
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                      ),
-                                    ...friends.map((friend) {
-                                      final user = friend['friend'];
-                                      return Card(
-                                        child: ListTile(
-                                          leading: CircleAvatar(
-                                            child: Text(user['name']?[0] ?? '?'),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const SectionTitle(title: "Els teus amics"),
+                                        TextButton.icon(
+                                          onPressed: () => _showSearchDialog(),
+                                          icon: const Icon(Icons.person_add, size: 20),
+                                          label: const Text('Afegir'),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: const Color(0xFF00B089),
                                           ),
-                                          title: Text(user['name'] ?? ''),
-                                          subtitle: Text("@${user['username'] ?? ''}"),
                                         ),
-                                      );
-                                    }),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    if (friends.isEmpty)
+                                      _emptyFriends()
+                                    else
+                                      ...friends.map((friend) {
+                                        final user = friend['friend'];
+                                        return Card(
+                                          margin: const EdgeInsets.only(bottom: 8),
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            side: BorderSide(color: Colors.grey[200]!),
+                                          ),
+                                          child: ListTile(
+                                            leading: CircleAvatar(
+                                              backgroundColor: const Color(0xFF00B089).withOpacity(0.15),
+                                              child: Text(
+                                                user['name']?[0] ?? '?',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF00B089),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            title: Text(
+                                              user['name'] ?? '',
+                                              style: const TextStyle(fontWeight: FontWeight.w600),
+                                            ),
+                                            subtitle: Text("@${user['username'] ?? ''}"),
+                                            trailing: IconButton(
+                                              icon: const Icon(Icons.person_remove, color: Colors.grey),
+                                              tooltip: 'Eliminar amic',
+                                              onPressed: () => _removeFriend(friend['friendshipId']),
+                                            ),
+                                          ),
+                                        );
+                                      }),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 20),
                               Expanded(
                                 flex: 1,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SectionTitle(title: "Sol·licituds"),
-                                    const SizedBox(height: 10),
+                                    const SectionTitle(title: "Sol·licituds pendents"),
+                                    const SizedBox(height: 12),
                                     if (requests.isEmpty)
-                                      const Padding(
-                                        padding: EdgeInsets.all(24),
-                                        child: Text(
-                                          "No tens sol·licituds pendents",
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                      ),
-                                    ...requests.map((req) {
-                                      final user = req['user'];
-                                      return Card(
-                                        child: ListTile(
-                                          leading: CircleAvatar(
-                                            child: Text(user['name']?[0] ?? '?'),
+                                      _emptyRequests()
+                                    else
+                                      ...requests.map((req) {
+                                        final user = req['user'];
+                                        return Card(
+                                          margin: const EdgeInsets.only(bottom: 8),
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            side: BorderSide(color: Colors.grey[200]!),
                                           ),
-                                          title: Text(user['name'] ?? ''),
-                                          subtitle: Text("@${user['username'] ?? ''}"),
-                                          trailing: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              IconButton(
-                                                icon: Icon(Icons.check, color: Colors.green),
-                                                onPressed: () => _respondRequest(req['id'], 'accept'),
+                                          child: ListTile(
+                                            leading: CircleAvatar(
+                                              backgroundColor: const Color(0xFF00B089).withOpacity(0.15),
+                                              child: Text(
+                                                user['name']?[0] ?? '?',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF00B089),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                              IconButton(
-                                                icon: Icon(Icons.close, color: Colors.red),
-                                                onPressed: () => _respondRequest(req['id'], 'reject'),
-                                              ),
-                                            ],
+                                            ),
+                                            title: Text(
+                                              user['name'] ?? '',
+                                              style: const TextStyle(fontWeight: FontWeight.w600),
+                                            ),
+                                            subtitle: Text("@${user['username'] ?? ''}"),
+                                            trailing: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                IconButton(
+                                                  icon: const Icon(Icons.check_circle_outline, color: Colors.green),
+                                                  tooltip: 'Acceptar',
+                                                  onPressed: () => _respondRequest(req['id'], 'accept'),
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.cancel_outlined, color: Colors.red),
+                                                  tooltip: 'Rebutjar',
+                                                  onPressed: () => _respondRequest(req['id'], 'reject'),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    }),
+                                        );
+                                      }),
                                   ],
                                 ),
                               ),
@@ -198,64 +277,106 @@ class _AmicsViewState extends State<AmicsView> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SectionTitle(title: "Els teus amics"),
-                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SectionTitle(title: "Els teus amics"),
+                                TextButton.icon(
+                                  onPressed: () => _showSearchDialog(),
+                                  icon: const Icon(Icons.person_add, size: 20),
+                                  label: const Text('Afegir'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF00B089),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
                             if (friends.isEmpty)
-                              const Padding(
-                                padding: EdgeInsets.all(24),
-                                child: Text(
-                                  "Encara no tens amics 👀",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            ...friends.map((friend) {
-                              final user = friend['friend'];
-                              return Card(
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    child: Text(user['name']?[0] ?? '?'),
+                              _emptyFriends()
+                            else
+                              ...friends.map((friend) {
+                                final user = friend['friend'];
+                                return Card(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(color: Colors.grey[200]!),
                                   ),
-                                  title: Text(user['name'] ?? ''),
-                                  subtitle: Text("@${user['username'] ?? ''}"),
-                                ),
-                              );
-                            }),
-                            const SizedBox(height: 20),
-                            SectionTitle(title: "Sol·licituds"),
-                            const SizedBox(height: 10),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: const Color(0xFF00B089).withOpacity(0.15),
+                                      child: Text(
+                                        user['name']?[0] ?? '?',
+                                        style: const TextStyle(
+                                          color: Color(0xFF00B089),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      user['name'] ?? '',
+                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                    subtitle: Text("@${user['username'] ?? ''}"),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.person_remove, color: Colors.grey),
+                                      tooltip: 'Eliminar amic',
+                                      onPressed: () => _removeFriend(friend['friendshipId']),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            const SizedBox(height: 24),
+                            const SectionTitle(title: "Sol·licituds pendents"),
+                            const SizedBox(height: 12),
                             if (requests.isEmpty)
-                              const Padding(
-                                padding: EdgeInsets.all(24),
-                                child: Text(
-                                  "No tens sol·licituds pendents",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            ...requests.map((req) {
-                              final user = req['user'];
-                              return Card(
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    child: Text(user['name']?[0] ?? '?'),
+                              _emptyRequests()
+                            else
+                              ...requests.map((req) {
+                                final user = req['user'];
+                                return Card(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(color: Colors.grey[200]!),
                                   ),
-                                  title: Text(user['name'] ?? ''),
-                                  subtitle: Text("@${user['username'] ?? ''}"),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(Icons.check, color: Colors.green),
-                                        onPressed: () => _respondRequest(req['id'], 'accept'),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: const Color(0xFF00B089).withOpacity(0.15),
+                                      child: Text(
+                                        user['name']?[0] ?? '?',
+                                        style: const TextStyle(
+                                          color: Color(0xFF00B089),
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      IconButton(
-                                        icon: Icon(Icons.close, color: Colors.red),
-                                        onPressed: () => _respondRequest(req['id'], 'reject'),
-                                      ),
-                                    ],
+                                    ),
+                                    title: Text(
+                                      user['name'] ?? '',
+                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                    subtitle: Text("@${user['username'] ?? ''}"),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.check_circle_outline, color: Colors.green),
+                                          tooltip: 'Acceptar',
+                                          onPressed: () => _respondRequest(req['id'], 'accept'),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.cancel_outlined, color: Colors.red),
+                                          tooltip: 'Rebutjar',
+                                          onPressed: () => _respondRequest(req['id'], 'reject'),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              }),
                           ],
                         );
                       },
@@ -265,49 +386,180 @@ class _AmicsViewState extends State<AmicsView> {
     );
   }
 
+  Widget _emptyFriends() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.people_outline, size: 56, color: Colors.grey[300]),
+          const SizedBox(height: 12),
+          const Text(
+            'Encara no tens amics',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Cerca usuaris per connectar',
+            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: _showSearchDialog,
+            icon: const Icon(Icons.search, size: 18),
+            label: const Text('Cercar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00B089),
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyRequests() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.mail_outline, size: 56, color: Colors.grey[300]),
+          const SizedBox(height: 12),
+          const Text(
+            'No tens sol·licituds',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Les sol·licituds pendents apareixeran aquí',
+            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showSearchDialog() {
     final controller = TextEditingController();
+    List<dynamic> searchResults = [];
+    bool searching = false;
 
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Cercar usuari",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: controller,
-                  decoration: inputEstil.base("Username", "Escriu el username"),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("Cancel·lar"),
+                    const Text(
+                      "Cercar usuari",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (controller.text.isNotEmpty) {
-                          Navigator.pop(context);
-                          _sendRequest(controller.text);
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller,
+                      decoration: inputEstil.base("Username", "Escriu el username"),
+                      onChanged: (value) async {
+                        if (value.length >= 2) {
+                          setDialogState(() => searching = true);
+                          try {
+                            final results = await _friendsApi.searchUsers(value);
+                            setDialogState(() {
+                              searchResults = results;
+                              searching = false;
+                            });
+                          } catch (e) {
+                            setDialogState(() => searching = false);
+                          }
+                        } else {
+                          setDialogState(() {
+                            searchResults = [];
+                          });
                         }
                       },
-                      child: const Text("Enviar sol·licitud"),
+                    ),
+                    const SizedBox(height: 16),
+                    if (searching)
+                      const SizedBox(
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else if (searchResults.isNotEmpty)
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: searchResults.length,
+                          itemBuilder: (context, index) {
+                            final user = searchResults[index];
+                            final isFriend = user['isFriend'] ?? false;
+                            final requestSent = user['requestSent'] ?? false;
+
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: const Color(0xFF00B089).withOpacity(0.15),
+                                child: Text(
+                                  user['name']?[0] ?? '?',
+                                  style: const TextStyle(
+                                    color: Color(0xFF00B089),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              title: Text(user['name'] ?? ''),
+                              subtitle: Text("@${user['username'] ?? ''}"),
+                              trailing: isFriend
+                                  ? const Icon(Icons.check_circle, color: Colors.green)
+                                  : requestSent
+                                      ? const Text('Enviat', style: TextStyle(color: Colors.grey))
+                                      : ElevatedButton(
+                                          onPressed: () {
+                                            _sendRequest(user['username']);
+                                            Navigator.pop(context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(0xFF00B089),
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          child: const Text('Afegir'),
+                                        ),
+                            );
+                          },
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Tancar"),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

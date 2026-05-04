@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
 import 'auth_storage.dart';
 
 class ProfileApi {
-  final String baseUrl;
+  final AppConfig _config = AppConfig.instance;
   final AuthStorage _storage = AuthStorage();
 
-  ProfileApi(this.baseUrl);
+  String get baseUrl => _config.serverUrl;
 
   Future<Map<String, String>> _headers() async {
-    final token = await _storage.getToken();
+    final token = _config.token ?? await _storage.getToken();
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
-  // Get current user profile
   Future<Map<String, dynamic>> getProfile() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/profile'),
@@ -30,7 +30,6 @@ class ProfileApi {
     return jsonDecode(res.body);
   }
 
-  // Update profile (name, avatar)
   Future<Map<String, dynamic>> updateProfile({
     String? name,
     String? avatar,
@@ -52,7 +51,6 @@ class ProfileApi {
     return jsonDecode(res.body);
   }
 
-  // Get profile stats
   Future<Map<String, dynamic>> getProfileStats() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/profile/stats'),

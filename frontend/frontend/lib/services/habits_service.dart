@@ -1,24 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
 import 'auth_storage.dart';
 
 class HabitsApi {
-  final String baseUrl;
+  final AppConfig _config = AppConfig.instance;
   final AuthStorage _storage = AuthStorage();
 
-  HabitsApi(this.baseUrl);
+  String get baseUrl => _config.serverUrl;
 
-  // Construye headers incluyendo el token de autenticación si existe
   Future<Map<String, String>> _headers() async {
-    final token = await _storage.getToken();
-
+    final token = _config.token ?? await _storage.getToken();
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
-  // Obtiene la lista de hábitos del usuario
   Future<List<dynamic>> getHabits() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/habits'),
@@ -32,8 +30,7 @@ class HabitsApi {
     return jsonDecode(res.body);
   }
 
-  // Crea un nuevo hábito
-  Future<void> createHabit(
+  Future<Map<String, dynamic>> createHabit(
     String name,
     String description,
     List<String> tags,
@@ -51,13 +48,15 @@ class HabitsApi {
     if (res.statusCode != 201) {
       throw Exception('Error creating habit: ${res.body}');
     }
+
+    return jsonDecode(res.body);
   }
 
-  // Actualiza un hábito existente
-  Future<void> updateHabit(
+  Future<Map<String, dynamic>> updateHabit(
     String id,
     String name,
     String description,
+    List<String> tags,
   ) async {
     final res = await http.put(
       Uri.parse('$baseUrl/api/habits/$id'),
@@ -65,15 +64,17 @@ class HabitsApi {
       body: jsonEncode({
         "name": name,
         "description": description,
+        "tags": tags,
       }),
     );
 
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('Error updating habit: ${res.body}');
     }
+
+    return jsonDecode(res.body);
   }
 
-  // Elimina un hábito por su id
   Future<void> deleteHabit(String id) async {
     final res = await http.delete(
       Uri.parse('$baseUrl/api/habits/$id'),
@@ -85,8 +86,7 @@ class HabitsApi {
     }
   }
 
-  // Registra o actualiza el estado de completado de un hábito
-  Future<void> toggleHabit(String id, bool completed) async {
+  Future<Map<String, dynamic>> toggleHabit(String id, bool completed) async {
     final res = await http.post(
       Uri.parse('$baseUrl/api/habits/$id/log'),
       headers: await _headers(),
@@ -99,9 +99,10 @@ class HabitsApi {
     if (res.statusCode != 200 && res.statusCode != 201) {
       throw Exception('Error logging habit: ${res.body}');
     }
+
+    return jsonDecode(res.body);
   }
 
-  // Obtiene estadísticas de un hábito concreto
   Future<Map<String, dynamic>> getHabitStats(String id) async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/habits/$id/stats'),
@@ -115,7 +116,6 @@ class HabitsApi {
     return jsonDecode(res.body);
   }
 
-  // Obtiene estadísticas generales del perfil del usuario
   Future<Map<String, dynamic>> getProfileStats() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/profile/stats'),
@@ -129,7 +129,6 @@ class HabitsApi {
     return jsonDecode(res.body);
   }
 
-  // Obtiene el heatmap de un hábito para un año
   Future<Map<String, dynamic>> getHabitHeatmap(String id, {int? year}) async {
     final queryParams = <String, String>{
       if (year != null) 'year': year.toString(),
@@ -147,7 +146,6 @@ class HabitsApi {
     return jsonDecode(res.body);
   }
 
-  // Obtiene datos semanales de un hábito
   Future<Map<String, dynamic>> getHabitWeekly(String id) async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/habits/$id/weekly'),
@@ -161,7 +159,6 @@ class HabitsApi {
     return jsonDecode(res.body);
   }
 
-  // Obtiene datos mensuales de un hábito
   Future<Map<String, dynamic>> getHabitMonthly(String id) async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/habits/$id/monthly'),

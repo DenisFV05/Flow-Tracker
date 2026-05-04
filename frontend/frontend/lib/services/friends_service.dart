@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
 import 'auth_storage.dart';
 
 class FriendsApi {
-  final String baseUrl;
+  final AppConfig _config = AppConfig.instance;
   final AuthStorage _storage = AuthStorage();
 
-  FriendsApi(this.baseUrl);
+  String get baseUrl => _config.serverUrl;
 
   Future<Map<String, String>> _headers() async {
-    final token = await _storage.getToken();
+    final token = _config.token ?? await _storage.getToken();
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
-  // Get friends list
   Future<List<dynamic>> getFriends() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/friends'),
@@ -30,7 +30,6 @@ class FriendsApi {
     return jsonDecode(res.body);
   }
 
-  // Search users
   Future<List<dynamic>> searchUsers(String query) async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/friends/search?q=$query'),
@@ -44,7 +43,6 @@ class FriendsApi {
     return jsonDecode(res.body);
   }
 
-  // Send friend request
   Future<void> sendRequest(String username) async {
     final res = await http.post(
       Uri.parse('$baseUrl/api/friends/request'),
@@ -57,7 +55,6 @@ class FriendsApi {
     }
   }
 
-  // Get pending requests
   Future<List<dynamic>> getRequests() async {
     final res = await http.get(
       Uri.parse('$baseUrl/api/friends/requests'),
@@ -71,7 +68,6 @@ class FriendsApi {
     return jsonDecode(res.body);
   }
 
-  // Respond to friend request (accept/reject)
   Future<void> respondRequest(String id, String action) async {
     final res = await http.put(
       Uri.parse('$baseUrl/api/friends/request/$id'),
@@ -84,7 +80,6 @@ class FriendsApi {
     }
   }
 
-  // Remove friend
   Future<void> removeFriend(String id) async {
     final res = await http.delete(
       Uri.parse('$baseUrl/api/friends/$id'),

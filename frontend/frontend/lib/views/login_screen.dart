@@ -1,7 +1,6 @@
-import 'package:flowTracker/services/auth_storage.dart';
-import 'package:flutter/material.dart';
-import '../utils/settings_manager.dart';
 import 'package:flowTracker/services/auth_service.dart';
+import 'package:flutter/material.dart';
+import '../config/app_config.dart';
 import 'mainScreen.dart';
 import 'crearCuentaScreen.dart';
 import 'package:flowTracker/utils.dart';
@@ -17,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _serverUrlController = TextEditingController();
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isLoading = false;
@@ -31,14 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loadSettings() async {
-    final settings = await SettingsManager.loadSettings();
-    final serverUrl = settings['serverUrl'];
-
-    if (serverUrl != null && serverUrl.isNotEmpty) {
-      _serverUrlController.text = serverUrl;
-    } else {
-      _serverUrlController.text = 'http://localhost:3000';
-    }
+    final config = AppConfig.instance;
+    _serverUrlController.text = config.serverUrl;
   }
 
   Future<void> _login() async {
@@ -50,16 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final authService = AuthService(_serverUrlController.text);
-      final storage = AuthStorage();
+      final authService = AuthService();
 
       final token = await authService.login(
-        _usernameController.text,
+        _emailController.text,
         _passwordController.text,
       );
-      await storage.saveToken(token);
-        
-      await SettingsManager.saveSettings(
+
+      await AppConfig.instance.login(
         serverUrl: _serverUrlController.text,
         token: token,
       );
@@ -68,11 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-          builder: (context) => MainScreen(
-            //serverUrl: _serverUrlController.text,
-            //token: token,
+            builder: (context) => MainScreen(),
           ),
-          )
         );
       }
     } catch (e) {
@@ -113,10 +101,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    const Icon(
+                      Icons.local_fire_department_outlined,
+                      size: 64,
+                      color: bgIcons,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Flow Tracker',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
                     TextFormField(
                       controller: _serverUrlController,
                       decoration: const InputDecoration(
                         labelText: 'URL del servidor',
+                        prefixIcon: Icon(Icons.dns_outlined),
                       ),
                       validator: (value) =>
                           value!.isEmpty ? 'Requerit' : null,
@@ -124,32 +128,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 16),
 
-                    // Usuari
                     TextFormField(
-                      controller: _usernameController,
+                      controller: _emailController,
                       decoration: inputEstil.base(
                         "Correu",
                         "Introdueix el teu correu",
                       ),
+                      keyboardType: TextInputType.emailAddress,
                       validator: (value) =>
                           value!.isEmpty ? 'Requerit' : null,
                     ),
 
-                    const SizedBox(height: 8),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          print('Recuperar contrasenya');
-                        },
-                        child: const Text('Has oblidat la contrasenya?'),
-                      ),
-                    ),
-
                     const SizedBox(height: 16),
 
-                    // Contrasenya
                     TextFormField(
                       controller: _passwordController,
                       obscureText: !_passwordVisible,
@@ -175,7 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Error
                     if (_errorMessage.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16),
@@ -185,7 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
 
-                    // Botó login
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -193,9 +182,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: bgIcons,
                           foregroundColor: white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                         child: _isLoading
-                            ? const CircularProgressIndicator(strokeWidth: 2)
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
                             : const Text('Iniciar sessió'),
                       ),
                     ),
@@ -212,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       child: const Text(
-                        'No tens un compte? Crea’n un de gratuït',
+                        'No tens un compte? Crea\'n un de gratuït',
                       ),
                     ),
                   ],

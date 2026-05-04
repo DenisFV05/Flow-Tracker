@@ -4,12 +4,9 @@ import '../services/feed_service.dart';
 import '../services/profile_service.dart';
 
 class HabitProvider extends ChangeNotifier {
-  final HabitsApi api =
-      HabitsApi("https://flow-tracker.ieti.site");
-  final FeedApi feedApi =
-      FeedApi("https://flow-tracker.ieti.site");
-  final ProfileApi profileApi =
-      ProfileApi("https://flow-tracker.ieti.site");
+  final HabitsApi api = HabitsApi();
+  final FeedApi feedApi = FeedApi();
+  final ProfileApi profileApi = ProfileApi();
 
   List<dynamic> habits = [];
 
@@ -32,18 +29,13 @@ class HabitProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      // cargar hábitos
       habits = await api.getHabits();
 
-      // cargar stats globales
       dashboardStats = await api.getProfileStats();
 
-      // cargar stats por cada hábito
       for (final habit in habits) {
         final habitId = habit['id'];
-        
         final stats = await api.getHabitStats(habitId);
-        
         habitStats[habitId] = stats;
       }
 
@@ -100,17 +92,46 @@ class HabitProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addHabit(
+  Future<Map<String, dynamic>> addHabit(
     String name,
     String description,
     List<String> tags,
   ) async {
     try {
-      await api.createHabit(name, description, tags);
+      final result = await api.createHabit(name, description, tags);
+      await loadDashboard();
+      return result;
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> editHabit(
+    String id,
+    String name,
+    String description,
+    List<String> tags,
+  ) async {
+    try {
+      await api.updateHabit(id, name, description, tags);
       await loadDashboard();
     } catch (e) {
       error = e.toString();
       notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> deleteHabit(String id) async {
+    try {
+      await api.deleteHabit(id);
+      await loadDashboard();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+      rethrow;
     }
   }
 
@@ -122,5 +143,17 @@ class HabitProvider extends ChangeNotifier {
       error = e.toString();
       notifyListeners();
     }
+  }
+
+  Future<Map<String, dynamic>> getHabitHeatmap(String id, {int? year}) async {
+    return await api.getHabitHeatmap(id, year: year);
+  }
+
+  Future<Map<String, dynamic>> getHabitWeekly(String id) async {
+    return await api.getHabitWeekly(id);
+  }
+
+  Future<Map<String, dynamic>> getHabitMonthly(String id) async {
+    return await api.getHabitMonthly(id);
   }
 }

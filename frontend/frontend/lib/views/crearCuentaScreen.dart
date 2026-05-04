@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'inputEstil.dart';
 import 'package:flowTracker/utils.dart';
 import 'login_screen.dart';
+import '../config/app_config.dart';
+
 class CrearCuentaScreen extends StatefulWidget {
   const CrearCuentaScreen({super.key});
 
@@ -18,6 +20,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _serverUrlController = TextEditingController();
 
   bool _isLoading = false;
   String _errorMessage = '';
@@ -26,74 +29,83 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   bool _acceptedTerms = false;
 
   @override
+  void initState() {
+    super.initState();
+    _serverUrlController.text = AppConfig.instance.serverUrl;
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _serverUrlController.dispose();
     super.dispose();
   }
 
-Future<void> _register() async {
-  if (!_formKey.currentState!.validate()) return;
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  if (!_acceptedTerms) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Has d’acceptar els termes')),
-    );
-    return;
-  }
-
-  setState(() {
-    _isLoading = true;
-    _errorMessage = '';
-  });
-
-  try {
-    final authService = AuthService('https://flow-tracker.ieti.site');
-
-    await authService.register(
-      _emailController.text,
-      _passwordController.text,
-      _nameController.text,
-      _usernameController.text,
-    );
-
-    if (mounted) {
+    if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Compte creat correctament')),
+        const SnackBar(content: Text('Has d\'acceptar els termes')),
       );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      return;
     }
 
-  } catch (e) {
     setState(() {
-      _errorMessage = e.toString();
+      _isLoading = true;
+      _errorMessage = '';
     });
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
 
+    try {
+      final authService = AuthService();
+
+      await authService.register(
+        _emailController.text,
+        _passwordController.text,
+        _nameController.text,
+        _usernameController.text,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Compte creat correctament')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('Crear compte'),
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
             width: 420,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: const [
                 BoxShadow(
@@ -153,6 +165,7 @@ Future<void> _register() async {
                     controller: _emailController,
                     decoration:
                         inputEstil.base("Correu electrònic", "elteumail@mail.com"),
+                    keyboardType: TextInputType.emailAddress,
                     validator: (v) =>
                         v!.isEmpty ? "Requerit" : null,
                   ),
@@ -232,10 +245,19 @@ Future<void> _register() async {
 
                   const SizedBox(height: 16),
 
+                  if (_errorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        _errorMessage,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _register,
+                      onPressed: _isLoading ? null : _register,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: bgIcons,
                         foregroundColor: white,
@@ -244,7 +266,16 @@ Future<void> _register() async {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text("Crear compte"),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text("Crear compte"),
                     ),
                   ),
                 ],

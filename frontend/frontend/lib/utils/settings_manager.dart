@@ -15,7 +15,7 @@ class SettingsManager {
       
       final settings = {
         'serverUrl': serverUrl,
-        'token': ?token,
+        'token': token,
       };
       
       await file.writeAsString(jsonEncode(settings));
