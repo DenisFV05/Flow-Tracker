@@ -24,15 +24,20 @@ class FeedApi {
     };
 
     final uri = Uri.parse('$baseUrl/api/feed').replace(queryParameters: queryParams);
+    print('[FEED] Requesting: $uri');
     final res = await http.get(uri, headers: await _headers());
+    print('[FEED] Status: ${res.statusCode}');
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching feed: ${res.body}');
+      throw Exception('Error fetching feed (${res.statusCode}): ${res.body}');
     }
 
     final data = jsonDecode(res.body);
+    final postsData = data['posts'];
+    final posts = postsData is List ? postsData : [];
+    print('[FEED] Posts count: ${posts.length}');
     return {
-      'posts': data['posts'] as List<dynamic>,
+      'posts': posts,
       'nextCursor': data['nextCursor'],
     };
   }

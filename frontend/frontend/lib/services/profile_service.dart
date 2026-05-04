@@ -18,13 +18,11 @@ class ProfileApi {
   }
 
   Future<Map<String, dynamic>> getProfile() async {
-    final res = await http.get(
-      Uri.parse('$baseUrl/api/profile'),
-      headers: await _headers(),
-    );
+    final uri = Uri.parse('$baseUrl/api/profile');
+    final res = await http.get(uri, headers: await _headers());
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching profile: ${res.body}');
+      throw Exception('Error fetching profile (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -45,20 +43,18 @@ class ProfileApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error updating profile: ${res.body}');
+      throw Exception('Error updating profile (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
   }
 
   Future<Map<String, dynamic>> getProfileStats() async {
-    final res = await http.get(
-      Uri.parse('$baseUrl/api/profile/stats'),
-      headers: await _headers(),
-    );
+    final uri = Uri.parse('$baseUrl/api/profile/stats');
+    final res = await http.get(uri, headers: await _headers());
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching stats: ${res.body}');
+      throw Exception('Error fetching stats (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);

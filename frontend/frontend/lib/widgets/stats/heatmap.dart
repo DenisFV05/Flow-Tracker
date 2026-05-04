@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'dart:collection';
 
 class HabitHeatmap extends StatelessWidget {
-  final List<dynamic> heatmapData; // List of {date: 'YYYY-MM-DD', completed: bool}
+  final List<dynamic> heatmapData;
   final int year;
 
   const HabitHeatmap({
@@ -22,14 +21,21 @@ class HabitHeatmap extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Heatmap $year',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
           ),
           const SizedBox(height: 12),
           _buildHeatmap(dataMap),
@@ -41,11 +47,9 @@ class HabitHeatmap extends StatelessWidget {
   }
 
   Widget _buildHeatmap(HashMap<String, bool> dataMap) {
-    // Group data by week
     final weeks = <List<_DayData>>[];
     var currentWeek = <_DayData>[];
 
-    // Start from January 1st
     final startDate = DateTime(year, 1, 1);
     final endDate = DateTime(year, 12, 31);
 
@@ -77,9 +81,7 @@ class HabitHeatmap extends StatelessWidget {
                 height: 14,
                 margin: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  color: day.completed
-                      ? Colors.green
-                      : Colors.grey[200],
+                  color: day.completed ? const Color(0xFF1E88E5) : Colors.grey[200],
                   borderRadius: BorderRadius.circular(3),
                 ),
               );
@@ -93,11 +95,11 @@ class HabitHeatmap extends StatelessWidget {
   Widget _buildLegend() {
     return Row(
       children: [
-        Container(width: 14, height: 14, color: Colors.green, margin: const EdgeInsets.only(right: 4)),
-        const Text('Completed', style: TextStyle(fontSize: 12)),
+        Container(width: 14, height: 14, color: const Color(0xFF1E88E5), margin: const EdgeInsets.only(right: 4)),
+        const Text('Completat', style: TextStyle(fontSize: 12, color: Color(0xFF546E7A))),
         const SizedBox(width: 16),
         Container(width: 14, height: 14, color: Colors.grey[200]!, margin: const EdgeInsets.only(right: 4)),
-        const Text('No data', style: TextStyle(fontSize: 12)),
+        const Text('No completat', style: TextStyle(fontSize: 12, color: Color(0xFF546E7A))),
       ],
     );
   }

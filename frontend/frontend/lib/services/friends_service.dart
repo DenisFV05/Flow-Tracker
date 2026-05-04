@@ -18,16 +18,19 @@ class FriendsApi {
   }
 
   Future<List<dynamic>> getFriends() async {
-    final res = await http.get(
-      Uri.parse('$baseUrl/api/friends'),
-      headers: await _headers(),
-    );
+    final headers = await _headers();
+    final uri = Uri.parse('$baseUrl/api/friends');
+    print('[FRIENDS] Requesting: $uri');
+    final res = await http.get(uri, headers: headers);
+    print('[FRIENDS] Status: ${res.statusCode}');
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching friends: ${res.body}');
+      throw Exception('Error fetching friends (${res.statusCode}): ${res.body}');
     }
 
-    return jsonDecode(res.body);
+    final data = jsonDecode(res.body);
+    print('[FRIENDS] Friends count: ${data.length}');
+    return data;
   }
 
   Future<List<dynamic>> searchUsers(String query) async {
@@ -62,7 +65,7 @@ class FriendsApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching requests: ${res.body}');
+      throw Exception('Error fetching requests (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -89,5 +92,20 @@ class FriendsApi {
     if (res.statusCode != 200) {
       throw Exception('Error removing friend: ${res.body}');
     }
+  }
+
+  Future<Map<String, dynamic>> getFriendProfile(String friendId) async {
+    final uri = Uri.parse('$baseUrl/api/profile/$friendId');
+    print('[FRIEND PROFILE] Requesting: $uri');
+    final res = await http.get(uri, headers: await _headers());
+    print('[FRIEND PROFILE] Status: ${res.statusCode}');
+    print('[FRIEND PROFILE] Body: ${res.body.substring(0, res.body.length > 200 ? 200 : res.body.length)}');
+
+    if (res.statusCode != 200) {
+      final body = jsonDecode(res.body);
+      throw Exception(body['error'] ?? 'Error fetching friend profile (${res.statusCode})');
+    }
+
+    return jsonDecode(res.body);
   }
 }

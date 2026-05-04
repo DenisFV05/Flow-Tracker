@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'inputEstil.dart';
-import 'package:flowTracker/utils.dart';
 import 'package:flowTracker/models/habitsProvider.dart';
 
 class EditarHabit extends StatefulWidget {
@@ -67,7 +66,10 @@ class _EditarHabitFormState extends State<EditarHabit> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hàbit actualitzat correctament')),
+          SnackBar(
+            content: const Text('Hàbit actualitzat correctament'),
+            backgroundColor: const Color(0xFF1E88E5),
+          ),
         );
         Navigator.pop(context);
       }
@@ -93,10 +95,17 @@ class _EditarHabitFormState extends State<EditarHabit> {
           children: [
             const Text(
               "Editar hàbit",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A2332),
+              ),
             ),
             const SizedBox(height: 8),
-            const Text("Modifica les dades de l'hàbit"),
+            const Text(
+              "Modifica les dades de l'hàbit",
+              style: TextStyle(color: Color(0xFF546E7A)),
+            ),
             const SizedBox(height: 20),
 
             TextFormField(
@@ -105,8 +114,7 @@ class _EditarHabitFormState extends State<EditarHabit> {
                 "NOM DE L'HÀBIT",
                 "Escriu un nom",
               ),
-              validator: (value) =>
-                  value!.isEmpty ? "Requerit" : null,
+              validator: (value) => value!.isEmpty ? "Requerit" : null,
             ),
 
             const SizedBox(height: 12),
@@ -118,8 +126,7 @@ class _EditarHabitFormState extends State<EditarHabit> {
                 "Escriu una descripció",
               ),
               maxLines: 3,
-              validator: (value) =>
-                  value!.isEmpty ? "Requerit" : null,
+              validator: (value) => value!.isEmpty ? "Requerit" : null,
             ),
 
             const SizedBox(height: 12),
@@ -130,8 +137,7 @@ class _EditarHabitFormState extends State<EditarHabit> {
                 "ETIQUETES",
                 "Separa amb comes (ex: esport, salut)",
               ),
-              validator: (value) =>
-                  value!.isEmpty ? "Requerit" : null,
+              validator: (value) => value!.isEmpty ? "Requerit" : null,
             ),
 
             const SizedBox(height: 25),
@@ -142,17 +148,21 @@ class _EditarHabitFormState extends State<EditarHabit> {
                 OutlinedButton(
                   onPressed: _isLoading ? null : () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.grey,
-                    side: const BorderSide(color: Colors.grey),
+                    foregroundColor: const Color(0xFF546E7A),
+                    side: const BorderSide(color: Color(0xFFCFD8DC)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   child: const Text("CANCEL·LAR"),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _updateHabit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: bgIcons,
-                    foregroundColor: white,
+                    backgroundColor: const Color(0xFF1E88E5),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   ),
                   child: _isLoading
                       ? const SizedBox(

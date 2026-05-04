@@ -1,8 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/habitsProvider.dart';
 import 'inputEstil.dart';
-import 'package:flowTracker/utils.dart';
 
 class perfilView extends StatefulWidget {
   const perfilView({super.key});
@@ -13,7 +15,10 @@ class perfilView extends StatefulWidget {
 
 class _perfilViewState extends State<perfilView> {
   final _nameController = TextEditingController();
+  final _avatarUrlController = TextEditingController();
   bool _saving = false;
+  File? _selectedImage;
+  bool _showDebug = false;
 
   @override
   void initState() {
@@ -28,6 +33,10 @@ class _perfilViewState extends State<perfilView> {
       final profile = provider.userProfile;
       if (profile.isNotEmpty) {
         _nameController.text = profile['name'] ?? '';
+        final avatar = profile['avatar'];
+        if (avatar != null && !avatar.startsWith('data:')) {
+          _avatarUrlController.text = avatar;
+        }
       }
     });
   }
@@ -35,20 +44,41 @@ class _perfilViewState extends State<perfilView> {
   @override
   void dispose() {
     _nameController.dispose();
+    _avatarUrlController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      final file = File(result.files.first.path!);
+      final bytes = await file.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      final ext = result.files.first.extension?.toLowerCase() ?? 'png';
+      setState(() {
+        _selectedImage = file;
+        _avatarUrlController.text = 'data:image/$ext;base64,$base64Image';
+      });
+    }
   }
 
   Future<void> _saveProfile() async {
     setState(() => _saving = true);
     try {
+      final avatar = _avatarUrlController.text.trim().isNotEmpty
+          ? _avatarUrlController.text.trim()
+          : null;
       await context.read<HabitProvider>().updateProfile(
         name: _nameController.text,
+        avatar: avatar,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Perfil actualitzat!'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: const Text('Perfil actualitzat!'),
+            backgroundColor: const Color(0xFF1E88E5),
           ),
         );
       }
@@ -71,8 +101,8 @@ class _perfilViewState extends State<perfilView> {
 
     if (loading && profile.isEmpty) {
       return Container(
-        color: const Color(0xFFF5F7FA),
-        child: const Center(child: CircularProgressIndicator()),
+        color: const Color(0xFFF0F7FF),
+        child: const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5))),
       );
     }
 
@@ -80,9 +110,12 @@ class _perfilViewState extends State<perfilView> {
     final username = profile['username'] ?? '';
     final email = profile['email'] ?? '';
     final avatar = profile['avatar'];
+    final avatarPreview = _avatarUrlController.text.isNotEmpty
+        ? _avatarUrlController.text
+        : avatar;
 
     return Container(
-      color: const Color(0xFFF5F7FA),
+      color: const Color(0xFFF0F7FF),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: LayoutBuilder(
@@ -95,12 +128,19 @@ class _perfilViewState extends State<perfilView> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: _buildProfileForm(name, username, email, avatar),
+                    child: _buildProfileForm(name, username, email, avatarPreview),
                   ),
                   const SizedBox(width: 24),
                   Expanded(
                     flex: 1,
-                    child: _buildStatsCard(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildStatsCard(),
+                        const SizedBox(height: 16),
+                        _buildDebugPanel(),
+                      ],
+                    ),
                   ),
                 ],
               );
@@ -109,9 +149,11 @@ class _perfilViewState extends State<perfilView> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileForm(name, username, email, avatar),
+                _buildProfileForm(name, username, email, avatarPreview),
                 const SizedBox(height: 24),
                 _buildStatsCard(),
+                const SizedBox(height: 24),
+                _buildDebugPanel(),
               ],
             );
           },
@@ -120,48 +162,93 @@ class _perfilViewState extends State<perfilView> {
     );
   }
 
-  Widget _buildProfileForm(String name, String username, String email, String? avatar) {
+  Widget _buildProfileForm(String name, String username, String email, String? avatarPreview) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Perfil',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A2332)),
           ),
           const SizedBox(height: 20),
           Center(
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: bgIcons.withOpacity(0.15),
-              backgroundImage: avatar != null ? NetworkImage(avatar) : null,
-              child: avatar == null
-                  ? Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(fontSize: 32, color: bgIcons),
-                    )
-                  : null,
+            child: Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFF1E88E5), width: 2),
+                  ),
+                  child: CircleAvatar(
+                    radius: 48,
+                    backgroundColor: const Color(0xFFE3F2FD),
+                    backgroundImage: avatarPreview != null && avatarPreview.isNotEmpty
+                        ? (avatarPreview.startsWith('data:')
+                            ? MemoryImage(base64Decode(avatarPreview.split(',').last))
+                            : NetworkImage(avatarPreview))
+                        : null,
+                    child: (avatarPreview == null || avatarPreview.isEmpty)
+                        ? Text(
+                            name.isNotEmpty ? name[0].toUpperCase() : '?',
+                            style: const TextStyle(fontSize: 32, color: Color(0xFF1E88E5), fontWeight: FontWeight.bold),
+                          )
+                        : null,
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _showAvatarOptions,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF1E88E5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
           const SizedBox(height: 24),
 
-          const Text('Nom', style: TextStyle(fontWeight: FontWeight.w600)),
+          const Text('Nom', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1A2332))),
           const SizedBox(height: 8),
           TextField(
             controller: _nameController,
-            decoration: inputEstil.base("Nom", "El teu nom"),
+            decoration: InputDecoration(
+              hintText: 'El teu nom',
+              filled: true,
+              fillColor: const Color(0xFFF0F7FF),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
           ),
 
           const SizedBox(height: 16),
 
-          const Text('Username', style: TextStyle(fontWeight: FontWeight.w600)),
+          const Text('Username', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1A2332))),
           const SizedBox(height: 8),
           Text(
             '@$username',
@@ -170,7 +257,7 @@ class _perfilViewState extends State<perfilView> {
 
           const SizedBox(height: 16),
 
-          const Text('Email', style: TextStyle(fontWeight: FontWeight.w600)),
+          const Text('Email', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1A2332))),
           const SizedBox(height: 8),
           Text(
             email,
@@ -183,6 +270,12 @@ class _perfilViewState extends State<perfilView> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _saving ? null : _saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1E88E5),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
               child: _saving
                   ? const SizedBox(
                       width: 18,
@@ -200,12 +293,98 @@ class _perfilViewState extends State<perfilView> {
     );
   }
 
+  void _showAvatarOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Foto de perfil',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A2332)),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded, color: Color(0xFF1E88E5)),
+                title: const Text('Seleccionar imatge'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.link_rounded, color: Color(0xFF1E88E5)),
+                title: const Text('URL de la imatge'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showAvatarUrlDialog();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete_rounded, color: Colors.red),
+                title: const Text('Eliminar foto', style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _avatarUrlController.clear();
+                    _selectedImage = null;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAvatarUrlDialog() {
+    final controller = TextEditingController(text: _avatarUrlController.text);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('URL de la imatge', style: TextStyle(color: Color(0xFF1A2332))),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'https://exemple.com/foto.jpg',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel·lar', style: TextStyle(color: Color(0xFF1E88E5))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() => _avatarUrlController.text = controller.text.trim());
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1E88E5),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatsCard() {
     final stats = context.watch<HabitProvider>().dashboardStats;
     final loading = context.watch<HabitProvider>().loading;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)));
     }
 
     final totalHabits = stats['totalHabits'] ?? 0;
@@ -221,39 +400,223 @@ class _perfilViewState extends State<perfilView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Estadístiques',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A2332)),
           ),
           const SizedBox(height: 20),
-          _statRow('Hàbits totals', '$totalHabits'),
-          const SizedBox(height: 14),
-          _statRow('Registres totals', '$totalLogs'),
-          const SizedBox(height: 14),
-          _statRow('Completats', '$completedLogs'),
-          const SizedBox(height: 14),
-          _statRow('Percentatge global', '${rate.toStringAsFixed(1)}%'),
-          const SizedBox(height: 14),
-          _statRow('Ratxa màxima', '$longestStreak dies'),
-          const SizedBox(height: 14),
-          _statRow('Avui', '$todayCompleted/$todayTotal'),
+          _statRow(Icons.track_changes_rounded, 'Hàbits totals', '$totalHabits', const Color(0xFF1E88E5)),
+          const SizedBox(height: 12),
+          _statRow(Icons.description_rounded, 'Registres totals', '$totalLogs', const Color(0xFF43A047)),
+          const SizedBox(height: 12),
+          _statRow(Icons.check_circle_rounded, 'Completats', '$completedLogs', const Color(0xFFAB47BC)),
+          const SizedBox(height: 12),
+          _statRow(Icons.percent_rounded, 'Percentatge global', '${rate.toStringAsFixed(1)}%', const Color(0xFFFF9800)),
+          const SizedBox(height: 12),
+          _statRow(Icons.local_fire_department_rounded, 'Ratxa màxima', '$longestStreak dies', const Color(0xFFFF9800)),
+          const SizedBox(height: 12),
+          _statRow(Icons.today_rounded, 'Avui', '$todayCompleted/$todayTotal', const Color(0xFF1E88E5)),
         ],
       ),
     );
   }
 
-  Widget _statRow(String label, String value) {
+  Widget _statRow(IconData icon, String label, String value, Color color) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+        Icon(icon, size: 20, color: color),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+        ),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF1A2332))),
       ],
     );
+  }
+
+  Widget _buildDebugPanel() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F7FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFBBDEFB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => setState(() => _showDebug = !_showDebug),
+            child: Row(
+              children: [
+                const Icon(Icons.bug_report_rounded, size: 18, color: Color(0xFF1E88E5)),
+                const SizedBox(width: 8),
+                const Text(
+                  'Mode desenvolupador',
+                  style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+                ),
+                const Spacer(),
+                Icon(_showDebug ? Icons.expand_less : Icons.expand_more, size: 20, color: Colors.grey[500]),
+              ],
+            ),
+          ),
+          if (_showDebug) ...[
+            const SizedBox(height: 12),
+            const Divider(),
+            const SizedBox(height: 8),
+            const Text(
+              'Simular ratxes i registres en dates passades',
+              style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '1. Crea un hàbit al Dashboard si encara no en tens',
+              style: TextStyle(fontSize: 11, color: Color(0xFF546E7A)),
+            ),
+            const Text(
+              '2. Usa "Marcar hàbit avui" per registrar el hàbit per avui',
+              style: TextStyle(fontSize: 11, color: Color(0xFF546E7A)),
+            ),
+            const Text(
+              '3. Usa els altres botons per crear registres en dies anteriors i augmentar la ratxa',
+              style: TextStyle(fontSize: 11, color: Color(0xFF546E7A)),
+            ),
+            const SizedBox(height: 12),
+            _debugButton('Marcar hàbit avui', const Color(0xFF43A047), _markToday),
+            const SizedBox(height: 4),
+            Text(
+              'Registra el primer hàbit de la llista per avui. És el punt de partida per crear ratxes.',
+              style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 12),
+            _debugButton('Afegir registre ahir', const Color(0xFF1E88E5), _simulatePastDay),
+            const SizedBox(height: 4),
+            Text(
+              'Crea un registre per ahir. Si ja tens un registre avui, la ratxa augmentarà a 2.',
+              style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 12),
+            _debugButton('Afegir registre fa 7 dies', const Color(0xFFAB47BC), _simulateWeekAgo),
+            const SizedBox(height: 4),
+            Text(
+              'Crea un registre fa 7 dies. No afecta la ratxa actual però omple el heatmap.',
+              style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 12),
+            _debugButton('Crear ratxa de 8 dies', const Color(0xFFFF9800), _simulate7DaysAgo),
+            const SizedBox(height: 4),
+            Text(
+              'Registra el hàbit durant 8 dies seguits (fa 7 dies fins avui). Veurem la ratxa pujar a 8.',
+              style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _debugButton(String label, Color color, VoidCallback onTap) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: color,
+          side: BorderSide(color: color),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+        ),
+        child: Text(label, style: const TextStyle(fontSize: 13)),
+      ),
+    );
+  }
+
+  Future<void> _markToday() async {
+    final provider = context.read<HabitProvider>();
+    if (provider.habits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Crea un hàbit primer')),
+      );
+      return;
+    }
+    final habit = provider.habits.first;
+    await provider.toggleHabit(habit['id'], true);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${habit['name']} marcat per avui!'),
+          backgroundColor: const Color(0xFF43A047),
+        ),
+      );
+    }
+  }
+
+  Future<void> _simulatePastDay() async {
+    final provider = context.read<HabitProvider>();
+    if (provider.habits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Crea un hàbit primer')),
+      );
+      return;
+    }
+    final habitId = provider.habits.first['id'];
+    final yesterday = DateTime.now().subtract(const Duration(days: 1)).toIso8601String().split('T').first;
+    await provider.api.logHabit(habitId, yesterday, true);
+    await provider.loadDashboard();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Hàbit registrat per ahir ($yesterday)'),
+          backgroundColor: const Color(0xFF1E88E5),
+        ),
+      );
+    }
+  }
+
+  Future<void> _simulateWeekAgo() async {
+    final provider = context.read<HabitProvider>();
+    if (provider.habits.isEmpty) return;
+    final habitId = provider.habits.first['id'];
+    final date = DateTime.now().subtract(const Duration(days: 7)).toIso8601String().split('T').first;
+    await provider.api.logHabit(habitId, date, true);
+    await provider.loadDashboard();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Hàbit registrat fa 7 dies ($date)'),
+          backgroundColor: const Color(0xFFAB47BC),
+        ),
+      );
+    }
+  }
+
+  Future<void> _simulate7DaysAgo() async {
+    final provider = context.read<HabitProvider>();
+    if (provider.habits.isEmpty) return;
+    final habitId = provider.habits.first['id'];
+    for (int i = 7; i >= 0; i--) {
+      final date = DateTime.now().subtract(Duration(days: i)).toIso8601String().split('T').first;
+      await provider.api.logHabit(habitId, date, true);
+    }
+    await provider.loadDashboard();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registrats 8 dies seguits! Ratxa de 8.'),
+          backgroundColor: const Color(0xFFFF9800),
+        ),
+      );
+    }
   }
 }

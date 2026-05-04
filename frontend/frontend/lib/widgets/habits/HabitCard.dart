@@ -32,70 +32,79 @@ class HabitCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: Colors.white,
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              blurRadius: 8,
-              color: Colors.black12,
+              color: color.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// TÍTULO
             Text(
               title,
               style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1A2332),
               ),
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
-            /// DESCRIPCIÓN
             Text(
               subtitle,
               style: const TextStyle(
-                color: Colors.grey,
+                fontSize: 13,
+                color: Color(0xFF546E7A),
               ),
             ),
 
             const SizedBox(height: 12),
 
-            /// TAGS
             if (tags.isNotEmpty)
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: tags.map((tag) {
                   final name = tag is Map ? tag['name'] ?? '' : tag.toString();
-                  return Chip(
-                    label: Text(
-                      name,
-                      style: const TextStyle(fontSize: 12),
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE3F2FD),
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    visualDensity: VisualDensity.compact,
+                    child: Text(
+                      name,
+                      style: const TextStyle(fontSize: 11, color: Color(0xFF1E88E5), fontWeight: FontWeight.w500),
+                    ),
                   );
                 }).toList(),
               ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
-            /// STREAK + %
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "🔥 $streak días",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFF9800), size: 18),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$streak',
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF1A2332)),
+                    ),
+                  ],
                 ),
                 Text(
-                  "$percentage%",
-                  style: const TextStyle(
+                  '$percentage%',
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: color,
                   ),
                 ),
               ],
@@ -103,13 +112,14 @@ class HabitCard extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            /// PROGRESS BAR
-            LinearProgressIndicator(
-              value: progress,
-              color: color,
-              backgroundColor: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-              minHeight: 8,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: progress,
+                color: color,
+                backgroundColor: color.withOpacity(0.12),
+                minHeight: 6,
+              ),
             ),
           ],
         ),

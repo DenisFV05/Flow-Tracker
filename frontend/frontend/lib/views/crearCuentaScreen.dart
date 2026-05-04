@@ -1,7 +1,6 @@
 import 'package:flowTracker/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'inputEstil.dart';
-import 'package:flowTracker/utils.dart';
 import 'login_screen.dart';
 import '../config/app_config.dart';
 
@@ -72,7 +71,10 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Compte creat correctament')),
+          SnackBar(
+            content: const Text('Compte creat correctament'),
+            backgroundColor: const Color(0xFF1E88E5),
+          ),
         );
 
         Navigator.pushReplacement(
@@ -95,190 +97,256 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Crear compte'),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            width: 420,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(
-                  blurRadius: 10,
-                  color: Colors.black12,
-                )
-              ],
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Registrar-se",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  const Text(
-                    "Omple les teves dades per crear un compte nou",
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _nameController,
-                          decoration:
-                              inputEstil.base("Nom complet", "Insereix el teu nom"),
-                          validator: (v) =>
-                              v!.isEmpty ? "Requerit" : null,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _usernameController,
-                          decoration:
-                              inputEstil.base("Nom d'usuari", "Insereix el teu username"),
-                          validator: (v) =>
-                              v!.isEmpty ? "Requerit" : null,
-                        ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: _emailController,
-                    decoration:
-                        inputEstil.base("Correu electrònic", "elteumail@mail.com"),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (v) =>
-                        v!.isEmpty ? "Requerit" : null,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: !_passwordVisible,
-                    decoration: inputEstil
-                        .base("Contrasenya", "Crea una contrasenya segura")
-                        .copyWith(
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (v) =>
-                        v!.length < 6 ? "Mínim 6 caràcters" : null,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: !_confirmPasswordVisible,
-                    decoration: inputEstil
-                        .base("Confirma la contrasenya", "Confirma-la")
-                        .copyWith(
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _confirmPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _confirmPasswordVisible =
-                                !_confirmPasswordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (v) => v != _passwordController.text
-                        ? "Les contrasenyes no coincideixen"
-                        : null,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _acceptedTerms,
-                        onChanged: (value) {
-                          setState(() {
-                            _acceptedTerms = value!;
-                          });
-                        },
-                      ),
-                      const Expanded(
-                        child: Text(
-                          "Accepto els Termes del servei i la Política de privacitat",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  if (_errorMessage.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(
-                        _errorMessage,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: bgIcons,
-                        foregroundColor: white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.local_fire_department_rounded,
+                                size: 28,
                                 color: Colors.white,
                               ),
-                            )
-                          : const Text("Crear compte"),
+                            ),
+                            const SizedBox(width: 12),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Registrar-se",
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1A2332),
+                                  ),
+                                ),
+                                Text(
+                                  "Omple les teves dades per crear un compte",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFF546E7A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        TextFormField(
+                          controller: _serverUrlController,
+                          decoration: const InputDecoration(
+                            labelText: 'URL del servidor',
+                            hintText: 'http://localhost:3000',
+                            prefixIcon: Icon(Icons.dns_outlined, color: Color(0xFF1E88E5)),
+                            filled: true,
+                            fillColor: Color(0xFFF0F7FF),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                          validator: (v) => v!.isEmpty ? "Requerit" : null,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _nameController,
+                                decoration: inputEstil.base("Nom complet", "El teu nom").copyWith(
+                                  prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF1E88E5)),
+                                ),
+                                validator: (v) => v!.isEmpty ? "Requerit" : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _usernameController,
+                                decoration: inputEstil.base("Username", "@username").copyWith(
+                                  prefixIcon: const Icon(Icons.alternate_email, color: Color(0xFF1E88E5)),
+                                ),
+                                validator: (v) => v!.isEmpty ? "Requerit" : null,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: inputEstil.base("Correu electrònic", "elteumail@mail.com").copyWith(
+                            prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF1E88E5)),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) => v!.isEmpty ? "Requerit" : null,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_passwordVisible,
+                          decoration: inputEstil
+                              .base("Contrasenya", "Mínim 6 caràcters")
+                              .copyWith(
+                            prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF1E88E5)),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: const Color(0xFF1E88E5),
+                              ),
+                              onPressed: () => setState(() => _passwordVisible = !_passwordVisible),
+                            ),
+                          ),
+                          validator: (v) => v!.length < 6 ? "Mínim 6 caràcters" : null,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: !_confirmPasswordVisible,
+                          decoration: inputEstil
+                              .base("Confirma la contrasenya", "Repeteix la contrasenya")
+                              .copyWith(
+                            prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF1E88E5)),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: const Color(0xFF1E88E5),
+                              ),
+                              onPressed: () => setState(() => _confirmPasswordVisible = !_confirmPasswordVisible),
+                            ),
+                          ),
+                          validator: (v) => v != _passwordController.text
+                              ? "Les contrasenyes no coincideixen"
+                              : null,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _acceptedTerms,
+                              activeColor: const Color(0xFF1E88E5),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                              onChanged: (value) => setState(() => _acceptedTerms = value!),
+                            ),
+                            const Expanded(
+                              child: Text(
+                                "Accepto els Termes del servei i la Política de privacitat",
+                                style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        if (_errorMessage.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFEBEE),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              _errorMessage,
+                              style: const TextStyle(color: Color(0xFFE53935), fontSize: 13),
+                            ),
+                          ),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _register,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1E88E5),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Crear compte",
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              "Ja tens un compte? Inicia sessió",
+                              style: TextStyle(color: Color(0xFF1E88E5)),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),

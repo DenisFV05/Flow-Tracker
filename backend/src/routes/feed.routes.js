@@ -41,17 +41,14 @@ async function getFriendIds(userId) {
 router.get('/', async (req, res) => {
     try {
         const userId = req.user.id;
-        const { cursor, limit = 20 } = req.query;
+        const { cursor, limit = '20' } = req.query;
 
         const friendIds = await getFriendIds(userId);
-        
-        if (friendIds.length === 0) {
-            return res.json({ posts: [], nextCursor: null });
-        }
+        const allUserIds = [userId, ...friendIds];
 
         const where = {
-            userId: { in: friendIds },
-            type: 'achievement'
+            userId: { in: allUserIds },
+            type: { in: ['achievement', 'manual'] }
         };
 
         if (cursor) {
@@ -78,19 +75,25 @@ router.get('/', async (req, res) => {
 
         let nextCursor = null;
         if (posts.length > parseInt(limit)) {
-            posts.pop();
-            nextCursor = posts[posts.length - 1].createdAt.toISOString();
+            const nextPost = posts.pop();
+            nextCursor = nextPost.createdAt.toISOString();
         }
 
         const result = posts.map(post => ({
             id: post.id,
-            user: post.user,
+            user: {
+                id: post.user.id,
+                username: post.user.username,
+                name: post.user.name,
+                avatar: post.user.avatar
+            },
             type: post.type,
             content: post.content,
             habitId: post.habitId,
             habitName: post.habit?.name,
-            createdAt: post.createdAt,
-            liked: post.likes.length > 0
+            createdAt: post.createdAt.toISOString(),
+            liked: post.likes.length > 0,
+            isOwn: post.userId === userId
         }));
 
         res.json({
@@ -98,8 +101,8 @@ router.get('/', async (req, res) => {
             nextCursor
         });
     } catch (error) {
-        console.error('Error fetching feed:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FEED ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant el feed', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
     }
 });
 
@@ -120,15 +123,23 @@ router.post('/', validatePost, async (req, res) => {
             },
             include: {
                 user: {
-                    select: { id: true, username: true, name: true }
+                    select: { id: true, username: true, name: true, avatar: true }
                 }
             }
         });
 
-        res.status(201).json(post);
+        res.status(201).json({
+            id: post.id,
+            user: post.user,
+            type: post.type,
+            content: post.content,
+            createdAt: post.createdAt.toISOString(),
+            liked: false,
+            isOwn: true
+        });
     } catch (error) {
-        console.error('Error creating post:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FEED POST ERROR]', error.message);
+        res.status(500).json({ error: 'Error creant publicació' });
     }
 });
 
@@ -154,10 +165,14 @@ router.get('/:id/likes', async (req, res) => {
             orderBy: { createdAt: 'desc' }
         });
 
-        res.json(likes);
+        res.json(likes.map(l => ({
+            id: l.id,
+            user: l.user,
+            createdAt: l.createdAt.toISOString()
+        })));
     } catch (error) {
-        console.error('Error fetching likes:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FEED LIKES ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant likes' });
     }
 });
 
@@ -196,8 +211,8 @@ router.post('/:id/like', async (req, res) => {
 
         res.status(201).json(like);
     } catch (error) {
-        console.error('Error liking post:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FEED LIKE ERROR]', error.message);
+        res.status(500).json({ error: 'Error fent like' });
     }
 });
 
@@ -225,8 +240,8 @@ router.delete('/:id/like', async (req, res) => {
 
         res.json({ message: 'Like removed' });
     } catch (error) {
-        console.error('Error removing like:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FEED UNLIKE ERROR]', error.message);
+        res.status(500).json({ error: 'Error treient like' });
     }
 });
 

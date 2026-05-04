@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
-import 'utils.dart';
 import 'config/app_config.dart';
 import 'views/login_screen.dart';
 
@@ -16,37 +15,35 @@ class ExampleSidebarX extends StatelessWidget {
       theme: SidebarXTheme(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: canvasColor,
+          color: const Color(0xFF1A2332),
           borderRadius: BorderRadius.circular(20),
         ),
-        hoverColor: scaffoldBackgroundColor,
-        textStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-        selectedTextStyle: const TextStyle(color: Colors.white),
-        hoverTextStyle: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
+        hoverColor: const Color(0xFF2A3547),
+        textStyle: const TextStyle(color: Color(0xFF90A4AE)),
+        selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        hoverTextStyle: const TextStyle(color: Colors.white),
         itemTextPadding: const EdgeInsets.only(left: 30),
         selectedItemTextPadding: const EdgeInsets.only(left: 30),
         itemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: canvasColor),
         ),
         selectedItemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: actionColor.withOpacity(0.37),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.28),
-              blurRadius: 30,
-            )
+              color: const Color(0xFF1E88E5).withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
-          color: canvasColor,
         ),
-        iconTheme: IconThemeData(
-          color: Colors.white.withOpacity(0.7),
+        iconTheme: const IconThemeData(
+          color: Color(0xFF90A4AE),
           size: 20,
         ),
         selectedIconTheme: const IconThemeData(
@@ -54,8 +51,11 @@ class ExampleSidebarX extends StatelessWidget {
           size: 20,
         ),
       ),
-      extendedTheme: const SidebarXTheme(width: 200, decoration: BoxDecoration(color: canvasColor)),
-      footerDivider: divider,
+      extendedTheme: const SidebarXTheme(
+        width: 220,
+        decoration: BoxDecoration(color: Color(0xFF1A2332)),
+      ),
+      footerDivider: Divider(color: Colors.white.withOpacity(0.1), height: 1),
       headerBuilder: (context, extended) => SizedBox(
         height: 100,
         child: Padding(
@@ -67,17 +67,25 @@ class ExampleSidebarX extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(extended ? 8 : 4),
                   decoration: BoxDecoration(
-                    color: bgIcons,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+                    ),
                     borderRadius: BorderRadius.circular(extended ? 12 : 8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF1E88E5).withOpacity(0.4),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Icon(
-                    Icons.local_fire_department_outlined,
-                    color: white,
+                    Icons.local_fire_department_rounded,
+                    color: Colors.white,
                     size: extended ? 35 : 25,
                   ),
                 ),
-                if (extended)
-                  const SizedBox(width: 8),
+                if (extended) const SizedBox(width: 8),
                 if (extended)
                   const Text(
                     'Flow Tracker',
@@ -92,16 +100,16 @@ class ExampleSidebarX extends StatelessWidget {
           ),
         ),
       ),
-      items: [
-        const SidebarXItem(icon: Icons.dashboard, label: 'Dashboard'),
-        const SidebarXItem(icon: Icons.bar_chart, label: 'Estadístiques'),
-        const SidebarXItem(icon: Icons.feed_outlined, label: 'Feed'),
-        const SidebarXItem(icon: Icons.people, label: 'Amics'),
-        const SidebarXItem(icon: Icons.person, label: 'Perfil'),
+      items: const [
+        SidebarXItem(icon: Icons.dashboard_rounded, label: 'Dashboard'),
+        SidebarXItem(icon: Icons.bar_chart_rounded, label: 'Estadístiques'),
+        SidebarXItem(icon: Icons.feed_rounded, label: 'Feed'),
+        SidebarXItem(icon: Icons.people_rounded, label: 'Amics'),
+        SidebarXItem(icon: Icons.person_rounded, label: 'Perfil'),
       ],
       footerItems: [
         SidebarXItem(
-          icon: Icons.logout,
+          icon: Icons.logout_rounded,
           label: 'Tancar sessió',
           onTap: () => _showLogoutDialog(context),
         ),
@@ -113,12 +121,13 @@ class ExampleSidebarX extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tancar sessió'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Tancar sessió', style: TextStyle(color: Color(0xFF1A2332))),
         content: const Text('Segur que vols tancar la sessió?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel·lar'),
+            child: const Text('Cancel·lar', style: TextStyle(color: Color(0xFF1E88E5))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -132,8 +141,9 @@ class ExampleSidebarX extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: const Color(0xFF1E88E5),
               foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Tancar'),
           ),

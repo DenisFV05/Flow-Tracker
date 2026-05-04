@@ -19,11 +19,11 @@ class MainScreen extends StatelessWidget {
   ];
 
   static const _icons = [
-    Icons.dashboard,
-    Icons.bar_chart,
-    Icons.feed_outlined,
-    Icons.people,
-    Icons.person,
+    Icons.dashboard_rounded,
+    Icons.bar_chart_rounded,
+    Icons.feed_rounded,
+    Icons.people_rounded,
+    Icons.person_rounded,
   ];
 
   String _getTitle(int index) {
@@ -48,9 +48,9 @@ class MainScreen extends StatelessWidget {
                 builder: (context, _) {
                   return Row(
                     children: [
-                      Icon(
-                        _icons[_controller.selectedIndex] ?? Icons.local_fire_department,
-                        color: const Color(0xFF00B089),
+                      const Icon(
+                        Icons.local_fire_department_rounded,
+                        color: Color(0xFF1E88E5),
                         size: 24,
                       ),
                       const SizedBox(width: 8),

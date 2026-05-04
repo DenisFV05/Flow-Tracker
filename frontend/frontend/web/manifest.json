@@ -1,6 +1,6 @@
 {
-    "name": "exercici09",
-    "short_name": "exercici09",
+"name": "Flow Tracker",
+  "short_name": "Flow Tracker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

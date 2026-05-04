@@ -5,8 +5,11 @@ class inputEstil {
     return InputDecoration(
       labelText: label,
       hintText: hint,
+      filled: true,
+      fillColor: const Color(0xFFF0F7FF),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,

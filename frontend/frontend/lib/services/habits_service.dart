@@ -24,7 +24,7 @@ class HabitsApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching habits: ${res.body}');
+      throw Exception('Error fetching habits (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -46,7 +46,7 @@ class HabitsApi {
     );
 
     if (res.statusCode != 201) {
-      throw Exception('Error creating habit: ${res.body}');
+      throw Exception('Error creating habit (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -69,7 +69,7 @@ class HabitsApi {
     );
 
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('Error updating habit: ${res.body}');
+      throw Exception('Error updating habit (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -82,7 +82,7 @@ class HabitsApi {
     );
 
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('Error deleting habit: ${res.body}');
+      throw Exception('Error deleting habit (${res.statusCode}): ${res.body}');
     }
   }
 
@@ -97,7 +97,24 @@ class HabitsApi {
     );
 
     if (res.statusCode != 200 && res.statusCode != 201) {
-      throw Exception('Error logging habit: ${res.body}');
+      throw Exception('Error logging habit (${res.statusCode}): ${res.body}');
+    }
+
+    return jsonDecode(res.body);
+  }
+
+  Future<Map<String, dynamic>> logHabit(String id, String date, bool completed) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/api/habits/$id/log'),
+      headers: await _headers(),
+      body: jsonEncode({
+        "date": date,
+        "completed": completed,
+      }),
+    );
+
+    if (res.statusCode != 200 && res.statusCode != 201) {
+      throw Exception('Error logging habit (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -110,7 +127,7 @@ class HabitsApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching habit stats: ${res.body}');
+      throw Exception('Error fetching habit stats (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -123,7 +140,7 @@ class HabitsApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching profile stats: ${res.body}');
+      throw Exception('Error fetching profile stats (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -140,7 +157,7 @@ class HabitsApi {
     final res = await http.get(uri, headers: await _headers());
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching heatmap: ${res.body}');
+      throw Exception('Error fetching heatmap (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -153,7 +170,7 @@ class HabitsApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching weekly data: ${res.body}');
+      throw Exception('Error fetching weekly data (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);
@@ -166,7 +183,7 @@ class HabitsApi {
     );
 
     if (res.statusCode != 200) {
-      throw Exception('Error fetching monthly data: ${res.body}');
+      throw Exception('Error fetching monthly data (${res.statusCode}): ${res.body}');
     }
 
     return jsonDecode(res.body);

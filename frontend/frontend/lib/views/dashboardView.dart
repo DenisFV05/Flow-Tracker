@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
 import '../widgets/stats/quickStats.dart';
-import '../widgets/SectionTitle.dart';
 
 import '../models/habitsProvider.dart';
 import 'crearHabit.dart';
@@ -42,11 +41,12 @@ class _DashboardViewState extends State<DashboardView> {
     final habitStats = provider.habitStats;
 
     return Container(
-      color: const Color(0xFFF5F7FA),
+      color: const Color(0xFFF0F7FF),
       child: RefreshIndicator(
         onRefresh: _refresh,
+        color: const Color(0xFF1E88E5),
         child: loading && habits.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)))
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -61,7 +61,7 @@ class _DashboardViewState extends State<DashboardView> {
                       totalToday: dashboardStats['todayTotal'] ?? 0,
                       longestStreak: dashboardStats['longestStreak'] ?? 0,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final isWide = constraints.maxWidth > 700;
@@ -80,8 +80,15 @@ class _DashboardViewState extends State<DashboardView> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SectionTitle(title: "Resum"),
-                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'Resum',
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF1A2332),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
                                     const QuickStats(),
                                   ],
                                 ),
@@ -94,9 +101,16 @@ class _DashboardViewState extends State<DashboardView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildHabitsList(habits, habitStats),
-                            const SizedBox(height: 24),
-                            SectionTitle(title: "Resum"),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 28),
+                            const Text(
+                              'Resum',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A2332),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
                             const QuickStats(),
                           ],
                         );
@@ -120,26 +134,63 @@ class _DashboardViewState extends State<DashboardView> {
       greeting = 'Bona nit';
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          greeting,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1A1A2E),
-          ),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        const SizedBox(height: 4),
-        const Text(
-          'Segueix els teus hàbits d\'avui',
-          style: TextStyle(
-            fontSize: 15,
-            color: Color(0xFF6B7280),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E88E5).withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
-        ),
-      ],
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.track_changes_rounded,
+              size: 32,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  greeting,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Segueix els teus hàbits d\'avui',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -150,83 +201,38 @@ class _DashboardViewState extends State<DashboardView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SectionTitle(title: "Hàbits d'avui"),
+            const Text(
+              'Hàbits d\'avui',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A2332),
+              ),
+            ),
             TextButton.icon(
               onPressed: () => showCrearHabitPopup(context),
-              icon: const Icon(Icons.add_circle_outline, size: 20),
-              label: const Text('Afegir'),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF00B089),
-              ),
+              icon: const Icon(Icons.add_circle_outline, size: 20, color: Color(0xFF1E88E5)),
+              label: const Text('Afegir', style: TextStyle(color: Color(0xFF1E88E5))),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         if (habits.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(40),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.track_changes_outlined,
-                  size: 64,
-                  color: Colors.grey[300],
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Encara no tens hàbits',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF374151),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Crea el teu primer hàbit per començar a fer seguiment',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () => showCrearHabitPopup(context),
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Crear hàbit'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00B089),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
+          _emptyHabits()
         else
           ...habits.map((habit) {
             final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
             final progress = ((stats['completionRate'] ?? 0) / 100).toDouble();
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 10),
               child: HabitCard(
                 title: habit['name'] ?? '',
                 subtitle: habit['description'] ?? '',
                 progress: progress,
                 streak: stats['currentStreak'] ?? 0,
                 tags: habit['tags'] ?? [],
-                color: const Color(0xFF00B089),
+                color: const Color(0xFF1E88E5),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -241,6 +247,63 @@ class _DashboardViewState extends State<DashboardView> {
       ],
     );
   }
+
+  Widget _emptyHabits() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 48),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE3F2FD),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.track_changes_rounded, size: 40, color: Color(0xFF1E88E5)),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Encara no tens hàbits',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1A2332),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Crea el teu primer hàbit per començar a fer seguiment',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: () => showCrearHabitPopup(context),
+            icon: const Icon(Icons.add, size: 18),
+            label: const Text('Crear hàbit'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1E88E5),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 void showCrearHabitPopup(BuildContext context) {
@@ -249,11 +312,9 @@ void showCrearHabitPopup(BuildContext context) {
     barrierDismissible: true,
     builder: (context) {
       return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: const Padding(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(24),
           child: CrearHabitForm(),
         ),
       );

@@ -5,7 +5,6 @@ import '../../models/habitsProvider.dart';
 import '../../widgets/stats/heatmap.dart';
 import '../../widgets/stats/weekly_chart.dart';
 import '../../views/editarHabit.dart';
-import 'package:flowTracker/utils.dart';
 
 class HabitDetailView extends StatefulWidget {
   final dynamic habit;
@@ -103,18 +102,20 @@ class _HabitDetailViewState extends State<HabitDetailView> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar hàbit'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Eliminar hàbit', style: TextStyle(color: Color(0xFF1A2332))),
         content: Text('Segur que vols eliminar "${widget.habit['name']}"? Aquesta acció no es pot desfer.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel·lar'),
+            child: const Text('Cancel·lar', style: TextStyle(color: Color(0xFF1E88E5))),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: const Color(0xFFE53935),
               foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Eliminar'),
           ),
@@ -150,8 +151,15 @@ class _HabitDetailViewState extends State<HabitDetailView> {
     final tags = habit['tags'] as List<dynamic>? ?? [];
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF0F7FF),
       appBar: AppBar(
-        title: Text(habit['name'] ?? 'Detalls hàbit'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          habit['name'] ?? 'Detalls hàbit',
+          style: const TextStyle(color: Color(0xFF1A2332), fontWeight: FontWeight.w600),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF1A2332)),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -159,7 +167,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
             onPressed: _showEditDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            icon: const Icon(Icons.delete_outline, color: Color(0xFFE53935)),
             tooltip: 'Eliminar hàbit',
             onPressed: _deleteHabit,
           ),
@@ -175,6 +183,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
+                color: Color(0xFF1A2332),
               ),
             ),
 
@@ -184,25 +193,46 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               habit['description'] ?? 'Sense descripció',
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.grey,
+                color: Color(0xFF546E7A),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             Wrap(
               spacing: 8,
               children: tags.isNotEmpty
                   ? tags.map<Widget>((tag) {
-                      final name = tag is Map
-                          ? tag['name']
-                          : tag.toString();
-                      return Chip(
-                        label: Text(name),
-                        backgroundColor: bgIcons.withOpacity(0.1),
+                      final name = tag is Map ? tag['name'] : tag.toString();
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE3F2FD),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF1E88E5),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       );
                     }).toList()
-                  : [const Chip(label: Text("Sense etiquetes"))],
+                  : [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          "Sense etiquetes",
+                          style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+                        ),
+                      ),
+                    ],
             ),
 
             const SizedBox(height: 24),
@@ -213,8 +243,8 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                   child: _buildStatCard(
                     'Ratxa actual',
                     '$streak dies',
-                    Icons.local_fire_department,
-                    Colors.orange,
+                    Icons.local_fire_department_rounded,
+                    const Color(0xFFFF9800),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -222,8 +252,8 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                   child: _buildStatCard(
                     'Ratxa màxima',
                     '$maxStreak dies',
-                    Icons.emoji_events,
-                    Colors.amber,
+                    Icons.emoji_events_rounded,
+                    const Color(0xFFFF9800),
                   ),
                 ),
               ],
@@ -237,8 +267,8 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                   child: _buildStatCard(
                     'Dies completats',
                     '$completedDays/$totalDays',
-                    Icons.check_circle_outline,
-                    Colors.green,
+                    Icons.check_circle_rounded,
+                    const Color(0xFF43A047),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -246,8 +276,8 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                   child: _buildStatCard(
                     'Percentatge',
                     '${(progress * 100).round()}%',
-                    Icons.analytics,
-                    Colors.blue,
+                    Icons.analytics_rounded,
+                    const Color(0xFF1E88E5),
                   ),
                 ),
               ],
@@ -257,30 +287,39 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 
             const Text(
               "Progrés",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF1A2332)),
             ),
             const SizedBox(height: 10),
 
-            LinearProgressIndicator(
-              value: progress,
-              minHeight: 12,
-              color: bgIcons,
-              backgroundColor: bgIcons.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(6),
+            Container(
+              height: 12,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFF1E88E5).withOpacity(0.12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 12,
+                  backgroundColor: Colors.transparent,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
+                ),
+              ),
             ),
 
             const SizedBox(height: 24),
 
             const Text(
               "Aquesta setmana",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF1A2332)),
             ),
             const SizedBox(height: 10),
 
             _chartsLoading
                 ? const SizedBox(
                     height: 200,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5))),
                   )
                 : _weeklyData.isNotEmpty
                     ? WeeklyChart(days: _weeklyData)
@@ -290,14 +329,14 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 
             const Text(
               "Aquest mes",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF1A2332)),
             ),
             const SizedBox(height: 10),
 
             _chartsLoading
                 ? const SizedBox(
                     height: 200,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5))),
                   )
                 : _monthlyData.isNotEmpty
                     ? MonthlyChart(days: _monthlyData)
@@ -305,16 +344,16 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 
             const SizedBox(height: 24),
 
-              Text(
-                "Heatmap $_heatmapYear",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+            Text(
+              "Heatmap $_heatmapYear",
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF1A2332)),
+            ),
             const SizedBox(height: 10),
 
             _chartsLoading
                 ? const SizedBox(
                     height: 120,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5))),
                   )
                 : _heatmapData.isNotEmpty
                     ? HabitHeatmap(heatmapData: _heatmapData, year: _heatmapYear)
@@ -335,15 +374,16 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.check),
+                    : const Icon(Icons.check_rounded),
                 label: _loading
                     ? const Text('Marcant...')
                     : const Text("Marcar com feta avui"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: bgIcons,
-                  foregroundColor: white,
+                  backgroundColor: const Color(0xFF1E88E5),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 16),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
@@ -360,28 +400,40 @@ class _HabitDetailViewState extends State<HabitDetailView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(blurRadius: 8, color: Colors.black12),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(height: 10),
           Text(
             value,
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: Color(0xFF1A2332),
             ),
           ),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: Colors.grey[500],
             ),
           ),
         ],
@@ -393,13 +445,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
     return Container(
       height: 120,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: const Color(0xFFE3F2FD),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
         child: Text(
           message,
-          style: TextStyle(color: Colors.grey[500]),
+          style: const TextStyle(color: Color(0xFF1E88E5)),
         ),
       ),
     );

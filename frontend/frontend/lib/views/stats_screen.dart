@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../models/habitsProvider.dart';
-import '../widgets/SectionTitle.dart';
-import 'package:flowTracker/utils.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});
@@ -31,7 +29,7 @@ class _StatsScreenState extends State<StatsScreen> {
     final dashboardStats = provider.dashboardStats;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)));
     }
 
     final overallRate = dashboardStats['overallCompletionRate'] ?? 0;
@@ -39,46 +37,60 @@ class _StatsScreenState extends State<StatsScreen> {
     final longestStreak = dashboardStats['longestStreak'] ?? 0;
     final completedLogs = dashboardStats['completedLogs'] ?? 0;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Estadístiques'),
-      ),
-      body: habits.isEmpty
+    return Container(
+      color: const Color(0xFFF0F7FF),
+      child: habits.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.analytics_outlined, size: 64, color: Colors.grey[400]),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE3F2FD),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.analytics_outlined, size: 48, color: Color(0xFF1E88E5)),
+                  ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'No hi ha dades encara',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.grey,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1A2332),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Crea hàbits i marca\'ls per veure estadístiques',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                   ),
                 ],
               ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Text(
+                    'Estadístiques',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A2332),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
                         child: _summaryCard(
                           'Percentatge global',
                           '${overallRate.toStringAsFixed(1)}%',
-                          Icons.percent,
-                          bgIcons,
+                          Icons.percent_rounded,
+                          const Color(0xFF1E88E5),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -86,8 +98,8 @@ class _StatsScreenState extends State<StatsScreen> {
                         child: _summaryCard(
                           'Hàbits totals',
                           '$totalHabits',
-                          Icons.track_changes,
-                          Colors.blue,
+                          Icons.track_changes_rounded,
+                          const Color(0xFF43A047),
                         ),
                       ),
                     ],
@@ -99,8 +111,8 @@ class _StatsScreenState extends State<StatsScreen> {
                         child: _summaryCard(
                           'Ratxa màxima',
                           '$longestStreak dies',
-                          Icons.local_fire_department,
-                          Colors.orange,
+                          Icons.local_fire_department_rounded,
+                          const Color(0xFFFF9800),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -108,17 +120,24 @@ class _StatsScreenState extends State<StatsScreen> {
                         child: _summaryCard(
                           'Dies completats',
                           '$completedLogs',
-                          Icons.check_circle,
-                          Colors.green,
+                          Icons.check_circle_rounded,
+                          const Color(0xFFAB47BC),
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
 
-                  SectionTitle(title: 'Progrés per hàbit'),
-                  const SizedBox(height: 12),
+                  const Text(
+                    'Progrés per hàbit',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A2332),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
                   ...habits.map((habit) {
                     final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
@@ -127,105 +146,118 @@ class _StatsScreenState extends State<StatsScreen> {
                     final completed = stats['completedDays'] ?? 0;
                     final total = stats['totalDays'] ?? 0;
 
-                    return Card(
+                    return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF1E88E5).withOpacity(0.06),
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            habit['name'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1A2332),
+                            ),
+                          ),
+                          if ((habit['description'] ?? '').isNotEmpty)
                             Text(
-                              habit['name'] ?? '',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              habit['description'],
+                              style: const TextStyle(fontSize: 13, color: Color(0xFF546E7A)),
                             ),
-                            if ((habit['description'] ?? '').isNotEmpty)
-                              Text(
-                                habit['description'],
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            const SizedBox(height: 12),
+                          const SizedBox(height: 14),
 
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '$rate% completat',
-                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '$rate% completat',
+                                      style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(6),
+                                      child: LinearProgressIndicator(
+                                        value: rate / 100,
+                                        minHeight: 8,
+                                        backgroundColor: const Color(0xFF1E88E5).withOpacity(0.12),
+                                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
                                       ),
-                                      const SizedBox(height: 4),
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: LinearProgressIndicator(
-                                          value: rate / 100,
-                                          minHeight: 8,
-                                          backgroundColor: bgIcons.withOpacity(0.2),
-                                          color: bgIcons,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Column(
+                                children: [
+                                  Text(
+                                    '$completed/$total',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1A2332),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '$completed/$total',
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  const Text(
+                                    'dies',
+                                    style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(width: 16),
+                              Column(
+                                children: [
+                                  const Icon(
+                                    Icons.local_fire_department_rounded,
+                                    color: Color(0xFFFF9800),
+                                    size: 20,
+                                  ),
+                                  Text(
+                                    '$streak',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1A2332),
                                     ),
-                                    Text(
-                                      'dies',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 16),
-                                Column(
-                                  children: [
-                                    const Icon(
-                                      Icons.local_fire_department,
-                                      color: Colors.orange,
-                                      size: 20,
-                                    ),
-                                    Text(
-                                      '$streak',
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      'ratxa',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                                  ),
+                                  const Text(
+                                    'ratxa',
+                                    style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     );
                   }),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
 
-                  SectionTitle(title: 'Comparativa de ratxes'),
-                  const SizedBox(height: 12),
+                  const Text(
+                    'Comparativa de ratxes',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A2332),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
                   SizedBox(
                     height: 250,
@@ -242,28 +274,41 @@ class _StatsScreenState extends State<StatsScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(blurRadius: 8, color: Colors.black12),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(height: 12),
           Text(
             value,
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: Color(0xFF1A2332),
             ),
           ),
+          const SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: Colors.grey[500],
             ),
           ),
         ],
@@ -321,7 +366,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       labels[index]!,
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 9, color: Color(0xFF546E7A)),
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -335,8 +380,8 @@ class _StatsScreenState extends State<StatsScreen> {
               showTitles: true,
               reservedSize: 30,
               getTitlesWidget: (value, meta) {
-                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10));
-                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10));
+                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10, color: Color(0xFF546E7A)));
+                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10, color: Color(0xFF546E7A)));
               },
             ),
           ),
@@ -348,6 +393,12 @@ class _StatsScreenState extends State<StatsScreen> {
           show: true,
           drawVerticalLine: false,
           horizontalInterval: 1,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: const Color(0xFF1E88E5).withOpacity(0.08),
+              strokeWidth: 1,
+            );
+          },
         ),
         barGroups: spots.map((spot) {
           return BarChartGroupData(
@@ -355,7 +406,11 @@ class _StatsScreenState extends State<StatsScreen> {
             barRods: [
               BarChartRodData(
                 toY: spot.y,
-                color: bgIcons,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
                 width: 20,
                 borderRadius: BorderRadius.circular(4),
               ),

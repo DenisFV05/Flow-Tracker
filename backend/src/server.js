@@ -38,6 +38,7 @@ app.use((req, res, next) => {
     console.log(`[${readableTime}] ${req.method} ${req.originalUrl}`);
     next();
 });
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitsRoutes);
@@ -46,16 +47,27 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/friends', friendsRoutes);
 app.use('/api/feed', feedRoutes);
 
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
+    if (err.name === 'PrismaClientKnownRequestError') {
+        console.error('[PRISMA ERROR]', err.code, err.message);
+        return res.status(400).json({ error: 'Database error', code: err.code });
+    }
+    if (err.name === 'PrismaClientValidationError') {
+        console.error('[PRISMA VALIDATION ERROR]', err.message);
+        return res.status(400).json({ error: 'Invalid request data' });
+    }
+    console.error('[SERVER ERROR]', err.message);
     res.status(500).json({ error: 'Internal server error' });
 });
 
 // Start server
 app.listen(PORT, () => {
     const time = new Date().toLocaleTimeString('es-ES');
-
     console.log(`[${time}] Server running on port ${PORT}`);
 });
-
