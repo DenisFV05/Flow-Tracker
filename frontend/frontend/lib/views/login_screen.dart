@@ -1,6 +1,7 @@
 import 'package:flowTracker/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '../config/app_config.dart';
+import '../config/app_theme.dart';
 import 'mainScreen.dart';
 import 'crearCuentaScreen.dart';
 import 'inputEstil.dart';
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
+            colors: [AppTheme.primary, AppTheme.primaryDarker],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -111,12 +112,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+                            colors: [AppTheme.primary, AppTheme.primaryDark],
                           ),
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF1E88E5).withOpacity(0.3),
+                              color: AppTheme.primary.withOpacity(0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -134,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A2332),
+                          color: AppTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -142,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         'Inicia sessió per continuar',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF546E7A),
+                          color: AppTheme.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 28),
@@ -152,9 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: const InputDecoration(
                           labelText: 'URL del servidor',
                           hintText: 'http://localhost:3000',
-                          prefixIcon: Icon(Icons.dns_outlined, color: Color(0xFF1E88E5)),
+                          prefixIcon: Icon(Icons.dns_outlined, color: AppTheme.primary),
                           filled: true,
-                          fillColor: Color(0xFFF0F7FF),
+                          fillColor: AppTheme.background,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(12)),
                             borderSide: BorderSide.none,
@@ -172,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Correu",
                           "Introdueix el teu correu",
                         ).copyWith(
-                          prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF1E88E5)),
+                          prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primary),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) => value!.isEmpty ? 'Requerit' : null,
@@ -186,13 +187,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: inputEstil
                             .base("Contrasenya", "Introdueix la teva contrasenya")
                             .copyWith(
-                          prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF1E88E5)),
+                          prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primary),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _passwordVisible
                                   ? Icons.visibility
                                   : Icons.visibility_off,
-                              color: const Color(0xFF1E88E5),
+                              color: AppTheme.primary,
                             ),
                             onPressed: () {
                               setState(() {
@@ -212,12 +213,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(12),
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFEBEE),
+                            color: AppTheme.errorBg,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
                             _errorMessage,
-                            style: const TextStyle(color: Color(0xFFE53935), fontSize: 13),
+                            style: const TextStyle(color: AppTheme.error, fontSize: 13),
                           ),
                         ),
 
@@ -226,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E88E5),
+                            backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -262,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: const Text(
                           "No tens un compte? Crea'n un de gratuït",
-                          style: TextStyle(color: Color(0xFF1E88E5)),
+                          style: TextStyle(color: AppTheme.primary),
                         ),
                       ),
                     ],

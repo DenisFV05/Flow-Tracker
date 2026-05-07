@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../config/app_theme.dart';
 import '../models/habitsProvider.dart';
 
 class StatsScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _StatsScreenState extends State<StatsScreen> {
     final dashboardStats = provider.dashboardStats;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)));
+      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
     }
 
     final overallRate = dashboardStats['overallCompletionRate'] ?? 0;
@@ -38,7 +39,7 @@ class _StatsScreenState extends State<StatsScreen> {
     final completedLogs = dashboardStats['completedLogs'] ?? 0;
 
     return Container(
-      color: const Color(0xFFF0F7FF),
+      color: AppTheme.background,
       child: habits.isEmpty
           ? Center(
               child: Column(
@@ -47,10 +48,10 @@ class _StatsScreenState extends State<StatsScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE3F2FD),
+                      color: AppTheme.surfaceLight,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.analytics_outlined, size: 48, color: Color(0xFF1E88E5)),
+                    child: const Icon(Icons.analytics_outlined, size: 48, color: AppTheme.primary),
                   ),
                   const SizedBox(height: 16),
                   const Text(
@@ -58,7 +59,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A2332),
+                      color: AppTheme.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -79,7 +80,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A2332),
+                      color: AppTheme.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -90,7 +91,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           'Percentatge global',
                           '${overallRate.toStringAsFixed(1)}%',
                           Icons.percent_rounded,
-                          const Color(0xFF1E88E5),
+                          AppTheme.primary,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -99,7 +100,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           'Hàbits totals',
                           '$totalHabits',
                           Icons.track_changes_rounded,
-                          const Color(0xFF43A047),
+                          AppTheme.success,
                         ),
                       ),
                     ],
@@ -112,7 +113,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           'Ratxa màxima',
                           '$longestStreak dies',
                           Icons.local_fire_department_rounded,
-                          const Color(0xFFFF9800),
+                          AppTheme.warning,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -121,7 +122,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           'Dies completats',
                           '$completedLogs',
                           Icons.check_circle_rounded,
-                          const Color(0xFFAB47BC),
+                          AppTheme.purple,
                         ),
                       ),
                     ],
@@ -134,7 +135,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A2332),
+                      color: AppTheme.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -154,7 +155,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF1E88E5).withOpacity(0.06),
+                            color: AppTheme.primary.withOpacity(0.06),
                             blurRadius: 12,
                             offset: const Offset(0, 2),
                           ),
@@ -168,13 +169,13 @@ class _StatsScreenState extends State<StatsScreen> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF1A2332),
+                              color: AppTheme.textPrimary,
                             ),
                           ),
                           if ((habit['description'] ?? '').isNotEmpty)
                             Text(
                               habit['description'],
-                              style: const TextStyle(fontSize: 13, color: Color(0xFF546E7A)),
+                              style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
                             ),
                           const SizedBox(height: 14),
 
@@ -186,7 +187,7 @@ class _StatsScreenState extends State<StatsScreen> {
                                   children: [
                                     Text(
                                       '$rate% completat',
-                                      style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+                                      style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
                                     ),
                                     const SizedBox(height: 6),
                                     ClipRRect(
@@ -194,8 +195,8 @@ class _StatsScreenState extends State<StatsScreen> {
                                       child: LinearProgressIndicator(
                                         value: rate / 100,
                                         minHeight: 8,
-                                        backgroundColor: const Color(0xFF1E88E5).withOpacity(0.12),
-                                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
+                                        backgroundColor: AppTheme.primary.withOpacity(0.12),
+                                        valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
                                       ),
                                     ),
                                   ],
@@ -209,12 +210,12 @@ class _StatsScreenState extends State<StatsScreen> {
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1A2332),
+                                      color: AppTheme.textPrimary,
                                     ),
                                   ),
                                   const Text(
                                     'dies',
-                                    style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+                                    style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                                   ),
                                 ],
                               ),
@@ -223,7 +224,7 @@ class _StatsScreenState extends State<StatsScreen> {
                                 children: [
                                   const Icon(
                                     Icons.local_fire_department_rounded,
-                                    color: Color(0xFFFF9800),
+                                    color: AppTheme.warning,
                                     size: 20,
                                   ),
                                   Text(
@@ -231,12 +232,12 @@ class _StatsScreenState extends State<StatsScreen> {
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1A2332),
+                                      color: AppTheme.textPrimary,
                                     ),
                                   ),
                                   const Text(
                                     'ratxa',
-                                    style: TextStyle(fontSize: 12, color: Color(0xFF546E7A)),
+                                    style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                                   ),
                                 ],
                               ),
@@ -254,7 +255,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A2332),
+                      color: AppTheme.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -300,7 +301,7 @@ class _StatsScreenState extends State<StatsScreen> {
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A2332),
+              color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
@@ -366,7 +367,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       labels[index]!,
-                      style: const TextStyle(fontSize: 9, color: Color(0xFF546E7A)),
+                      style: const TextStyle(fontSize: 9, color: AppTheme.textSecondary),
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -380,8 +381,8 @@ class _StatsScreenState extends State<StatsScreen> {
               showTitles: true,
               reservedSize: 30,
               getTitlesWidget: (value, meta) {
-                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10, color: Color(0xFF546E7A)));
-                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10, color: Color(0xFF546E7A)));
+                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10, color: AppTheme.textSecondary));
+                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary));
               },
             ),
           ),
@@ -395,7 +396,7 @@ class _StatsScreenState extends State<StatsScreen> {
           horizontalInterval: 1,
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: const Color(0xFF1E88E5).withOpacity(0.08),
+              color: AppTheme.primary.withOpacity(0.08),
               strokeWidth: 1,
             );
           },
@@ -407,7 +408,7 @@ class _StatsScreenState extends State<StatsScreen> {
               BarChartRodData(
                 toY: spot.y,
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+                  colors: [AppTheme.primary, AppTheme.primaryDark],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),

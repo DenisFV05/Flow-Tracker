@@ -2,6 +2,7 @@ import 'package:flowTracker/views/editarHabit.dart';
 import 'package:flowTracker/widgets/habits/HabitDetailView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../config/app_theme.dart';
 
 import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
@@ -42,12 +43,12 @@ class _DashboardViewState extends State<DashboardView> {
     final habitStats = provider.habitStats;
 
     return Container(
-      color: const Color(0xFFF0F7FF),
+      color: AppTheme.background,
       child: RefreshIndicator(
         onRefresh: _refresh,
-        color: const Color(0xFF1E88E5),
+        color: AppTheme.primary,
         child: loading && habits.isEmpty
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)))
+            ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -86,7 +87,7 @@ class _DashboardViewState extends State<DashboardView> {
                                       style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF1A2332),
+                                        color: AppTheme.textPrimary,
                                       ),
                                     ),
                                     const SizedBox(height: 16),
@@ -108,7 +109,7 @@ class _DashboardViewState extends State<DashboardView> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF1A2332),
+                                color: AppTheme.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -139,14 +140,14 @@ class _DashboardViewState extends State<DashboardView> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
+          colors: [AppTheme.primary, AppTheme.primaryDarker],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.3),
+            color: AppTheme.primary.withOpacity(0.3),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -207,13 +208,13 @@ class _DashboardViewState extends State<DashboardView> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A2332),
+                color: AppTheme.textPrimary,
               ),
             ),
             TextButton.icon(
               onPressed: () => showCrearHabitPopup(context),
-              icon: const Icon(Icons.add_circle_outline, size: 20, color: Color(0xFF1E88E5)),
-              label: const Text('Afegir', style: TextStyle(color: Color(0xFF1E88E5))),
+              icon: const Icon(Icons.add_circle_outline, size: 20, color: AppTheme.primary),
+              label: const Text('Afegir', style: TextStyle(color: AppTheme.primary)),
             ),
           ],
         ),
@@ -233,7 +234,7 @@ class _DashboardViewState extends State<DashboardView> {
                 progress: progress,
                 streak: stats['currentStreak'] ?? 0,
                 tags: habit['tags'] ?? [],
-                color: const Color(0xFF1E88E5),
+                color: AppTheme.primary,
 
                 onTap: () {
                   Navigator.push(
@@ -282,7 +283,7 @@ class _DashboardViewState extends State<DashboardView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -293,10 +294,10 @@ class _DashboardViewState extends State<DashboardView> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFE3F2FD),
+              color: AppTheme.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.track_changes_rounded, size: 40, color: Color(0xFF1E88E5)),
+            child: const Icon(Icons.track_changes_rounded, size: 40, color: AppTheme.primary),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -304,7 +305,7 @@ class _DashboardViewState extends State<DashboardView> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1A2332),
+              color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -319,7 +320,7 @@ class _DashboardViewState extends State<DashboardView> {
             icon: const Icon(Icons.add, size: 18),
             label: const Text('Crear hàbit'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E88E5),
+              backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

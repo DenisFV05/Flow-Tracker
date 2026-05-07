@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'config/app_config.dart';
+import 'config/app_theme.dart';
 import 'views/login_screen.dart';
 
 class ExampleSidebarX extends StatelessWidget {
@@ -15,7 +16,7 @@ class ExampleSidebarX extends StatelessWidget {
       theme: SidebarXTheme(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A2332),
+          color: AppTheme.textPrimary,
           borderRadius: BorderRadius.circular(20),
         ),
         hoverColor: const Color(0xFF2A3547),
@@ -30,13 +31,13 @@ class ExampleSidebarX extends StatelessWidget {
         selectedItemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: const LinearGradient(
-            colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+            colors: [AppTheme.primary, AppTheme.primaryDark],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1E88E5).withOpacity(0.3),
+              color: AppTheme.primary.withOpacity(0.3),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -53,7 +54,7 @@ class ExampleSidebarX extends StatelessWidget {
       ),
       extendedTheme: const SidebarXTheme(
         width: 220,
-        decoration: BoxDecoration(color: Color(0xFF1A2332)),
+        decoration: BoxDecoration(color: AppTheme.textPrimary),
       ),
       footerDivider: Divider(color: Colors.white.withOpacity(0.1), height: 1),
       headerBuilder: (context, extended) => SizedBox(
@@ -68,12 +69,12 @@ class ExampleSidebarX extends StatelessWidget {
                   padding: EdgeInsets.all(extended ? 8 : 4),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF1E88E5), Color(0xFF1976D2)],
+                      colors: [AppTheme.primary, AppTheme.primaryDark],
                     ),
                     borderRadius: BorderRadius.circular(extended ? 12 : 8),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF1E88E5).withOpacity(0.4),
+                        color: AppTheme.primary.withOpacity(0.4),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -122,12 +123,12 @@ class ExampleSidebarX extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Tancar sessió', style: TextStyle(color: Color(0xFF1A2332))),
+        title: const Text('Tancar sessió', style: TextStyle(color: AppTheme.textPrimary)),
         content: const Text('Segur que vols tancar la sessió?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel·lar', style: TextStyle(color: Color(0xFF1E88E5))),
+            child: const Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -141,7 +142,7 @@ class ExampleSidebarX extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E88E5),
+              backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),

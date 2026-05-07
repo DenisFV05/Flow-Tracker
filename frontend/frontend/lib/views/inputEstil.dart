@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_theme.dart';
 
 class inputEstil {
   static InputDecoration base(String label, String hint) {
@@ -6,7 +7,7 @@ class inputEstil {
       labelText: label,
       hintText: hint,
       filled: true,
-      fillColor: const Color(0xFFF0F7FF),
+      fillColor: AppTheme.background,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,

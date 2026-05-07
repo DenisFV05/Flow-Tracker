@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../config/app_theme.dart';
 import '../services/friends_service.dart';
 import 'inputEstil.dart';
 import 'friendProfileView.dart';
@@ -57,7 +58,7 @@ class _AmicsViewState extends State<AmicsView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Sol·licitud enviada!'),
-            backgroundColor: const Color(0xFF1E88E5),
+            backgroundColor: AppTheme.primary,
           ),
         );
       }
@@ -99,9 +100,9 @@ class _AmicsViewState extends State<AmicsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F7FF),
+      backgroundColor: AppTheme.background,
       body: loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
           : error != null
               ? Center(
                   child: Column(
@@ -119,7 +120,7 @@ class _AmicsViewState extends State<AmicsView> {
                       ElevatedButton(
                         onPressed: _loadData,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E88E5),
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -131,7 +132,7 @@ class _AmicsViewState extends State<AmicsView> {
                 )
               : RefreshIndicator(
                   onRefresh: _loadData,
-                  color: const Color(0xFF1E88E5),
+                  color: AppTheme.primary,
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -177,13 +178,13 @@ class _AmicsViewState extends State<AmicsView> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A2332),
+                color: AppTheme.textPrimary,
               ),
             ),
             TextButton.icon(
               onPressed: _showSearchDialog,
-              icon: const Icon(Icons.person_add, size: 18, color: Color(0xFF1E88E5)),
-              label: const Text('Afegir', style: TextStyle(color: Color(0xFF1E88E5))),
+              icon: const Icon(Icons.person_add, size: 18, color: AppTheme.primary),
+              label: const Text('Afegir', style: TextStyle(color: AppTheme.primary)),
             ),
           ],
         ),
@@ -208,7 +209,7 @@ class _AmicsViewState extends State<AmicsView> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1A2332),
+            color: AppTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
@@ -240,7 +241,7 @@ class _AmicsViewState extends State<AmicsView> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1E88E5).withOpacity(0.06),
+              color: AppTheme.primary.withOpacity(0.06),
               blurRadius: 12,
               offset: const Offset(0, 2),
             ),
@@ -250,13 +251,13 @@ class _AmicsViewState extends State<AmicsView> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           leading: CircleAvatar(
             radius: 22,
-            backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
+            backgroundColor: AppTheme.primary.withOpacity(0.1),
             backgroundImage: user['avatar'] != null ? NetworkImage(user['avatar']) : null,
             child: user['avatar'] == null
                 ? Text(
                     user['name']?[0]?.toUpperCase() ?? '?',
                     style: const TextStyle(
-                      color: Color(0xFF1E88E5),
+                      color: AppTheme.primary,
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
                     ),
@@ -265,7 +266,7 @@ class _AmicsViewState extends State<AmicsView> {
           ),
           title: Text(
             user['name'] ?? '',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF1A2332)),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary),
           ),
           subtitle: Text(
             '@${user['username'] ?? ''}',
@@ -280,7 +281,7 @@ class _AmicsViewState extends State<AmicsView> {
             ),
             child: const Text(
               'Eliminar',
-              style: TextStyle(color: Color(0xFFE53935), fontSize: 13, fontWeight: FontWeight.w500),
+              style: TextStyle(color: AppTheme.error, fontSize: 13, fontWeight: FontWeight.w500),
             ),
           ),
         ),
@@ -296,7 +297,7 @@ class _AmicsViewState extends State<AmicsView> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -306,11 +307,11 @@ class _AmicsViewState extends State<AmicsView> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: CircleAvatar(
           radius: 22,
-          backgroundColor: const Color(0xFFE3F2FD),
+          backgroundColor: AppTheme.surfaceLight,
           child: Text(
             user['name']?[0]?.toUpperCase() ?? '?',
             style: const TextStyle(
-              color: Color(0xFF1E88E5),
+              color: AppTheme.primary,
               fontWeight: FontWeight.w700,
               fontSize: 16,
             ),
@@ -318,7 +319,7 @@ class _AmicsViewState extends State<AmicsView> {
         ),
         title: Text(
           user['name'] ?? '',
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF1A2332)),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary),
         ),
         subtitle: Text(
           '@${user['username'] ?? ''}',
@@ -329,11 +330,11 @@ class _AmicsViewState extends State<AmicsView> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: AppTheme.successBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.check, size: 20, color: Color(0xFF43A047)),
+                icon: const Icon(Icons.check, size: 20, color: AppTheme.success),
                 onPressed: () => _respondRequest(id, 'accept'),
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
@@ -341,11 +342,11 @@ class _AmicsViewState extends State<AmicsView> {
             const SizedBox(width: 8),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFFFEBEE),
+                color: AppTheme.errorBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.close, size: 20, color: Color(0xFFE53935)),
+                icon: const Icon(Icons.close, size: 20, color: AppTheme.error),
                 onPressed: () => _respondRequest(id, 'reject'),
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
@@ -365,7 +366,7 @@ class _AmicsViewState extends State<AmicsView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -376,15 +377,15 @@ class _AmicsViewState extends State<AmicsView> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFE3F2FD),
+              color: AppTheme.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.people_outline, size: 40, color: Color(0xFF1E88E5)),
+            child: const Icon(Icons.people_outline, size: 40, color: AppTheme.primary),
           ),
           const SizedBox(height: 16),
           const Text(
             'Encara no tens amics',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
           ),
           const SizedBox(height: 8),
           Text(
@@ -397,7 +398,7 @@ class _AmicsViewState extends State<AmicsView> {
             icon: const Icon(Icons.search, size: 18),
             label: const Text('Cercar'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E88E5),
+              backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -417,7 +418,7 @@ class _AmicsViewState extends State<AmicsView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -428,15 +429,15 @@ class _AmicsViewState extends State<AmicsView> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFE3F2FD),
+              color: AppTheme.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.mail_outline, size: 40, color: Color(0xFF1E88E5)),
+            child: const Icon(Icons.mail_outline, size: 40, color: AppTheme.primary),
           ),
           const SizedBox(height: 16),
           const Text(
             'Cap sol·licitud',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
           ),
           const SizedBox(height: 8),
           Text(
@@ -467,16 +468,16 @@ class _AmicsViewState extends State<AmicsView> {
                   children: [
                     const Text(
                       'Cercar usuari',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A2332)),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller,
                       decoration: InputDecoration(
                         hintText: 'Escriu el username',
-                        prefixIcon: const Icon(Icons.search, color: Color(0xFF1E88E5)),
+                        prefixIcon: const Icon(Icons.search, color: AppTheme.primary),
                         filled: true,
-                        fillColor: const Color(0xFFF0F7FF),
+                        fillColor: AppTheme.background,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -504,7 +505,7 @@ class _AmicsViewState extends State<AmicsView> {
                     if (searching)
                       const SizedBox(
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1E88E5)),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary),
                       )
                     else if (searchResults.isNotEmpty)
                       SizedBox(
@@ -519,11 +520,11 @@ class _AmicsViewState extends State<AmicsView> {
                             return ListTile(
                               contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                               leading: CircleAvatar(
-                                backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
+                                backgroundColor: AppTheme.primary.withOpacity(0.1),
                                 child: Text(
                                   user['name']?[0]?.toUpperCase() ?? '?',
                                   style: const TextStyle(
-                                    color: Color(0xFF1E88E5),
+                                    color: AppTheme.primary,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -531,16 +532,16 @@ class _AmicsViewState extends State<AmicsView> {
                               title: Text(user['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w500)),
                               subtitle: Text('@${user['username'] ?? ''}', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
                               trailing: isFriend
-                                  ? const Icon(Icons.check_circle, color: Color(0xFF43A047), size: 20)
+                                  ? const Icon(Icons.check_circle, color: AppTheme.success, size: 20)
                                   : requestSent
-                                      ? const Text('Enviat', style: TextStyle(color: Color(0xFF1E88E5), fontSize: 13, fontWeight: FontWeight.w500))
+                                      ? const Text('Enviat', style: TextStyle(color: AppTheme.primary, fontSize: 13, fontWeight: FontWeight.w500))
                                       : TextButton(
                                           onPressed: () {
                                             _sendRequest(user['username']);
                                             Navigator.pop(context);
                                           },
                                           style: TextButton.styleFrom(
-                                            backgroundColor: const Color(0xFF1E88E5),
+                                            backgroundColor: AppTheme.primary,
                                             foregroundColor: Colors.white,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -556,7 +557,7 @@ class _AmicsViewState extends State<AmicsView> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Tancar', style: TextStyle(color: Color(0xFF1E88E5))),
+                        child: const Text('Tancar', style: TextStyle(color: AppTheme.primary)),
                       ),
                     ),
                   ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/app_theme.dart';
 
 class HabitCard extends StatelessWidget {
   final String title;
@@ -116,7 +117,7 @@ class HabitCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A2332),
+                color: AppTheme.textPrimary,
               ),
             ),
 
@@ -126,7 +127,7 @@ class HabitCard extends StatelessWidget {
               subtitle,
               style: const TextStyle(
                 fontSize: 13,
-                color: Color(0xFF546E7A),
+                color: AppTheme.textSecondary,
               ),
             ),
 
@@ -141,12 +142,12 @@ class HabitCard extends StatelessWidget {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE3F2FD),
+                      color: AppTheme.surfaceLight,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       name,
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF1E88E5), fontWeight: FontWeight.w500),
+                      style: const TextStyle(fontSize: 11, color: AppTheme.primary, fontWeight: FontWeight.w500),
                     ),
                   );
                 }).toList(),
@@ -159,11 +160,11 @@ class HabitCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFF9800), size: 18),
+                    const Icon(Icons.local_fire_department_rounded, color: AppTheme.warning, size: 18),
                     const SizedBox(width: 4),
                     Text(
                       '$streak',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF1A2332)),
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.textPrimary),
                     ),
                   ],
                 ),

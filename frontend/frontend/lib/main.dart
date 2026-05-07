@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'views/login_screen.dart';
 import 'views/mainScreen.dart';
 import 'config/app_config.dart';
+import 'config/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'models/habitsProvider.dart';
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flow Tracker',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E88E5)),
+          colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primary),
           useMaterial3: true,
         ),
         home: const SplashScreen(),

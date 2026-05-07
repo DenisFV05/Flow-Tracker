@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_theme.dart';
 import '../sidebar.dart';
 import '../screens.dart';
 import 'package:sidebarx/sidebarx.dart';
@@ -49,7 +50,7 @@ class MainScreen extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.local_fire_department_rounded,
-                        color: Color(0xFF1E88E5),
+                        color: AppTheme.primary,
                         size: 24,
                       ),
                       const SizedBox(width: 8),

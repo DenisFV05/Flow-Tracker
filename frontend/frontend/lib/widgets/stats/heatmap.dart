@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:collection';
+import '../../config/app_theme.dart';
 
 class HabitHeatmap extends StatelessWidget {
   final List<dynamic> heatmapData;
@@ -24,7 +25,7 @@ class HabitHeatmap extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -35,7 +36,7 @@ class HabitHeatmap extends StatelessWidget {
         children: [
           Text(
             'Heatmap $year',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
           ),
           const SizedBox(height: 12),
           _buildHeatmap(dataMap),
@@ -81,7 +82,7 @@ class HabitHeatmap extends StatelessWidget {
                 height: 14,
                 margin: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  color: day.completed ? const Color(0xFF1E88E5) : Colors.grey[200],
+                  color: day.completed ? AppTheme.primary : Colors.grey[200],
                   borderRadius: BorderRadius.circular(3),
                 ),
               );
@@ -95,11 +96,11 @@ class HabitHeatmap extends StatelessWidget {
   Widget _buildLegend() {
     return Row(
       children: [
-        Container(width: 14, height: 14, color: const Color(0xFF1E88E5), margin: const EdgeInsets.only(right: 4)),
-        const Text('Completat', style: TextStyle(fontSize: 12, color: Color(0xFF546E7A))),
+        Container(width: 14, height: 14, color: AppTheme.primary, margin: const EdgeInsets.only(right: 4)),
+        const Text('Completat', style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
         const SizedBox(width: 16),
         Container(width: 14, height: 14, color: Colors.grey[200]!, margin: const EdgeInsets.only(right: 4)),
-        const Text('No completat', style: TextStyle(fontSize: 12, color: Color(0xFF546E7A))),
+        const Text('No completat', style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
       ],
     );
   }

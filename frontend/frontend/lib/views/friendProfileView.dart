@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_theme.dart';
 import '../services/friends_service.dart';
 
 class FriendProfileView extends StatefulWidget {
@@ -55,21 +56,21 @@ class _FriendProfileViewState extends State<FriendProfileView> {
     final avatar = user['avatar'] as String?;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F7FF),
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1A2332)),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           name,
-          style: const TextStyle(color: Color(0xFF1A2332), fontWeight: FontWeight.w600),
+          style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w600),
         ),
       ),
       body: loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5)))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
           : error != null
               ? Center(
                   child: Column(
@@ -78,15 +79,15 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
-                          color: Color(0xFFFFEBEE),
+                          color: AppTheme.errorBg,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFFE53935)),
+                        child: const Icon(Icons.error_outline_rounded, size: 48, color: AppTheme.error),
                       ),
                       const SizedBox(height: 16),
                       const Text(
                         'No s\'han pogut carregar les dades',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
                       ),
                       const SizedBox(height: 8),
                       Padding(
@@ -103,7 +104,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                         icon: const Icon(Icons.refresh_rounded, size: 18),
                         label: const Text('Reintentar'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E88E5),
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -133,7 +134,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -145,18 +146,18 @@ class _FriendProfileViewState extends State<FriendProfileView> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF1E88E5), width: 2),
+              border: Border.all(color: AppTheme.primary, width: 2),
             ),
             child: CircleAvatar(
               radius: 48,
-              backgroundColor: const Color(0xFFE3F2FD),
+              backgroundColor: AppTheme.surfaceLight,
               backgroundImage: avatar != null && avatar.startsWith('http')
                   ? NetworkImage(avatar)
                   : null,
               child: (avatar == null || !avatar.startsWith('http'))
                   ? Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(fontSize: 32, color: Color(0xFF1E88E5), fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),
                     )
                   : null,
             ),
@@ -164,7 +165,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
           const SizedBox(height: 16),
           Text(
             name,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1A2332)),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
           ),
           const SizedBox(height: 4),
           Text(
@@ -189,7 +190,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -200,15 +201,15 @@ class _FriendProfileViewState extends State<FriendProfileView> {
         children: [
           const Text(
             'Estadístiques',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF1A2332)),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
           ),
           const SizedBox(height: 16),
-          _statRow(Icons.track_changes_rounded, 'Hàbits totals', '$totalHabits', const Color(0xFF1E88E5)),
+          _statRow(Icons.track_changes_rounded, 'Hàbits totals', '$totalHabits', AppTheme.primary),
           const SizedBox(height: 12),
-          _statRow(Icons.check_circle_rounded, 'Dies completats', '$completedLogs', const Color(0xFF43A047)),
+          _statRow(Icons.check_circle_rounded, 'Dies completats', '$completedLogs', AppTheme.success),
           const SizedBox(height: 12),
-          _statRow(Icons.local_fire_department_rounded, 'Ratxa màxima', '$longestStreak dies', const Color(0xFFFF9800)),
-          _statRow(Icons.percent_rounded, 'Percentatge global', '${rate.toStringAsFixed(1)}%', const Color(0xFFAB47BC)),
+          _statRow(Icons.local_fire_department_rounded, 'Ratxa màxima', '$longestStreak dies', AppTheme.warning),
+          _statRow(Icons.percent_rounded, 'Percentatge global', '${rate.toStringAsFixed(1)}%', AppTheme.purple),
         ],
       ),
     );
@@ -220,7 +221,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
         Icon(icon, size: 20, color: color),
         const SizedBox(width: 10),
         Expanded(child: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14))),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF1A2332))),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary)),
       ],
     );
   }

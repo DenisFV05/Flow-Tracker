@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_theme.dart';
 import '../services/feed_service.dart';
 
 class FeedView extends StatefulWidget {
@@ -61,7 +62,7 @@ class _FeedViewState extends State<FeedView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Publicació creat!'),
-            backgroundColor: const Color(0xFF1E88E5),
+            backgroundColor: AppTheme.primary,
           ),
         );
       }
@@ -130,14 +131,14 @@ class _FeedViewState extends State<FeedView> {
   Widget build(BuildContext context) {
     if (loading) {
       return Container(
-        color: const Color(0xFFF0F7FF),
-        child: const Center(child: CircularProgressIndicator(color: Color(0xFF1E88E5))),
+        color: AppTheme.background,
+        child: const Center(child: CircularProgressIndicator(color: AppTheme.primary)),
       );
     }
 
     if (error != null) {
       return Container(
-        color: const Color(0xFFF0F7FF),
+        color: AppTheme.background,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -145,10 +146,10 @@ class _FeedViewState extends State<FeedView> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFE3F2FD),
+                  color: AppTheme.surfaceLight,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.signal_wifi_off_rounded, size: 48, color: Color(0xFF1E88E5)),
+                child: const Icon(Icons.signal_wifi_off_rounded, size: 48, color: AppTheme.primary),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -156,7 +157,7 @@ class _FeedViewState extends State<FeedView> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A2332),
+                  color: AppTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -171,7 +172,7 @@ class _FeedViewState extends State<FeedView> {
                 icon: const Icon(Icons.refresh, size: 18),
                 label: const Text('Reintentar'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E88E5),
+                  backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -184,7 +185,7 @@ class _FeedViewState extends State<FeedView> {
     }
 
     return Container(
-      color: const Color(0xFFF0F7FF),
+      color: AppTheme.background,
       child: Column(
         children: [
           _buildPostComposer(),
@@ -197,10 +198,10 @@ class _FeedViewState extends State<FeedView> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFE3F2FD),
+                            color: AppTheme.surfaceLight,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.feed_rounded, size: 48, color: Color(0xFF1E88E5)),
+                          child: const Icon(Icons.feed_rounded, size: 48, color: AppTheme.primary),
                         ),
                         const SizedBox(height: 16),
                         const Text(
@@ -208,7 +209,7 @@ class _FeedViewState extends State<FeedView> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1A2332),
+                            color: AppTheme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -222,7 +223,7 @@ class _FeedViewState extends State<FeedView> {
                   )
                 : RefreshIndicator(
                     onRefresh: _loadFeed,
-                    color: const Color(0xFF1E88E5),
+                    color: AppTheme.primary,
                     child: ListView.builder(
                       padding: const EdgeInsets.all(20),
                       itemCount: posts.length,
@@ -239,7 +240,7 @@ class _FeedViewState extends State<FeedView> {
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF1E88E5).withOpacity(0.06),
+                                color: AppTheme.primary.withOpacity(0.06),
                                 blurRadius: 12,
                                 offset: const Offset(0, 2),
                               ),
@@ -252,7 +253,7 @@ class _FeedViewState extends State<FeedView> {
                               children: [
                                 CircleAvatar(
                                   radius: 24,
-                                  backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
+                                  backgroundColor: AppTheme.primary.withOpacity(0.1),
                                   backgroundImage: user['avatar'] != null
                                       ? NetworkImage(user['avatar'])
                                       : null,
@@ -264,7 +265,7 @@ class _FeedViewState extends State<FeedView> {
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            color: Color(0xFF1E88E5),
+                                            color: AppTheme.primary,
                                           ),
                                         )
                                       : null,
@@ -282,7 +283,7 @@ class _FeedViewState extends State<FeedView> {
                                               style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w600,
-                                                color: Color(0xFF1A2332),
+                                                color: AppTheme.textPrimary,
                                               ),
                                             ),
                                           ),
@@ -290,14 +291,14 @@ class _FeedViewState extends State<FeedView> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFFE3F2FD),
+                                                color: AppTheme.surfaceLight,
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
                                               child: const Text(
                                                 'Tu',
                                                 style: TextStyle(
                                                   fontSize: 10,
-                                                  color: Color(0xFF1E88E5),
+                                                  color: AppTheme.primary,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
@@ -320,7 +321,7 @@ class _FeedViewState extends State<FeedView> {
                                         style: const TextStyle(
                                           fontSize: 14,
                                           height: 1.4,
-                                          color: Color(0xFF374151),
+                                          color: AppTheme.textDark,
                                         ),
                                       ),
                                     ],
@@ -334,7 +335,7 @@ class _FeedViewState extends State<FeedView> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                                     child: Icon(
                                       liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                      color: liked ? const Color(0xFFE53935) : Colors.grey[400],
+                                      color: liked ? AppTheme.error : Colors.grey[400],
                                       size: 22,
                                     ),
                                   ),
@@ -359,7 +360,7 @@ class _FeedViewState extends State<FeedView> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E88E5).withOpacity(0.06),
+            color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -368,8 +369,8 @@ class _FeedViewState extends State<FeedView> {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
-            child: const Icon(Icons.edit_note_rounded, color: Color(0xFF1E88E5), size: 20),
+            backgroundColor: AppTheme.primary.withOpacity(0.1),
+            child: const Icon(Icons.edit_note_rounded, color: AppTheme.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -378,7 +379,7 @@ class _FeedViewState extends State<FeedView> {
               decoration: InputDecoration(
                 hintText: 'Comparteix el teu progrés...',
                 filled: true,
-                fillColor: const Color(0xFFF0F7FF),
+                fillColor: AppTheme.background,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
@@ -393,7 +394,7 @@ class _FeedViewState extends State<FeedView> {
           const SizedBox(width: 8),
           IconButton(
             onPressed: _createPost,
-            icon: const Icon(Icons.send_rounded, color: Color(0xFF1E88E5)),
+            icon: const Icon(Icons.send_rounded, color: AppTheme.primary),
           ),
         ],
       ),
@@ -416,13 +417,13 @@ class _FeedViewState extends State<FeedView> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.emoji_events_rounded, size: 12, color: Color(0xFFFF9800)),
+            const Icon(Icons.emoji_events_rounded, size: 12, color: AppTheme.warning),
             const SizedBox(width: 4),
             Text(
               'Assoliment: $habitName',
               style: const TextStyle(
                 fontSize: 11,
-                color: Color(0xFFFF9800),
+                color: AppTheme.warning,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -434,14 +435,14 @@ class _FeedViewState extends State<FeedView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFE3F2FD),
+        color: AppTheme.surfaceLight,
         borderRadius: BorderRadius.circular(6),
       ),
       child: const Text(
         'Publicació',
         style: TextStyle(
           fontSize: 11,
-          color: Color(0xFF1E88E5),
+          color: AppTheme.primary,
           fontWeight: FontWeight.w500,
         ),
       ),
