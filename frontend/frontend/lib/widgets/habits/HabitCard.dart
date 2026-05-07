@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flowTracker/utils.dart';
+import '../../config/app_theme.dart';
+
 class HabitCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -10,7 +11,6 @@ class HabitCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-
   const HabitCard({
     super.key,
     required this.title,
@@ -22,6 +22,7 @@ class HabitCard extends StatelessWidget {
     this.onTap,
     this.onEdit,
     this.onDelete,
+
   });
 
   @override
@@ -30,25 +31,24 @@ class HabitCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, 4),
+              color: color.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// TITLE + 3 DOTS
-            Row(
+                        Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
@@ -112,48 +112,33 @@ class HabitCard extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 4),
 
-            /// SUBTITLE
             Text(
               subtitle,
               style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+                fontSize: 13,
+                color: AppTheme.textSecondary,
               ),
             ),
 
             const SizedBox(height: 12),
 
-            /// TAGS
             if (tags.isNotEmpty)
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: tags.map((tag) {
-                  final name =
-                      tag is Map ? tag['name'] ?? '' : tag.toString();
-
+                  final name = tag is Map ? tag['name'] ?? '' : tag.toString();
                   return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: bgIcons.withOpacity(0.10),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: bgIcons.withOpacity(0.25),
-                      ),
+                      color: AppTheme.surfaceLight,
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       name,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: bgIcons,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: const TextStyle(fontSize: 11, color: AppTheme.primary, fontWeight: FontWeight.w500),
                     ),
                   );
                 }).toList(),
@@ -161,86 +146,42 @@ class HabitCard extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            /// STREAK
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(
-                  Icons.local_fire_department_outlined,
-                  size: 18,
-                  color: bgIcons,
+                Row(
+                  children: [
+                    const Icon(Icons.local_fire_department_rounded, color: AppTheme.warning, size: 18),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$streak',
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.textPrimary),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 6),
                 Text(
-                  "$streak days",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
+                  '$percentage%',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                     fontSize: 14,
+                    color: color,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
-            /// PROGRESS BAR
             ClipRRect(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: progress,
+                color: color,
+                backgroundColor: color.withOpacity(0.12),
                 minHeight: 6,
-                backgroundColor: bgIcons.withOpacity(0.15),
-                valueColor: AlwaysStoppedAnimation(bgIcons),
               ),
             ),
-
-            const SizedBox(height: 14),
-
-            /// WEEK DAYS CIRCLES
-            Row(
-              children: List.generate(7, (index) {
-                final completed = index < (progress * 7).round();
-
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: CircleAvatar(
-                    radius: 11,
-                    backgroundColor:
-                        completed ? bgIcons : Colors.grey.shade200,
-                    child: completed
-                        ? const Icon(
-                            Icons.check,
-                            size: 14,
-                            color: Colors.white,
-                          )
-                        : null,
-                  ),
-                );
-              }),
-            ),
-
-            const SizedBox(height: 6),
-
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DayLabel extends StatelessWidget {
-  final String text;
-
-  const _DayLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 14),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 11,
-          color: Colors.grey,
         ),
       ),
     );

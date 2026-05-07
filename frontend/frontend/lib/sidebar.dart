@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
-import 'utils.dart';
+import 'config/app_config.dart';
+import 'config/app_theme.dart';
+import 'views/login_screen.dart';
 
-class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sidebarx/example
+class ExampleSidebarX extends StatelessWidget {
   const ExampleSidebarX({super.key, required this.controller});
 
   final SidebarXController controller;
@@ -14,41 +16,35 @@ class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sideb
       theme: SidebarXTheme(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: canvasColor,
+          color: AppTheme.textPrimary,
           borderRadius: BorderRadius.circular(20),
         ),
-        hoverColor: scaffoldBackgroundColor,
-        textStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-        selectedTextStyle: const TextStyle(color: Colors.white),
-        hoverTextStyle: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
+        hoverColor: const Color(0xFF2A3547),
+        textStyle: const TextStyle(color: Color(0xFF90A4AE)),
+        selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        hoverTextStyle: const TextStyle(color: Colors.white),
         itemTextPadding: const EdgeInsets.only(left: 30),
         selectedItemTextPadding: const EdgeInsets.only(left: 30),
         itemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: canvasColor),
         ),
         selectedItemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: actionColor.withOpacity(0.37),
+          gradient: const LinearGradient(
+            colors: [AppTheme.primary, AppTheme.primaryDark],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
-          // gradient: const LinearGradient(
-          //   colors: [accentCanvasColor, canvasColor],
-          // ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.28),
-              blurRadius: 30,
-            )
+              color: AppTheme.primary.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
-          color: canvasColor,
         ),
-
-        iconTheme: IconThemeData(
-          color: Colors.white.withOpacity(0.7),
+        iconTheme: const IconThemeData(
+          color: Color(0xFF90A4AE),
           size: 20,
         ),
         selectedIconTheme: const IconThemeData(
@@ -56,46 +52,104 @@ class ExampleSidebarX extends StatelessWidget { //https://pub.dev/packages/sideb
           size: 20,
         ),
       ),
-      extendedTheme: const SidebarXTheme(width: 200, decoration: BoxDecoration(color: canvasColor)),
-      footerDivider: divider,
+      extendedTheme: const SidebarXTheme(
+        width: 220,
+        decoration: BoxDecoration(color: AppTheme.textPrimary),
+      ),
+      footerDivider: Divider(color: Colors.white.withOpacity(0.1), height: 1),
       headerBuilder: (context, extended) => SizedBox(
-      height: 100,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(extended ? 8 : 4),
-                decoration: BoxDecoration(
-                  color: bgIcons, 
-                  borderRadius: BorderRadius.circular(extended ? 12 : 8),
+        height: 100,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(extended ? 8 : 4),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppTheme.primary, AppTheme.primaryDark],
+                    ),
+                    borderRadius: BorderRadius.circular(extended ? 12 : 8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primary.withOpacity(0.4),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.local_fire_department_rounded,
+                    color: Colors.white,
+                    size: extended ? 35 : 25,
+                  ),
                 ),
-                child: Icon(
-                  Icons.local_fire_department_outlined, 
-                  color: white,
-                  size: extended ? 35 : 25,
-                ),
-                
-              ),
-              if (extended) 
-                const SizedBox(width: 8),
-            ],
+                if (extended) const SizedBox(width: 8),
+                if (extended)
+                  const Text(
+                    'Flow Tracker',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+              ],
+            ),
           ),
-          
         ),
       ),
-    ),
-      items: [
-        SidebarXItem(icon: Icons.dashboard, label: 'Dashboard', onTap: () => debugPrint('Home')),
-        const SidebarXItem(icon: Icons.feed_outlined, label: 'Feed'),
-        const SidebarXItem(icon: Icons.people, label: 'Amics'),
-        const SidebarXItem(icon: Icons.settings,label: 'Opcions'),
-        const SidebarXItem(icon: Icons.person,label: 'Perfil'),
-
+      items: const [
+        SidebarXItem(icon: Icons.dashboard_rounded, label: 'Dashboard'),
+        SidebarXItem(icon: Icons.bar_chart_rounded, label: 'Estadístiques'),
+        SidebarXItem(icon: Icons.feed_rounded, label: 'Feed'),
+        SidebarXItem(icon: Icons.people_rounded, label: 'Amics'),
+        SidebarXItem(icon: Icons.person_rounded, label: 'Perfil'),
+      ],
+      footerItems: [
+        SidebarXItem(
+          icon: Icons.logout_rounded,
+          label: 'Tancar sessió',
+          onTap: () => _showLogoutDialog(context),
+        ),
       ],
     );
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Tancar sessió', style: TextStyle(color: AppTheme.textPrimary)),
+        content: const Text('Segur que vols tancar la sessió?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await AppConfig.instance.logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Tancar'),
+          ),
+        ],
+      ),
+    );
+  }
 }

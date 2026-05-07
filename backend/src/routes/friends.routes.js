@@ -6,6 +6,15 @@ const { validateFriendRequest } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
+function mapUser(user) {
+    return {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        avatar: user.avatar
+    };
+}
+
 router.get('/search', async (req, res) => {
     try {
         const userId = req.user.id;
@@ -20,7 +29,6 @@ router.get('/search', async (req, res) => {
                 id: { not: userId },
                 OR: [
                     { username: { contains: q, mode: 'insensitive' } },
-                    { email: { contains: q, mode: 'insensitive' } },
                     { name: { contains: q, mode: 'insensitive' } }
                 ]
             },
@@ -64,8 +72,8 @@ router.get('/search', async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error('Error searching users:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS SEARCH ERROR]', error.message);
+        res.status(500).json({ error: 'Error cercant usuaris' });
     }
 });
 
@@ -95,15 +103,15 @@ router.get('/', async (req, res) => {
             const friend = f.requesterId === userId ? f.receiver : f.requester;
             return {
                 friendshipId: f.id,
-                friend,
+                friend: mapUser(friend),
                 since: f.updatedAt
             };
         });
 
         res.json(friends);
     } catch (error) {
-        console.error('Error fetching friends:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS LIST ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant amics' });
     }
 });
 
@@ -126,12 +134,12 @@ router.get('/requests', async (req, res) => {
 
         res.json(requests.map(r => ({
             id: r.id,
-            user: r.requester,
+            user: mapUser(r.requester),
             createdAt: r.createdAt
         })));
     } catch (error) {
-        console.error('Error fetching requests:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS REQUESTS ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant sol·licituds' });
     }
 });
 
@@ -154,12 +162,12 @@ router.get('/sent', async (req, res) => {
 
         res.json(sent.map(s => ({
             id: s.id,
-            user: s.receiver,
+            user: mapUser(s.receiver),
             createdAt: s.createdAt
         })));
     } catch (error) {
-        console.error('Error fetching sent requests:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS SENT ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant sol·licituds enviades' });
     }
 });
 
@@ -223,8 +231,8 @@ router.post('/request', validateFriendRequest, async (req, res) => {
             status: friendship.status
         });
     } catch (error) {
-        console.error('Error sending friend request:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS REQUEST ERROR]', error.message);
+        res.status(500).json({ error: 'Error enviant sol·licitud' });
     }
 });
 
@@ -262,8 +270,8 @@ router.put('/request/:id', async (req, res) => {
             status: updated.status
         });
     } catch (error) {
-        console.error('Error responding to friend request:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS RESPOND ERROR]', error.message);
+        res.status(500).json({ error: 'Error responent sol·licitud' });
     }
 });
 
@@ -292,8 +300,8 @@ router.delete('/:id', async (req, res) => {
 
         res.json({ message: 'Friend removed successfully' });
     } catch (error) {
-        console.error('Error removing friend:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[FRIENDS DELETE ERROR]', error.message);
+        res.status(500).json({ error: 'Error eliminant amic' });
     }
 });
 

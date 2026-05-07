@@ -1,70 +1,35 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'api_client.dart';
 
 class AuthService {
-  final String baseUrl;
-
-  AuthService(this.baseUrl);
+  final ApiClient _client = ApiClient();
 
   Future<String> login(String email, String password) async {
-    final url = Uri.parse('$baseUrl/api/auth/login');
+    final data = await _client.post('/api/auth/login',
+        body: {'email': email, 'password': password}, auth: false);
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
-
-    print('STATUS: ${response.statusCode}');
-    print('BODY: ${response.body}');
-
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      final token = data['token'];
-
-      if (token == null) {
-        throw Exception('Token no recibido');
-      }
-
-      return token;
-    } else {
-      throw Exception(data['error'] ?? 'Error login');
+    final token = data['token'] as String?;
+    if (token == null) {
+      throw Exception('Token no recibido');
     }
+    return token;
   }
-
 
   Future<String> register(
-  String email,
-  String password,
-  String name,
-  String username,
-) async {
-  final url = Uri.parse('$baseUrl/api/auth/register');
+    String email,
+    String password,
+    String name,
+    String username,
+  ) async {
+    final data = await _client.post('/api/auth/register',
+        body: {
+          'email': email,
+          'password': password,
+          'name': name,
+          'username': username
+        },
+        auth: false,
+        expectedStatus: 201);
 
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'email': email,
-      'password': password,
-      'name': name,
-      'username': username,
-    }),
-  );
-
-  final data = jsonDecode(response.body);
-
-  if (response.statusCode != 201) {
-    throw Exception(data['error'] ?? 'Error register');
+    return data['id'] as String;
   }
-
-  return data['id'];
-}
-
 }

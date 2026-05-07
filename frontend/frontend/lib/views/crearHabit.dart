@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flowTracker/models/habitsProvider.dart';
+import '../config/app_theme.dart';
 
 class CrearHabitForm extends StatefulWidget {
   const CrearHabitForm({super.key});
@@ -59,9 +60,10 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
 
         if (mounted) Navigator.pop(context);
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error habit'),
+          SnackBar(
+            content: Text('Error: $e'),
           ),
         );
       }

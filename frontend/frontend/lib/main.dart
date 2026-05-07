@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'views/login_screen.dart';
-import 'views/home_screen.dart';
-import 'utils/settings_manager.dart';
+import 'views/mainScreen.dart';
+import 'config/app_config.dart';
+import 'config/app_theme.dart';
 import 'package:provider/provider.dart';
-
 import 'models/habitsProvider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  final config = AppConfig.instance;
+  await config.load();
+  
   runApp(const MyApp());
 }
 
@@ -15,13 +20,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => HabitProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: AppConfig.instance),
+        ChangeNotifierProvider(create: (_) => HabitProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flow Tracker',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primary),
           useMaterial3: true,
         ),
         home: const SplashScreen(),
@@ -46,41 +54,41 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initApp() async {
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 500));
 
-    final settings = await SettingsManager.loadSettings();
-
-    final serverUrl = settings['serverUrl'];
-    final token = settings['token'];
+    final config = AppConfig.instance;
 
     if (!mounted) return;
 
-    if (token != null && token.isNotEmpty) {
+    if (config.isAuthenticated) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => HomeScreen(
-            serverUrl: serverUrl ?? 'http://localhost:3000',
-            token: token,
-          ),
-        ),
+        MaterialPageRoute(builder: (_) => MainScreen()),
       );
-      return;
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
     }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LoginScreen(),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.local_fire_department_outlined,
+              size: 80,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 16),
+            const CircularProgressIndicator(),
+          ],
+        ),
       ),
     );
   }

@@ -5,6 +5,45 @@ const authMiddleware = require('../middleware/auth');
 
 router.use(authMiddleware);
 
+function computeStats(habits) {
+    let totalHabits = habits.length;
+    let totalLogs = 0;
+    let completedLogs = 0;
+    let longestStreak = 0;
+
+    for (const habit of habits) {
+        const logs = habit.logs || [];
+        totalLogs += logs.length;
+        completedLogs += logs.filter(l => l.completed).length;
+
+        const completedDates = logs
+            .filter(l => l.completed)
+            .map(l => new Date(l.date).toISOString().split('T')[0])
+            .sort();
+
+        if (completedDates.length > 0) {
+            let currentStreak = 1;
+            let maxInHabit = 1;
+            for (let i = 1; i < completedDates.length; i++) {
+                const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
+                if (completedDates[i] === prevDate) {
+                    currentStreak++;
+                    maxInHabit = Math.max(maxInHabit, currentStreak);
+                } else {
+                    currentStreak = 1;
+                }
+            }
+            longestStreak = Math.max(longestStreak, maxInHabit);
+        }
+    }
+
+    const overallCompletionRate = totalLogs > 0 
+        ? Math.round((completedLogs / totalLogs) * 1000) / 10 
+        : 0;
+
+    return { totalHabits, totalLogs, completedLogs, overallCompletionRate, longestStreak };
+}
+
 router.get('/', async (req, res) => {
     try {
         const userId = req.user.id;
@@ -21,10 +60,14 @@ router.get('/', async (req, res) => {
             }
         });
 
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
         res.json(user);
     } catch (error) {
-        console.error('Error fetching profile:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[PROFILE GET ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant perfil' });
     }
 });
 
@@ -50,8 +93,8 @@ router.put('/', async (req, res) => {
 
         res.json(user);
     } catch (error) {
-        console.error('Error updating profile:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[PROFILE UPDATE ERROR]', error.message);
+        res.status(500).json({ error: 'Error actualitzant perfil' });
     }
 });
 
@@ -61,45 +104,10 @@ router.get('/stats', async (req, res) => {
 
         const habits = await prisma.habit.findMany({
             where: { userId },
-            include: {
-                logs: true
-            }
+            include: { logs: true }
         });
 
-        let totalHabits = habits.length;
-        let totalLogs = 0;
-        let completedLogs = 0;
-        let longestStreak = 0;
-
-        for (const habit of habits) {
-            const logs = habit.logs;
-            totalLogs += logs.length;
-            completedLogs += logs.filter(l => l.completed).length;
-
-            if (logs.length > 0) {
-                const completedDates = logs
-                    .filter(l => l.completed)
-                    .map(l => new Date(l.date).toISOString().split('T')[0])
-                    .sort();
-
-                let currentStreak = 1;
-                let maxInHabit = 1;
-                for (let i = 1; i < completedDates.length; i++) {
-                    const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
-                    if (completedDates[i] === prevDate) {
-                        currentStreak++;
-                        maxInHabit = Math.max(maxInHabit, currentStreak);
-                    } else {
-                        currentStreak = 1;
-                    }
-                }
-                longestStreak = Math.max(longestStreak, maxInHabit);
-            }
-        }
-
-        const overallCompletionRate = totalLogs > 0 
-            ? Math.round((completedLogs / totalLogs) * 1000) / 10 
-            : 0;
+        const stats = computeStats(habits);
 
         const today = new Date().toISOString().split('T')[0];
         const todayLogs = await prisma.activityLog.findMany({
@@ -115,17 +123,71 @@ router.get('/stats', async (req, res) => {
         const todayTotal = todayLogs.length;
 
         res.json({
-            totalHabits,
-            totalLogs,
-            completedLogs,
-            overallCompletionRate,
-            longestStreak,
+            ...stats,
             todayCompleted,
             todayTotal
         });
     } catch (error) {
-        console.error('Error fetching profile stats:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('[PROFILE STATS ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant estadístiques' });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const friendId = req.params.id;
+        const userId = req.user.id;
+
+        if (!friendId || friendId.trim() === '') {
+            return res.status(400).json({ error: 'ID invàlid' });
+        }
+
+        if (friendId === userId) {
+            return res.status(400).json({ error: 'Usa /api/profile per al teu propi perfil' });
+        }
+
+        const friendship = await prisma.friendship.findFirst({
+            where: {
+                OR: [
+                    { requesterId: userId, receiverId: friendId, status: 'accepted' },
+                    { requesterId: friendId, receiverId: userId, status: 'accepted' }
+                ]
+            }
+        });
+
+        if (!friendship) {
+            return res.status(403).json({ error: 'No sou amics' });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: friendId },
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                avatar: true,
+                createdAt: true
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuari no trobat' });
+        }
+
+        const habits = await prisma.habit.findMany({
+            where: { userId: friendId },
+            include: { logs: true }
+        });
+
+        const stats = computeStats(habits);
+
+        res.json({
+            ...user,
+            ...stats
+        });
+    } catch (error) {
+        console.error('[PROFILE FRIEND ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant perfil de l\'amic' });
     }
 });
 

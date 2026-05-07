@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flowTracker/models/habitsProvider.dart';
+import '../config/app_theme.dart';
 
 class Editarhabit extends StatefulWidget {
   final String habitId;
@@ -75,7 +76,7 @@ class EditarhabitFormState extends State<Editarhabit> {
       }
 
       try {
-        await context.read<HabitProvider>().updateHabit(
+        await context.read<HabitProvider>().editHabit(
           widget.habitId,
           name,
           description,
@@ -86,9 +87,10 @@ class EditarhabitFormState extends State<Editarhabit> {
           Navigator.pop(context);
         }
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error editando hábito'),
+          SnackBar(
+            content: Text('Error: $e'),
           ),
         );
       }
@@ -107,11 +109,11 @@ class EditarhabitFormState extends State<Editarhabit> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFD7F8F1) : Colors.white,
+          color: isSelected ? AppTheme.primary : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF4FD1B5)
+                ? AppTheme.white
                 : Colors.grey.shade300,
           ),
         ),
@@ -121,7 +123,7 @@ class EditarhabitFormState extends State<Editarhabit> {
             fontSize: 13,
             fontWeight: FontWeight.w500,
             color: isSelected
-                ? const Color(0xFF1F8A70)
+                ? AppTheme.white
                 : Colors.black87,
           ),
         ),
@@ -281,7 +283,7 @@ class EditarhabitFormState extends State<Editarhabit> {
                       onPressed: _editarHabit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            const Color(0xFFB8F2E6),
+                           AppTheme.primary ,
                         foregroundColor: Colors.white,
                         elevation: 0,
                       ),
