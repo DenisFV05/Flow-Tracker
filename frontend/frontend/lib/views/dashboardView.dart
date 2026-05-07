@@ -48,7 +48,9 @@ class _DashboardViewState extends State<DashboardView> {
         onRefresh: _refresh,
         color: AppTheme.primary,
         child: loading && habits.isEmpty
-            ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+            ? const Center(
+                child: CircularProgressIndicator(color: AppTheme.primary),
+              )
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -183,10 +185,7 @@ class _DashboardViewState extends State<DashboardView> {
                 const SizedBox(height: 4),
                 const Text(
                   'Segueix els teus hàbits d\'avui',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.white70),
                 ),
               ],
             ),
@@ -196,7 +195,10 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildHabitsList(List<dynamic> habits, Map<String, dynamic> habitStats) {
+  Widget _buildHabitsList(
+    List<dynamic> habits,
+    Map<String, dynamic> habitStats,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -213,8 +215,15 @@ class _DashboardViewState extends State<DashboardView> {
             ),
             TextButton.icon(
               onPressed: () => showCrearHabitPopup(context),
-              icon: const Icon(Icons.add_circle_outline, size: 20, color: AppTheme.primary),
-              label: const Text('Afegir', style: TextStyle(color: AppTheme.primary)),
+              icon: const Icon(
+                Icons.add_circle_outline,
+                size: 20,
+                color: AppTheme.primary,
+              ),
+              label: const Text(
+                'Afegir',
+                style: TextStyle(color: AppTheme.primary),
+              ),
             ),
           ],
         ),
@@ -223,7 +232,8 @@ class _DashboardViewState extends State<DashboardView> {
           _emptyHabits()
         else
           ...habits.map((habit) {
-            final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+            final stats =
+                habitStats[habit['id']] as Map<String, dynamic>? ?? {};
             final progress = ((stats['completionRate'] ?? 0) / 100).toDouble();
 
             return Padding(
@@ -249,14 +259,23 @@ class _DashboardViewState extends State<DashboardView> {
                   final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       title: const Text('Eliminar hábit'),
-                      content: Text('Segur que vols eliminar "${habit['name'] ?? ''}"? Els registres i publicacions associats també es perdran.'),
+                      content: Text(
+                        'Segur que vols eliminar "${habit['name'] ?? ''}"? Els registres i publicacions associats també es perdran.',
+                      ),
                       actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel·lar')),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Cancel·lar'),
+                        ),
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
                           child: const Text('Eliminar'),
                         ),
                       ],
@@ -265,9 +284,7 @@ class _DashboardViewState extends State<DashboardView> {
                   if (confirmed != true) return;
                   if (!mounted) return;
                   final id = habit['id'].toString();
-                  await context
-                      .read<HabitProvider>()
-                      .deleteHabit(id);
+                  await context.read<HabitProvider>().deleteHabit(id);
                 },
 
                 onEdit: () async {
@@ -276,8 +293,7 @@ class _DashboardViewState extends State<DashboardView> {
                     builder: (_) => Editarhabit(
                       habitId: habit['id'].toString(),
                       initialName: habit['name'] ?? '',
-                      initialDescription:
-                          habit['description'] ?? '',
+                      initialDescription: habit['description'] ?? '',
                       initialTags: (habit['tags'] as List<dynamic>)
                           .map((tag) => tag['name'].toString())
                           .toList(),
@@ -314,7 +330,11 @@ class _DashboardViewState extends State<DashboardView> {
               color: AppTheme.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.track_changes_rounded, size: 40, color: AppTheme.primary),
+            child: const Icon(
+              Icons.track_changes_rounded,
+              size: 40,
+              color: AppTheme.primary,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -339,7 +359,9 @@ class _DashboardViewState extends State<DashboardView> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),

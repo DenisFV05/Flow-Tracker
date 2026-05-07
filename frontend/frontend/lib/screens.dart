@@ -1,3 +1,4 @@
+import 'package:flowTracker/views/opcionsView.dart';
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
@@ -18,12 +19,20 @@ class ScreensExample extends StatelessWidget {
       animation: controller,
       builder: (context, child) {
         switch (controller.selectedIndex) {
-          case 0: return const DashboardView();
-          case 1: return const StatsScreen();
-          case 2: return const FeedView();
-          case 3: return const AmicsView();
-          case 4: return const perfilView();
-          default: return const Center(child: Text('Not found'));
+          case 0:
+            return const DashboardView();
+          case 1:
+            return const StatsScreen();
+          case 2:
+            return const FeedView();
+          case 3:
+            return const AmicsView();
+          case 4:
+            return const perfilView();
+          case 5:
+            return const Opcionsview();
+          default:
+            return const Center(child: Text('Not found'));
         }
       },
     );

@@ -7,7 +7,6 @@ class HabitProvider extends ChangeNotifier {
   final HabitsApi api = HabitsApi();
   final FeedApi feedApi = FeedApi();
   final ProfileApi profileApi = ProfileApi();
-
   List<dynamic> habits = [];
 
   Map<String, dynamic> dashboardStats = {};
@@ -38,7 +37,6 @@ class HabitProvider extends ChangeNotifier {
         final stats = await api.getHabitStats(habitId);
         habitStats[habitId] = stats;
       }
-
     } catch (e) {
       error = e.toString();
       print("DASHBOARD ERROR: $e");
@@ -51,13 +49,13 @@ class HabitProvider extends ChangeNotifier {
   Future<void> loadFeed({String? cursor}) async {
     try {
       final result = await feedApi.getFeed(cursor: cursor);
-      
+
       if (cursor == null) {
         feedPosts = result['posts'] as List<dynamic>;
       } else {
         feedPosts.addAll(result['posts'] as List<dynamic>);
       }
-      
+
       feedNextCursor = result['nextCursor'] as String?;
       notifyListeners();
     } catch (e) {
@@ -82,10 +80,7 @@ class HabitProvider extends ChangeNotifier {
 
   Future<void> updateProfile({String? name, String? avatar}) async {
     try {
-      userProfile = await profileApi.updateProfile(
-        name: name,
-        avatar: avatar,
-      );
+      userProfile = await profileApi.updateProfile(name: name, avatar: avatar);
       notifyListeners();
     } catch (e) {
       print("UPDATE PROFILE ERROR: $e");
@@ -125,16 +120,6 @@ class HabitProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteHabit(String id) async {
-    try {
-      await api.deleteHabit(id);
-      await loadDashboard();
-    } catch (e) {
-      error = e.toString();
-      notifyListeners();
-      rethrow;
-    }
-  }
   Future<void> updateHabit(
     String id,
     String name,
@@ -142,12 +127,7 @@ class HabitProvider extends ChangeNotifier {
     List<String> tags,
   ) async {
     try {
-      await api.updateHabit(
-        id,
-        name,
-        description,
-        tags,
-      );
+      await api.updateHabit(id, name, description, tags);
 
       await loadDashboard();
     } catch (e) {
@@ -155,7 +135,6 @@ class HabitProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   Future<void> deleteHabit(String id) async {
     try {
@@ -171,7 +150,6 @@ class HabitProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   Future<void> toggleHabit(String id, bool completed) async {
     try {

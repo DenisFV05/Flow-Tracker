@@ -5,14 +5,25 @@ import 'config/app_config.dart';
 import 'config/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'models/habitsProvider.dart';
+import 'models/themeProvider.dart';
+import 'config/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   final config = AppConfig.instance;
   await config.load();
-  
-  runApp(const MyApp());
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: AppConfig.instance),
+        ChangeNotifierProvider(create: (_) => HabitProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -20,20 +31,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: AppConfig.instance),
-        ChangeNotifierProvider(create: (_) => HabitProvider()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flow Tracker',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primary),
-          useMaterial3: true,
-        ),
-        home: const SplashScreen(),
-      ),
+    final themeProvider = context.watch<ThemeProvider>();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flow Tracker',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      // Usamos el getter de la instancia
+      themeMode: themeProvider.themeMode,
+      home: const SplashScreen(),
     );
   }
 }
@@ -46,7 +52,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();

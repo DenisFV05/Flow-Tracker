@@ -16,6 +16,7 @@ class MainScreen extends StatelessWidget {
     'Feed',
     'Amics',
     'Perfil',
+    'Opcions',
   ];
 
   static const _icons = [
@@ -24,6 +25,7 @@ class MainScreen extends StatelessWidget {
     Icons.feed_rounded,
     Icons.people_rounded,
     Icons.person_rounded,
+    Icons.settings,
   ];
 
   String _getTitle(int index) {
@@ -74,11 +76,8 @@ class MainScreen extends StatelessWidget {
       drawer: ExampleSidebarX(controller: _controller),
       body: Row(
         children: [
-          if (!isSmallScreen)
-            ExampleSidebarX(controller: _controller),
-          Expanded(
-            child: ScreensExample(controller: _controller),
-          ),
+          if (!isSmallScreen) ExampleSidebarX(controller: _controller),
+          Expanded(child: ScreensExample(controller: _controller)),
         ],
       ),
     );

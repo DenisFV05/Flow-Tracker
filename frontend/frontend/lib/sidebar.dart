@@ -21,13 +21,14 @@ class ExampleSidebarX extends StatelessWidget {
         ),
         hoverColor: const Color(0xFF2A3547),
         textStyle: const TextStyle(color: Color(0xFF90A4AE)),
-        selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        selectedTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
         hoverTextStyle: const TextStyle(color: Colors.white),
         itemTextPadding: const EdgeInsets.only(left: 30),
         selectedItemTextPadding: const EdgeInsets.only(left: 30),
-        itemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        itemDecoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
         selectedItemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: const LinearGradient(
@@ -43,14 +44,8 @@ class ExampleSidebarX extends StatelessWidget {
             ),
           ],
         ),
-        iconTheme: const IconThemeData(
-          color: Color(0xFF90A4AE),
-          size: 20,
-        ),
-        selectedIconTheme: const IconThemeData(
-          color: Colors.white,
-          size: 20,
-        ),
+        iconTheme: const IconThemeData(color: Color(0xFF90A4AE), size: 20),
+        selectedIconTheme: const IconThemeData(color: Colors.white, size: 20),
       ),
       extendedTheme: const SidebarXTheme(
         width: 220,
@@ -107,6 +102,7 @@ class ExampleSidebarX extends StatelessWidget {
         SidebarXItem(icon: Icons.feed_rounded, label: 'Feed'),
         SidebarXItem(icon: Icons.people_rounded, label: 'Amics'),
         SidebarXItem(icon: Icons.person_rounded, label: 'Perfil'),
+        SidebarXItem(icon: Icons.settings, label: 'Opcions'),
       ],
       footerItems: [
         SidebarXItem(
@@ -123,12 +119,18 @@ class ExampleSidebarX extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Tancar sessió', style: TextStyle(color: AppTheme.textPrimary)),
+        title: const Text(
+          'Tancar sessió',
+          style: TextStyle(color: AppTheme.textPrimary),
+        ),
         content: const Text('Segur que vols tancar la sessió?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
+            child: const Text(
+              'Cancel·lar',
+              style: TextStyle(color: AppTheme.primary),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -144,7 +146,9 @@ class ExampleSidebarX extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             child: const Text('Tancar'),
           ),

@@ -51,9 +51,7 @@ class _perfilViewState extends State<perfilView> {
   }
 
   Future<void> _pickImage() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null && result.files.isNotEmpty) {
       final file = File(result.files.first.path!);
       final bytes = await file.readAsBytes();
@@ -86,9 +84,9 @@ class _perfilViewState extends State<perfilView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       setState(() => _saving = false);
@@ -104,7 +102,9 @@ class _perfilViewState extends State<perfilView> {
     if (loading && profile.isEmpty) {
       return Container(
         color: AppTheme.background,
-        child: const Center(child: CircularProgressIndicator(color: AppTheme.primary)),
+        child: const Center(
+          child: CircularProgressIndicator(color: AppTheme.primary),
+        ),
       );
     }
 
@@ -130,7 +130,12 @@ class _perfilViewState extends State<perfilView> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: _buildProfileForm(name, username, email, avatarPreview),
+                    child: _buildProfileForm(
+                      name,
+                      username,
+                      email,
+                      avatarPreview,
+                    ),
                   ),
                   const SizedBox(width: 24),
                   Expanded(
@@ -164,7 +169,12 @@ class _perfilViewState extends State<perfilView> {
     );
   }
 
-  Widget _buildProfileForm(String name, String username, String email, String? avatarPreview) {
+  Widget _buildProfileForm(
+    String name,
+    String username,
+    String email,
+    String? avatarPreview,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -183,7 +193,11 @@ class _perfilViewState extends State<perfilView> {
         children: [
           const Text(
             'Perfil',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
           ),
           const SizedBox(height: 20),
           Center(
@@ -198,15 +212,22 @@ class _perfilViewState extends State<perfilView> {
                   child: CircleAvatar(
                     radius: 48,
                     backgroundColor: AppTheme.surfaceLight,
-                    backgroundImage: avatarPreview != null && avatarPreview.isNotEmpty
+                    backgroundImage:
+                        avatarPreview != null && avatarPreview.isNotEmpty
                         ? (avatarPreview.startsWith('data:')
-                            ? MemoryImage(base64Decode(avatarPreview.split(',').last))
-                            : NetworkImage(avatarPreview))
+                              ? MemoryImage(
+                                  base64Decode(avatarPreview.split(',').last),
+                                )
+                              : NetworkImage(avatarPreview))
                         : null,
                     child: (avatarPreview == null || avatarPreview.isEmpty)
                         ? Text(
                             name.isNotEmpty ? name[0].toUpperCase() : '?',
-                            style: const TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 32,
+                              color: AppTheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           )
                         : null,
                   ),
@@ -222,7 +243,11 @@ class _perfilViewState extends State<perfilView> {
                         color: AppTheme.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                      child: const Icon(
+                        Icons.camera_alt_rounded,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -232,7 +257,13 @@ class _perfilViewState extends State<perfilView> {
 
           const SizedBox(height: 24),
 
-          const Text('Nom', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+          const Text(
+            'Nom',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _nameController,
@@ -244,13 +275,22 @@ class _perfilViewState extends State<perfilView> {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
           ),
 
           const SizedBox(height: 16),
 
-          const Text('Username', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
+          const Text(
+            'Username',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             '@$username',
@@ -259,12 +299,15 @@ class _perfilViewState extends State<perfilView> {
 
           const SizedBox(height: 16),
 
-          const Text('Email', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-          const SizedBox(height: 8),
-          Text(
-            email,
-            style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+          const Text(
+            'Email',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
           ),
+          const SizedBox(height: 8),
+          Text(email, style: TextStyle(fontSize: 15, color: Colors.grey[600])),
 
           const SizedBox(height: 24),
 
@@ -276,7 +319,9 @@ class _perfilViewState extends State<perfilView> {
                 backgroundColor: AppTheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: _saving
                   ? const SizedBox(
@@ -309,11 +354,18 @@ class _perfilViewState extends State<perfilView> {
             children: [
               const Text(
                 'Foto de perfil',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
               ),
               const SizedBox(height: 16),
               ListTile(
-                leading: const Icon(Icons.photo_library_rounded, color: AppTheme.primary),
+                leading: const Icon(
+                  Icons.photo_library_rounded,
+                  color: AppTheme.primary,
+                ),
                 title: const Text('Seleccionar imatge'),
                 onTap: () {
                   Navigator.pop(context);
@@ -321,7 +373,10 @@ class _perfilViewState extends State<perfilView> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.link_rounded, color: AppTheme.primary),
+                leading: const Icon(
+                  Icons.link_rounded,
+                  color: AppTheme.primary,
+                ),
                 title: const Text('URL de la imatge'),
                 onTap: () {
                   Navigator.pop(context);
@@ -330,7 +385,10 @@ class _perfilViewState extends State<perfilView> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_rounded, color: Colors.red),
-                title: const Text('Eliminar foto', style: TextStyle(color: Colors.red)),
+                title: const Text(
+                  'Eliminar foto',
+                  style: TextStyle(color: Colors.red),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -352,7 +410,10 @@ class _perfilViewState extends State<perfilView> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('URL de la imatge', style: TextStyle(color: AppTheme.textPrimary)),
+        title: const Text(
+          'URL de la imatge',
+          style: TextStyle(color: AppTheme.textPrimary),
+        ),
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
@@ -363,11 +424,16 @@ class _perfilViewState extends State<perfilView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
+            child: const Text(
+              'Cancel·lar',
+              style: TextStyle(color: AppTheme.primary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() => _avatarUrlController.text = controller.text.trim());
+              setState(
+                () => _avatarUrlController.text = controller.text.trim(),
+              );
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
@@ -386,7 +452,9 @@ class _perfilViewState extends State<perfilView> {
     final loading = context.watch<HabitProvider>().loading;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primary),
+      );
     }
 
     final totalHabits = stats['totalHabits'] ?? 0;
@@ -415,20 +483,54 @@ class _perfilViewState extends State<perfilView> {
         children: [
           const Text(
             'Estadístiques',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
           ),
           const SizedBox(height: 20),
-          _statRow(Icons.track_changes_rounded, 'Hàbits totals', '$totalHabits', AppTheme.primary),
+          _statRow(
+            Icons.track_changes_rounded,
+            'Hàbits totals',
+            '$totalHabits',
+            AppTheme.primary,
+          ),
           const SizedBox(height: 12),
-          _statRow(Icons.description_rounded, 'Registres totals', '$totalLogs', AppTheme.success),
+          _statRow(
+            Icons.description_rounded,
+            'Registres totals',
+            '$totalLogs',
+            AppTheme.success,
+          ),
           const SizedBox(height: 12),
-          _statRow(Icons.check_circle_rounded, 'Completats', '$completedLogs', AppTheme.purple),
+          _statRow(
+            Icons.check_circle_rounded,
+            'Completats',
+            '$completedLogs',
+            AppTheme.purple,
+          ),
           const SizedBox(height: 12),
-          _statRow(Icons.percent_rounded, 'Percentatge global', '${rate.toStringAsFixed(1)}%', AppTheme.warning),
+          _statRow(
+            Icons.percent_rounded,
+            'Percentatge global',
+            '${rate.toStringAsFixed(1)}%',
+            AppTheme.warning,
+          ),
           const SizedBox(height: 12),
-          _statRow(Icons.local_fire_department_rounded, 'Ratxa màxima', '$longestStreak dies', AppTheme.warning),
+          _statRow(
+            Icons.local_fire_department_rounded,
+            'Ratxa màxima',
+            '$longestStreak dies',
+            AppTheme.warning,
+          ),
           const SizedBox(height: 12),
-          _statRow(Icons.today_rounded, 'Avui', '$todayCompleted/$todayTotal', AppTheme.primary),
+          _statRow(
+            Icons.today_rounded,
+            'Avui',
+            '$todayCompleted/$todayTotal',
+            AppTheme.primary,
+          ),
         ],
       ),
     );
@@ -440,9 +542,19 @@ class _perfilViewState extends State<perfilView> {
         Icon(icon, size: 20, color: color),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+          child: Text(
+            label,
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          ),
         ),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: AppTheme.textPrimary,
+          ),
+        ),
       ],
     );
   }
@@ -462,14 +574,25 @@ class _perfilViewState extends State<perfilView> {
             onTap: () => setState(() => _showDebug = !_showDebug),
             child: Row(
               children: [
-                const Icon(Icons.bug_report_rounded, size: 18, color: AppTheme.primary),
+                const Icon(
+                  Icons.bug_report_rounded,
+                  size: 18,
+                  color: AppTheme.primary,
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   'Mode desenvolupador',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
                 const Spacer(),
-                Icon(_showDebug ? Icons.expand_less : Icons.expand_more, size: 20, color: Colors.grey[500]),
+                Icon(
+                  _showDebug ? Icons.expand_less : Icons.expand_more,
+                  size: 20,
+                  color: Colors.grey[500],
+                ),
               ],
             ),
           ),
@@ -502,21 +625,33 @@ class _perfilViewState extends State<perfilView> {
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
             ),
             const SizedBox(height: 12),
-            _debugButton('Afegir registre ahir', AppTheme.primary, _simulatePastDay),
+            _debugButton(
+              'Afegir registre ahir',
+              AppTheme.primary,
+              _simulatePastDay,
+            ),
             const SizedBox(height: 4),
             Text(
               'Crea un registre per ahir. Si ja tens un registre avui, la ratxa augmentarà a 2.',
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
             ),
             const SizedBox(height: 12),
-            _debugButton('Afegir registre fa 7 dies', AppTheme.purple, _simulateWeekAgo),
+            _debugButton(
+              'Afegir registre fa 7 dies',
+              AppTheme.purple,
+              _simulateWeekAgo,
+            ),
             const SizedBox(height: 4),
             Text(
               'Crea un registre fa 7 dies. No afecta la ratxa actual però omple el heatmap.',
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
             ),
             const SizedBox(height: 12),
-            _debugButton('Crear ratxa de 8 dies', AppTheme.warning, _simulate7DaysAgo),
+            _debugButton(
+              'Crear ratxa de 8 dies',
+              AppTheme.warning,
+              _simulate7DaysAgo,
+            ),
             const SizedBox(height: 4),
             Text(
               'Registra el hàbit durant 8 dies seguits (fa 7 dies fins avui). Veurem la ratxa pujar a 8.',
@@ -547,9 +682,9 @@ class _perfilViewState extends State<perfilView> {
   Future<void> _markToday() async {
     final provider = context.read<HabitProvider>();
     if (provider.habits.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Crea un hàbit primer')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Crea un hàbit primer')));
       return;
     }
     final habit = provider.habits.first;
@@ -567,13 +702,17 @@ class _perfilViewState extends State<perfilView> {
   Future<void> _simulatePastDay() async {
     final provider = context.read<HabitProvider>();
     if (provider.habits.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Crea un hàbit primer')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Crea un hàbit primer')));
       return;
     }
     final habitId = provider.habits.first['id'];
-    final yesterday = DateTime.now().subtract(const Duration(days: 1)).toIso8601String().split('T').first;
+    final yesterday = DateTime.now()
+        .subtract(const Duration(days: 1))
+        .toIso8601String()
+        .split('T')
+        .first;
     await provider.api.logHabit(habitId, yesterday, true);
     await provider.loadDashboard();
     if (mounted) {
@@ -590,7 +729,11 @@ class _perfilViewState extends State<perfilView> {
     final provider = context.read<HabitProvider>();
     if (provider.habits.isEmpty) return;
     final habitId = provider.habits.first['id'];
-    final date = DateTime.now().subtract(const Duration(days: 7)).toIso8601String().split('T').first;
+    final date = DateTime.now()
+        .subtract(const Duration(days: 7))
+        .toIso8601String()
+        .split('T')
+        .first;
     await provider.api.logHabit(habitId, date, true);
     await provider.loadDashboard();
     if (mounted) {
@@ -608,7 +751,11 @@ class _perfilViewState extends State<perfilView> {
     if (provider.habits.isEmpty) return;
     final habitId = provider.habits.first['id'];
     for (int i = 7; i >= 0; i--) {
-      final date = DateTime.now().subtract(Duration(days: i)).toIso8601String().split('T').first;
+      final date = DateTime.now()
+          .subtract(Duration(days: i))
+          .toIso8601String()
+          .split('T')
+          .first;
       await provider.api.logHabit(habitId, date, true);
     }
     await provider.loadDashboard();

@@ -65,9 +65,9 @@ class _AmicsViewState extends State<AmicsView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -78,9 +78,9 @@ class _AmicsViewState extends State<AmicsView> {
       await _loadData();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -93,7 +93,10 @@ class _AmicsViewState extends State<AmicsView> {
         title: const Text('Eliminar amic'),
         content: Text('Segur que vols eliminar $name com a amic?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel·lar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel·lar'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -108,9 +111,9 @@ class _AmicsViewState extends State<AmicsView> {
       await _loadData();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -120,67 +123,74 @@ class _AmicsViewState extends State<AmicsView> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: loading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppTheme.primary),
+            )
           : error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'No s\'han pogut carregar les dades',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(error!, style: TextStyle(color: Colors.grey[500])),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: _loadData,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: const Text('Reintentar'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No s\'han pogut carregar les dades',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadData,
-                  color: AppTheme.primary,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth > 700;
-
-                        if (isWide) {
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(flex: 2, child: _buildFriendsSection()),
-                              const SizedBox(width: 20),
-                              Expanded(flex: 1, child: _buildRequestsSection()),
-                            ],
-                          );
-                        }
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildFriendsSection(),
-                            const SizedBox(height: 24),
-                            _buildRequestsSection(),
-                          ],
-                        );
-                      },
+                  const SizedBox(height: 8),
+                  Text(error!, style: TextStyle(color: Colors.grey[500])),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _loadData,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
+                    child: const Text('Reintentar'),
                   ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              color: AppTheme.primary,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth > 700;
+
+                    if (isWide) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 2, child: _buildFriendsSection()),
+                          const SizedBox(width: 20),
+                          Expanded(flex: 1, child: _buildRequestsSection()),
+                        ],
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildFriendsSection(),
+                        const SizedBox(height: 24),
+                        _buildRequestsSection(),
+                      ],
+                    );
+                  },
                 ),
+              ),
+            ),
     );
   }
 
@@ -201,8 +211,15 @@ class _AmicsViewState extends State<AmicsView> {
             ),
             TextButton.icon(
               onPressed: _showSearchDialog,
-              icon: const Icon(Icons.person_add, size: 18, color: AppTheme.primary),
-              label: const Text('Afegir', style: TextStyle(color: AppTheme.primary)),
+              icon: const Icon(
+                Icons.person_add,
+                size: 18,
+                color: AppTheme.primary,
+              ),
+              label: const Text(
+                'Afegir',
+                style: TextStyle(color: AppTheme.primary),
+              ),
             ),
           ],
         ),
@@ -247,9 +264,7 @@ class _AmicsViewState extends State<AmicsView> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => FriendProfileView(friend: user),
-          ),
+          MaterialPageRoute(builder: (_) => FriendProfileView(friend: user)),
         );
       },
       child: Container(
@@ -266,14 +281,21 @@ class _AmicsViewState extends State<AmicsView> {
           ],
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 4,
+          ),
           leading: CircleAvatar(
             radius: 22,
             backgroundColor: AppTheme.primary.withOpacity(0.1),
             backgroundImage: user['avatar'] != null
                 ? (user['avatar'].toString().startsWith('data:')
-                    ? MemoryImage(base64Decode(user['avatar'].toString().split(',').last))
-                    : NetworkImage(user['avatar']))
+                      ? MemoryImage(
+                          base64Decode(
+                            user['avatar'].toString().split(',').last,
+                          ),
+                        )
+                      : NetworkImage(user['avatar']))
                 : null,
             child: user['avatar'] == null
                 ? Text(
@@ -288,7 +310,11 @@ class _AmicsViewState extends State<AmicsView> {
           ),
           title: Text(
             user['name'] ?? '',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary),
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              color: AppTheme.textPrimary,
+            ),
           ),
           subtitle: Text(
             '@${user['username'] ?? ''}',
@@ -303,7 +329,11 @@ class _AmicsViewState extends State<AmicsView> {
             ),
             child: const Text(
               'Eliminar',
-              style: TextStyle(color: AppTheme.error, fontSize: 13, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: AppTheme.error,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
@@ -341,7 +371,11 @@ class _AmicsViewState extends State<AmicsView> {
         ),
         title: Text(
           user['name'] ?? '',
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: AppTheme.textPrimary,
+          ),
         ),
         subtitle: Text(
           '@${user['username'] ?? ''}',
@@ -356,7 +390,11 @@ class _AmicsViewState extends State<AmicsView> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.check, size: 20, color: AppTheme.success),
+                icon: const Icon(
+                  Icons.check,
+                  size: 20,
+                  color: AppTheme.success,
+                ),
                 onPressed: () => _respondRequest(id, 'accept'),
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
@@ -402,12 +440,20 @@ class _AmicsViewState extends State<AmicsView> {
               color: AppTheme.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.people_outline, size: 40, color: AppTheme.primary),
+            child: const Icon(
+              Icons.people_outline,
+              size: 40,
+              color: AppTheme.primary,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
             'Encara no tens amics',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -422,7 +468,9 @@ class _AmicsViewState extends State<AmicsView> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
@@ -454,12 +502,20 @@ class _AmicsViewState extends State<AmicsView> {
               color: AppTheme.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.mail_outline, size: 40, color: AppTheme.primary),
+            child: const Icon(
+              Icons.mail_outline,
+              size: 40,
+              color: AppTheme.primary,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
             'Cap sol·licitud',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -482,7 +538,9 @@ class _AmicsViewState extends State<AmicsView> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -490,27 +548,39 @@ class _AmicsViewState extends State<AmicsView> {
                   children: [
                     const Text(
                       'Cercar usuari',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller,
                       decoration: InputDecoration(
                         hintText: 'Escriu el username',
-                        prefixIcon: const Icon(Icons.search, color: AppTheme.primary),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppTheme.primary,
+                        ),
                         filled: true,
                         fillColor: AppTheme.background,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                       ),
                       onChanged: (value) async {
                         if (value.length >= 2) {
                           setDialogState(() => searching = true);
                           try {
-                            final results = await _friendsApi.searchUsers(value);
+                            final results = await _friendsApi.searchUsers(
+                              value,
+                            );
                             setDialogState(() {
                               searchResults = results;
                               searching = false;
@@ -527,7 +597,10 @@ class _AmicsViewState extends State<AmicsView> {
                     if (searching)
                       const SizedBox(
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppTheme.primary,
+                        ),
                       )
                     else if (searchResults.isNotEmpty)
                       SizedBox(
@@ -540,9 +613,13 @@ class _AmicsViewState extends State<AmicsView> {
                             final requestSent = user['requestSent'] ?? false;
 
                             return ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
                               leading: CircleAvatar(
-                                backgroundColor: AppTheme.primary.withOpacity(0.1),
+                                backgroundColor: AppTheme.primary.withOpacity(
+                                  0.1,
+                                ),
                                 child: Text(
                                   user['name']?[0]?.toUpperCase() ?? '?',
                                   style: const TextStyle(
@@ -551,25 +628,57 @@ class _AmicsViewState extends State<AmicsView> {
                                   ),
                                 ),
                               ),
-                              title: Text(user['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w500)),
-                              subtitle: Text('@${user['username'] ?? ''}', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                              title: Text(
+                                user['name'] ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: Text(
+                                '@${user['username'] ?? ''}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
                               trailing: isFriend
-                                  ? const Icon(Icons.check_circle, color: AppTheme.success, size: 20)
+                                  ? const Icon(
+                                      Icons.check_circle,
+                                      color: AppTheme.success,
+                                      size: 20,
+                                    )
                                   : requestSent
-                                      ? const Text('Enviat', style: TextStyle(color: AppTheme.primary, fontSize: 13, fontWeight: FontWeight.w500))
-                                      : TextButton(
-                                          onPressed: () {
-                                            _sendRequest(user['username']);
-                                            Navigator.pop(context);
-                                          },
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: AppTheme.primary,
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ? const Text(
+                                      'Enviat',
+                                      style: TextStyle(
+                                        color: AppTheme.primary,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    )
+                                  : TextButton(
+                                      onPressed: () {
+                                        _sendRequest(user['username']);
+                                        Navigator.pop(context);
+                                      },
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: AppTheme.primary,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
                                           ),
-                                          child: const Text('Afegir', style: TextStyle(fontSize: 13)),
                                         ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Afegir',
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                    ),
                             );
                           },
                         ),
@@ -579,7 +688,10 @@ class _AmicsViewState extends State<AmicsView> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Tancar', style: TextStyle(color: AppTheme.primary)),
+                        child: const Text(
+                          'Tancar',
+                          style: TextStyle(color: AppTheme.primary),
+                        ),
                       ),
                     ),
                   ],
