@@ -54,16 +54,26 @@ app.use((req, res) => {
 
 // Error handling
 app.use((err, req, res, next) => {
-    if (err.name === 'PrismaClientKnownRequestError') {
-        console.error('[PRISMA ERROR]', err.code, err.message);
-        return res.status(400).json({ error: 'Database error', code: err.code });
+    try {
+        console.error('[SERVER ERROR]', err.message, err.stack?.split('\n')[1] || '');
+
+        if (err.type === 'entity.parse.failed') {
+            return res.status(400).json({ error: 'Invalid JSON in request body' });
+        }
+        if (err.name === 'PrismaClientKnownRequestError') {
+            console.error('[PRISMA ERROR]', err.code, err.message);
+            return res.status(400).json({ error: 'Database error', code: err.code });
+        }
+        if (err.name === 'PrismaClientValidationError') {
+            console.error('[PRISMA VALIDATION ERROR]', err.message);
+            return res.status(400).json({ error: 'Invalid request data' });
+        }
+        console.error('[SERVER ERROR]', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    } catch (handlerError) {
+        console.error('[FATAL] Error handler crashed:', handlerError);
+        res.status(500).json({ error: 'Internal server error' });
     }
-    if (err.name === 'PrismaClientValidationError') {
-        console.error('[PRISMA VALIDATION ERROR]', err.message);
-        return res.status(400).json({ error: 'Invalid request data' });
-    }
-    console.error('[SERVER ERROR]', err.message);
-    res.status(500).json({ error: 'Internal server error' });
 });
 
 // Start server

@@ -21,11 +21,7 @@ class AppConfig extends ChangeNotifier {
     if (settings['serverUrl'] != null && settings['serverUrl']!.isNotEmpty) {
       _serverUrl = settings['serverUrl']!;
     }
-    _token = settings['token'];
-    if (_token == null || _token!.isEmpty) {
-      final storedToken = await AuthStorage().getToken();
-      _token = storedToken;
-    }
+    _token = await AuthStorage().getToken();
     notifyListeners();
   }
 
@@ -35,21 +31,20 @@ class AppConfig extends ChangeNotifier {
   }) async {
     _serverUrl = serverUrl;
     _token = token;
-    await SettingsManager.saveSettings(serverUrl: serverUrl, token: token);
+    await SettingsManager.saveSettings(serverUrl: serverUrl);
     await AuthStorage().saveToken(token);
     notifyListeners();
   }
 
   Future<void> logout() async {
     _token = null;
-    await SettingsManager.clearToken();
     await AuthStorage().clear();
     notifyListeners();
   }
 
   Future<void> updateServerUrl(String url) async {
     _serverUrl = url;
-    await SettingsManager.saveSettings(serverUrl: url, token: _token);
+    await SettingsManager.saveSettings(serverUrl: url);
     notifyListeners();
   }
 }
