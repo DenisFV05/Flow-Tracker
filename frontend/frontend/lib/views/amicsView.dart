@@ -199,34 +199,37 @@ class _AmicsViewState extends State<AmicsView> {
                         onRefresh: _loadData,
                         color: AppTheme.primary,
                         child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth > 700;
+                          padding: const EdgeInsets.all(20),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isWide = constraints.maxWidth > 700;
 
-                        if (isWide) {
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(flex: 2, child: _buildFriendsSection()),
-                              const SizedBox(width: 20),
-                              Expanded(flex: 1, child: _buildRequestsSection()),
-                            ],
-                          );
-                        }
+                              if (isWide) {
+                                return Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(flex: 2, child: _buildFriendsSection()),
+                                    const SizedBox(width: 20),
+                                    Expanded(flex: 1, child: _buildRequestsSection()),
+                                  ],
+                                );
+                              }
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildFriendsSection(),
-                            const SizedBox(height: 24),
-                            _buildRequestsSection(),
-                          ],
-                        );
-                      },
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildFriendsSection(),
+                                  const SizedBox(height: 24),
+                                  _buildRequestsSection(),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
     );
   }
