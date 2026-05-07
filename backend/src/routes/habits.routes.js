@@ -6,11 +6,15 @@ const { validateHabit } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
-function toLocalDateStr(d) {
+function localDateStr(d) {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
+}
+
+function dateOnlyStr(d) {
+    return d.toISOString().split('T')[0];
 }
 
 function calculateStreak(logs) {
@@ -18,15 +22,17 @@ function calculateStreak(logs) {
 
     const completedDates = logs
         .filter(log => log.completed)
-        .map(log => toLocalDateStr(new Date(log.date)))
+        .map(log => dateOnlyStr(new Date(log.date)))
         .sort()
         .reverse();
 
     if (completedDates.length === 0) return 0;
 
     const now = new Date();
-    const today = toLocalDateStr(now);
-    const yesterday = toLocalDateStr(new Date(now.getTime() - 86400000));
+    const today = localDateStr(now);
+    const yesterdayDate = new Date(now);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = localDateStr(yesterdayDate);
 
     if (completedDates[0] !== today && completedDates[0] !== yesterday) {
         return 0;
@@ -36,7 +42,7 @@ function calculateStreak(logs) {
     let currentDate = new Date(completedDates[0]);
 
     for (let i = 1; i < completedDates.length; i++) {
-        const prevDate = toLocalDateStr(new Date(currentDate.getTime() - 86400000));
+        const prevDate = dateOnlyStr(new Date(currentDate.getTime() - 86400000));
         if (completedDates[i] === prevDate) {
             streak++;
             currentDate = new Date(completedDates[i]);
@@ -53,7 +59,7 @@ function calculateMaxStreak(logs) {
 
     const completedDates = logs
         .filter(log => log.completed)
-        .map(log => toLocalDateStr(new Date(log.date)))
+        .map(log => dateOnlyStr(new Date(log.date)))
         .sort();
 
     if (completedDates.length === 0) return 0;
@@ -62,7 +68,7 @@ function calculateMaxStreak(logs) {
     let currentStreak = 1;
 
     for (let i = 1; i < completedDates.length; i++) {
-        const prevDate = toLocalDateStr(new Date(new Date(completedDates[i - 1]).getTime() + 86400000));
+        const prevDate = dateOnlyStr(new Date(new Date(completedDates[i - 1]).getTime() + 86400000));
         if (completedDates[i] === prevDate) {
             currentStreak++;
             maxStreak = Math.max(maxStreak, currentStreak);
@@ -392,14 +398,15 @@ router.get('/:id/stats', async (req, res) => {
         const maxStreak = calculateMaxStreak(logs);
 
         const lastCompletedLog = completedLogs[0];
-        let lastCompletedDate = null;
-        if (lastCompletedLog) {
-            const d = new Date(lastCompletedLog.date);
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            lastCompletedDate = `${y}-${m}-${day}`;
-        }
+        const lastCompletedDate = lastCompletedLog
+            ? dateOnlyStr(new Date(lastCompletedLog.date))
+            : null;
+
+        const now = new Date();
+        const todayStr = localDateStr(now);
+        const todayCompleted = logs.some(log => {
+            return dateOnlyStr(new Date(log.date)) === todayStr && log.completed;
+        });
 
         res.json({
             habitId: id,
@@ -408,7 +415,8 @@ router.get('/:id/stats', async (req, res) => {
             totalDays,
             completedDays,
             completionRate,
-            lastCompletedDate
+            lastCompletedDate,
+            completedToday: todayCompleted
         });
     } catch (error) {
         console.error('Error fetching stats:', error);

@@ -4,19 +4,24 @@ import '../../config/app_theme.dart';
 class TodayProgress extends StatelessWidget {
   final List<dynamic> habits;
   final Map<String, dynamic> habitStats;
+  final List<dynamic>? todayCompletedHabitIds;
 
   const TodayProgress({
     super.key,
     required this.habits,
     required this.habitStats,
+    this.todayCompletedHabitIds,
   });
 
   @override
   Widget build(BuildContext context) {
-    final today = DateTime.now().toIso8601String().split('T').first;
     final doneCount = habits.where((h) {
+      final id = h['id']?.toString();
+      if (todayCompletedHabitIds != null) {
+        return todayCompletedHabitIds!.contains(id) || todayCompletedHabitIds!.contains(h['id']);
+      }
       final stats = habitStats[h['id']] as Map<String, dynamic>?;
-      return stats?['lastCompletedDate'] == today;
+      return stats?['completedToday'] == true;
     }).length;
 
     return Container(
@@ -68,8 +73,14 @@ class TodayProgress extends StatelessWidget {
             )
           else
             ...habits.map((habit) {
+              final id = habit['id']?.toString();
               final stats = habitStats[habit['id']] as Map<String, dynamic>?;
-              final doneToday = stats?['lastCompletedDate'] == today;
+              bool doneToday;
+              if (todayCompletedHabitIds != null) {
+                doneToday = todayCompletedHabitIds!.contains(id) || todayCompletedHabitIds!.contains(habit['id']);
+              } else {
+                doneToday = stats?['completedToday'] == true;
+              }
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(

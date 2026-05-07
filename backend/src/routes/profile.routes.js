@@ -126,11 +126,15 @@ router.get('/stats', async (req, res) => {
 
         const todayCompleted = todayLogs.filter(l => l.completed).length;
         const todayTotal = todayLogs.length;
+        const todayCompletedHabitIds = todayLogs
+            .filter(l => l.completed)
+            .map(l => l.habitId);
 
         res.json({
             ...stats,
             todayCompleted,
-            todayTotal
+            todayTotal,
+            todayCompletedHabitIds
         });
     } catch (error) {
         console.error('[PROFILE STATS ERROR]', error.message);

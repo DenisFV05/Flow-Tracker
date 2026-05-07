@@ -104,29 +104,37 @@ class _DashboardViewState extends State<DashboardView> {
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      TodayProgress(habits: habits, habitStats: habitStats),
+                                      TodayProgress(
+                                        habits: habits,
+                                        habitStats: habitStats,
+                                        todayCompletedHabitIds: dashboardStats['todayCompletedHabitIds'],
+                                      ),
                                     ],
                                   ),
-                              ),
-                            ],
-                          );
-                        }
+                                ),
+                              ],
+                            );
+                          }
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildHabitsList(habits, habitStats),
-                            const SizedBox(height: 28),
-                            const Text(
-                              'Progrés d\'avui',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textPrimary,
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildHabitsList(habits, habitStats),
+                              const SizedBox(height: 28),
+                              const Text(
+                                'Progrés d\'avui',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            TodayProgress(habits: habits, habitStats: habitStats),
+                              const SizedBox(height: 16),
+                              TodayProgress(
+                                habits: habits,
+                                habitStats: habitStats,
+                                todayCompletedHabitIds: dashboardStats['todayCompletedHabitIds'],
+                              ),
                           ],
                         );
                       },
