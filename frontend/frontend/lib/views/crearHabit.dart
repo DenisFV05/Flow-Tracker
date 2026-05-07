@@ -60,9 +60,10 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
 
         if (mounted) Navigator.pop(context);
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error habit'),
+          SnackBar(
+            content: Text('Error: $e'),
           ),
         );
       }

@@ -87,9 +87,10 @@ class EditarhabitFormState extends State<Editarhabit> {
           Navigator.pop(context);
         }
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error editando hábito'),
+          SnackBar(
+            content: Text('Error: $e'),
           ),
         );
       }

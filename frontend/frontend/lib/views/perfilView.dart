@@ -28,9 +28,10 @@ class _perfilViewState extends State<perfilView> {
   }
 
   void _loadProfile() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = context.read<HabitProvider>();
-      provider.loadProfile();
+      await provider.loadProfile();
+      if (!mounted) return;
       final profile = provider.userProfile;
       if (profile.isNotEmpty) {
         _nameController.text = profile['name'] ?? '';

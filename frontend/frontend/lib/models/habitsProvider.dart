@@ -61,7 +61,8 @@ class HabitProvider extends ChangeNotifier {
       feedNextCursor = result['nextCursor'] as String?;
       notifyListeners();
     } catch (e) {
-      print("FEED ERROR: $e");
+      error = e.toString();
+      notifyListeners();
     }
   }
 
@@ -72,7 +73,7 @@ class HabitProvider extends ChangeNotifier {
 
       userProfile = await profileApi.getProfile();
     } catch (e) {
-      print("PROFILE ERROR: $e");
+      error = e.toString();
     } finally {
       profileLoading = false;
       notifyListeners();
