@@ -13,20 +13,48 @@ class _FeedViewState extends State<FeedView> {
   final FeedApi _feedApi = FeedApi();
   List<dynamic> posts = [];
   bool loading = true;
+  bool _loadingMore = false;
   String? error;
   String? nextCursor;
   final _postController = TextEditingController();
+  final Set<String> _likingPostIds = {};
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadFeed();
   }
 
   @override
   void dispose() {
     _postController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (nextCursor != null && !_loadingMore && !loading) {
+        _loadMore();
+      }
+    }
+  }
+
+  Future<void> _loadMore() async {
+    setState(() => _loadingMore = true);
+    try {
+      final result = await _feedApi.getFeed(cursor: nextCursor);
+      setState(() {
+        posts.addAll(result['posts'] as List<dynamic>);
+        nextCursor = result['nextCursor'] as String?;
+        _loadingMore = false;
+      });
+    } catch (e) {
+      setState(() => _loadingMore = false);
+    }
   }
 
   Future<void> _loadFeed() async {
@@ -76,6 +104,8 @@ class _FeedViewState extends State<FeedView> {
   }
 
   Future<void> _likePost(String postId) async {
+    if (_likingPostIds.contains(postId)) return;
+    _likingPostIds.add(postId);
     try {
       await _feedApi.likePost(postId);
       await _loadFeed();
@@ -88,10 +118,14 @@ class _FeedViewState extends State<FeedView> {
           ),
         );
       }
+    } finally {
+      _likingPostIds.remove(postId);
     }
   }
 
   Future<void> _unlikePost(String postId) async {
+    if (_likingPostIds.contains(postId)) return;
+    _likingPostIds.add(postId);
     try {
       await _feedApi.unlikePost(postId);
       await _loadFeed();
@@ -104,6 +138,8 @@ class _FeedViewState extends State<FeedView> {
           ),
         );
       }
+    } finally {
+      _likingPostIds.remove(postId);
     }
   }
 
@@ -225,9 +261,16 @@ class _FeedViewState extends State<FeedView> {
                     onRefresh: _loadFeed,
                     color: AppTheme.primary,
                     child: ListView.builder(
+                      controller: _scrollController,
                       padding: const EdgeInsets.all(20),
-                      itemCount: posts.length,
+                      itemCount: posts.length + (_loadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == posts.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary)),
+                          );
+                        }
                         final post = posts[index];
                         final user = post['user'] ?? {};
                         final liked = post['liked'] ?? false;

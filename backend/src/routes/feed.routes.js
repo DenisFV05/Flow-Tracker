@@ -61,9 +61,6 @@ router.get('/', async (req, res) => {
                 user: {
                     select: { id: true, username: true, name: true, avatar: true }
                 },
-                habit: {
-                    select: { id: true, name: true }
-                },
                 likes: {
                     where: { userId },
                     select: { id: true }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 import '../services/friends_service.dart';
@@ -151,10 +152,14 @@ class _FriendProfileViewState extends State<FriendProfileView> {
             child: CircleAvatar(
               radius: 48,
               backgroundColor: AppTheme.surfaceLight,
-              backgroundImage: avatar != null && avatar.startsWith('http')
-                  ? NetworkImage(avatar)
+              backgroundImage: avatar != null
+                  ? (avatar.startsWith('data:')
+                      ? MemoryImage(base64Decode(avatar.split(',').last))
+                      : (avatar.startsWith('http')
+                          ? NetworkImage(avatar)
+                          : null))
                   : null,
-              child: (avatar == null || !avatar.startsWith('http'))
+              child: avatar == null || (!avatar.startsWith('http') && !avatar.startsWith('data:'))
                   ? Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                       style: const TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),

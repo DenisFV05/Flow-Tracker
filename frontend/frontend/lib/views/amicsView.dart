@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../config/app_theme.dart';
@@ -269,7 +270,11 @@ class _AmicsViewState extends State<AmicsView> {
           leading: CircleAvatar(
             radius: 22,
             backgroundColor: AppTheme.primary.withOpacity(0.1),
-            backgroundImage: user['avatar'] != null ? NetworkImage(user['avatar']) : null,
+            backgroundImage: user['avatar'] != null
+                ? (user['avatar'].toString().startsWith('data:')
+                    ? MemoryImage(base64Decode(user['avatar'].toString().split(',').last))
+                    : NetworkImage(user['avatar']))
+                : null,
             child: user['avatar'] == null
                 ? Text(
                     user['name']?[0]?.toUpperCase() ?? '?',
