@@ -8,7 +8,8 @@ class HabitCard extends StatelessWidget {
   final List<dynamic> tags;
   final Color color;
   final VoidCallback? onTap;
-
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   const HabitCard({
     super.key,
     required this.title,
@@ -18,6 +19,9 @@ class HabitCard extends StatelessWidget {
     required this.tags,
     required this.color,
     this.onTap,
+    this.onEdit,
+    this.onDelete,
+
   });
 
   @override
@@ -43,6 +47,70 @@ class HabitCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+                        Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+
+                PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.more_horiz,
+                    size: 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      onEdit?.call();
+                    } else if (value == 'delete') {
+                      onDelete?.call();
+                    }
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit_outlined, size: 18),
+                          SizedBox(width: 10),
+                          Text("Edit"),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: Colors.red,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Delete",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
             Text(
               title,
               style: const TextStyle(

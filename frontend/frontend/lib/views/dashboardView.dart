@@ -1,3 +1,4 @@
+import 'package:flowTracker/views/editarHabit.dart';
 import 'package:flowTracker/widgets/habits/HabitDetailView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -233,11 +234,35 @@ class _DashboardViewState extends State<DashboardView> {
                 streak: stats['currentStreak'] ?? 0,
                 tags: habit['tags'] ?? [],
                 color: const Color(0xFF1E88E5),
+
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => HabitDetailView(habit: habit),
+                    ),
+                  );
+                },
+
+                onDelete: () async {
+                  final id = habit['id'].toString();
+
+                  await context
+                      .read<HabitProvider>()
+                      .deleteHabit(id);
+                },
+
+                onEdit: () async {
+                  await showDialog(
+                    context: context,
+                    builder: (_) => Editarhabit(
+                      habitId: habit['id'].toString(),
+                      initialName: habit['name'] ?? '',
+                      initialDescription:
+                          habit['description'] ?? '',
+                      initialTags: (habit['tags'] as List<dynamic>)
+                          .map((tag) => tag['name'].toString())
+                          .toList(),
                     ),
                   );
                 },
