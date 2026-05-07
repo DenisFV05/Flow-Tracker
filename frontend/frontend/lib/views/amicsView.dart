@@ -84,7 +84,24 @@ class _AmicsViewState extends State<AmicsView> {
     }
   }
 
-  Future<void> _removeFriend(String id) async {
+  Future<void> _removeFriend(String id, String name) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Eliminar amic'),
+        content: Text('Segur que vols eliminar $name com a amic?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel·lar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
     try {
       await _friendsApi.removeFriend(id);
       await _loadData();
@@ -273,7 +290,7 @@ class _AmicsViewState extends State<AmicsView> {
             style: TextStyle(fontSize: 13, color: Colors.grey[500]),
           ),
           trailing: TextButton(
-            onPressed: () => _removeFriend(friendshipId),
+            onPressed: () => _removeFriend(friendshipId, user['name'] ?? ''),
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               minimumSize: Size.zero,

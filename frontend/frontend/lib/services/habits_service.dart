@@ -40,7 +40,7 @@ class HabitsApi {
   ) async {
     final data = await _client.post('/api/habits/$id/log',
         body: {
-          'date': DateTime.now().toIso8601String(),
+          'date': DateTime.now().toIso8601String().split('T').first,
           'completed': completed,
         });
     return data as Map<String, dynamic>;

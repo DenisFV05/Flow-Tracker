@@ -246,8 +246,25 @@ class _DashboardViewState extends State<DashboardView> {
                 },
 
                 onDelete: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      title: const Text('Eliminar hábit'),
+                      content: Text('Segur que vols eliminar "${habit['name'] ?? ''}"? Els registres i publicacions associats també es perdran.'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel·lar')),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                          child: const Text('Eliminar'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed != true) return;
+                  if (!mounted) return;
                   final id = habit['id'].toString();
-
                   await context
                       .read<HabitProvider>()
                       .deleteHabit(id);
