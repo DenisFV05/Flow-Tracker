@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flowTracker/views/editarHabit.dart';
 import 'package:flowTracker/widgets/habits/HabitDetailView.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import '../config/app_theme.dart';
 
 import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
-import '../widgets/stats/quickStats.dart';
+import '../widgets/stats/todayProgress.dart';
 
 import '../models/habitsProvider.dart';
 import 'crearHabit.dart';
@@ -19,6 +20,8 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
+  Timer? _timeTimer;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +29,16 @@ class _DashboardViewState extends State<DashboardView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HabitProvider>().loadDashboard();
     });
+
+    _timeTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timeTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -79,21 +92,21 @@ class _DashboardViewState extends State<DashboardView> {
                               const SizedBox(width: 20),
                               Expanded(
                                 flex: 1,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Resum',
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.textPrimary,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Progrés d\'avui',
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppTheme.textPrimary,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const QuickStats(),
-                                  ],
-                                ),
+                                      const SizedBox(height: 16),
+                                      TodayProgress(habits: habits, habitStats: habitStats),
+                                    ],
+                                  ),
                               ),
                             ],
                           );
@@ -105,7 +118,7 @@ class _DashboardViewState extends State<DashboardView> {
                             _buildHabitsList(habits, habitStats),
                             const SizedBox(height: 28),
                             const Text(
-                              'Resum',
+                              'Progrés d\'avui',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -113,7 +126,7 @@ class _DashboardViewState extends State<DashboardView> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            const QuickStats(),
+                            TodayProgress(habits: habits, habitStats: habitStats),
                           ],
                         );
                       },
@@ -128,12 +141,16 @@ class _DashboardViewState extends State<DashboardView> {
   Widget _buildWelcomeHeader() {
     final hour = DateTime.now().hour;
     String greeting;
+    IconData greetingIcon;
     if (hour < 12) {
       greeting = 'Bon dia';
+      greetingIcon = Icons.wb_sunny_rounded;
     } else if (hour < 18) {
       greeting = 'Bona tarda';
+      greetingIcon = Icons.wb_cloudy_rounded;
     } else {
       greeting = 'Bona nit';
+      greetingIcon = Icons.nights_stay_rounded;
     }
 
     return Container(
@@ -161,8 +178,8 @@ class _DashboardViewState extends State<DashboardView> {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.track_changes_rounded,
+            child: Icon(
+              greetingIcon,
               size: 32,
               color: Colors.white,
             ),

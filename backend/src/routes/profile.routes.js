@@ -109,12 +109,17 @@ router.get('/stats', async (req, res) => {
 
         const stats = computeStats(habits);
 
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfTomorrow = new Date(startOfToday);
+        startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
         const todayLogs = await prisma.activityLog.findMany({
             where: {
                 userId,
                 date: {
-                    gte: new Date(today)
+                    gte: startOfToday,
+                    lt: startOfTomorrow
                 }
             }
         });

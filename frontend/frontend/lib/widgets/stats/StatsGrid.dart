@@ -18,7 +18,7 @@ class StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rate = totalToday == 0 ? 0 : ((todayCompleted / totalToday) * 100).toStringAsFixed(0);
+    final rate = totalHabits == 0 ? 0 : ((todayCompleted / totalHabits) * 100).toStringAsFixed(0);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -48,7 +48,7 @@ class StatsGrid extends StatelessWidget {
             child: StatCard(
               icon: Icons.today_rounded,
               title: "Avui",
-              value: "$todayCompleted/$totalToday",
+              value: "$todayCompleted/$totalHabits",
               color: AppTheme.success,
             ),
           ),
