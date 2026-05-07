@@ -38,17 +38,21 @@ class EditarhabitFormState extends State<Editarhabit> {
   ];
 
   String? selectedTag;
+  final List<String> _customTags = [];
 
   @override
   void initState() {
     super.initState();
 
-    // Cargar datos actuales del hábito
     _nameController.text = widget.initialName;
     _descripcioController.text = widget.initialDescription;
 
-    if (widget.initialTags.isNotEmpty) {
-      selectedTag = widget.initialTags.first;
+    for (final tag in widget.initialTags) {
+      if (defaultTags.contains(tag)) {
+        selectedTag = tag;
+      } else {
+        _customTags.add(tag);
+      }
     }
   }
 
@@ -58,6 +62,22 @@ class EditarhabitFormState extends State<Editarhabit> {
     _descripcioController.dispose();
     _customTagController.dispose();
     super.dispose();
+  }
+
+  void _addCustomTag() {
+    final tag = _customTagController.text.trim();
+    if (tag.isEmpty) return;
+    if (_customTags.contains(tag)) return;
+    setState(() {
+      _customTags.add(tag);
+      _customTagController.clear();
+    });
+  }
+
+  void _removeCustomTag(String tag) {
+    setState(() {
+      _customTags.remove(tag);
+    });
   }
 
   Future<void> _editarHabit() async {
@@ -71,9 +91,7 @@ class EditarhabitFormState extends State<Editarhabit> {
         tags.add(selectedTag!);
       }
 
-      if (_customTagController.text.trim().isNotEmpty) {
-        tags.add(_customTagController.text.trim());
-      }
+      tags.addAll(_customTags);
 
       try {
         await context.read<HabitProvider>().editHabit(
@@ -103,7 +121,7 @@ class EditarhabitFormState extends State<Editarhabit> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedTag = tag;
+          selectedTag = isSelected ? null : tag;
         });
       },
       child: Container(
@@ -113,7 +131,7 @@ class EditarhabitFormState extends State<Editarhabit> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? AppTheme.white
+                ? AppTheme.primary
                 : Colors.grey.shade300,
           ),
         ),
@@ -122,9 +140,7 @@ class EditarhabitFormState extends State<Editarhabit> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: isSelected
-                ? AppTheme.white
-                : Colors.black87,
+            color: isSelected ? Colors.white : Colors.black87,
           ),
         ),
       ),
@@ -146,7 +162,6 @@ class EditarhabitFormState extends State<Editarhabit> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -155,11 +170,12 @@ class EditarhabitFormState extends State<Editarhabit> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
                       ),
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close, color: AppTheme.textSecondary),
                     ),
                   ],
                 ),
@@ -170,22 +186,17 @@ class EditarhabitFormState extends State<Editarhabit> {
                   'Modifica el teu habit i actualitza les etiquetes.',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey.shade700,
+                    color: AppTheme.textSecondary,
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
-                /// Nombre
                 const Text(
                   "Nom de l'habit",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
                 ),
-
                 const SizedBox(height: 8),
-
                 TextFormField(
                   controller: _nameController,
                   validator: (value) {
@@ -196,53 +207,44 @@ class EditarhabitFormState extends State<Editarhabit> {
                   },
                   decoration: InputDecoration(
                     hintText: 'Exemple: Correr al matí',
+                    filled: true,
+                    fillColor: AppTheme.background,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF4FD1B5),
-                        width: 2,
-                      ),
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
                 ),
 
                 const SizedBox(height: 18),
 
-                /// Descripción
                 const Text(
                   'Descripció (opcional)',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
                 ),
-
                 const SizedBox(height: 8),
-
                 TextFormField(
                   controller: _descripcioController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    hintText:
-                        'Exemple: 1 hora de camí tots els dies.',
+                    hintText: 'Exemple: 1 hora de camí tots els dies.',
+                    filled: true,
+                    fillColor: AppTheme.background,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
                 ),
 
                 const SizedBox(height: 18),
 
-                /// Tags
                 const Text(
                   'Etiquetes',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
                 ),
-
                 const SizedBox(height: 12),
 
                 Wrap(
@@ -255,26 +257,73 @@ class EditarhabitFormState extends State<Editarhabit> {
 
                 const SizedBox(height: 16),
 
-                /// Custom tag
-                TextFormField(
-                  controller: _customTagController,
-                  decoration: InputDecoration(
-                    hintText: 'Afegir una etiqueta custom...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _customTagController,
+                        decoration: InputDecoration(
+                          hintText: 'Afegir una etiqueta custom...',
+                          filled: true,
+                          fillColor: AppTheme.background,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: _addCustomTag,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text('Afegir'),
+                    ),
+                  ],
                 ),
+
+                if (_customTags.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: _customTags.map((tag) => Chip(
+                      label: Text(tag, style: const TextStyle(fontSize: 13, color: Colors.white)),
+                      backgroundColor: AppTheme.primary,
+                      deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                      onDeleted: () => _removeCustomTag(tag),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                    )).toList(),
+                  ),
+                ],
 
                 const SizedBox(height: 28),
 
-                /// Botones
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.textSecondary,
+                        side: const BorderSide(color: AppTheme.textSecondary),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      ),
+                      child: const Text('Cancel·lar'),
                     ),
 
                     const SizedBox(width: 12),
@@ -282,14 +331,15 @@ class EditarhabitFormState extends State<Editarhabit> {
                     ElevatedButton(
                       onPressed: _editarHabit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                           AppTheme.primary ,
+                        backgroundColor: AppTheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                      child: const Text(
-                        'Guardar canvis',
-                      ),
+                      child: const Text('Guardar canvis'),
                     ),
                   ],
                 ),
