@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 import '../services/feed_service.dart';
@@ -14,8 +16,11 @@ class _FeedViewState extends State<FeedView> {
   List<dynamic> posts = [];
   bool loading = true;
   bool _loadingMore = false;
+  bool _creatingPost = false;
+  bool _hasNewPosts = false;
   String? error;
   String? nextCursor;
+  Timer? _pollTimer;
   final _postController = TextEditingController();
   final Set<String> _likingPostIds = {};
   final ScrollController _scrollController = ScrollController();
@@ -25,13 +30,29 @@ class _FeedViewState extends State<FeedView> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _loadFeed();
+    _startPolling();
   }
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
     _postController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _startPolling() {
+    _pollTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      if (!mounted || _hasNewPosts) return;
+      try {
+        final result = await _feedApi.getFeed(limit: 1);
+        final newPosts = result['posts'] as List<dynamic>;
+        if (newPosts.isEmpty) return;
+        if (posts.isEmpty || newPosts.first['id'] != posts.first['id']) {
+          if (mounted) setState(() => _hasNewPosts = true);
+        }
+      } catch (_) {}
+    });
   }
 
   void _onScroll() {
@@ -69,6 +90,7 @@ class _FeedViewState extends State<FeedView> {
       setState(() {
         posts = result['posts'] as List<dynamic>;
         nextCursor = result['nextCursor'] as String?;
+        _hasNewPosts = false;
         loading = false;
       });
     } catch (e) {
@@ -80,16 +102,17 @@ class _FeedViewState extends State<FeedView> {
   }
 
   Future<void> _createPost() async {
-    if (_postController.text.trim().isEmpty) return;
-
+    if (_postController.text.trim().isEmpty || _creatingPost) return;
+    _creatingPost = true;
     try {
       await _feedApi.createPost(_postController.text.trim());
       _postController.clear();
       await _loadFeed();
+      _hasNewPosts = false;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Publicació creat!'),
+            content: const Text('Publicació creada!'),
             backgroundColor: AppTheme.primary,
           ),
         );
@@ -100,6 +123,8 @@ class _FeedViewState extends State<FeedView> {
           SnackBar(content: Text('Error: $e')),
         );
       }
+    } finally {
+      _creatingPost = false;
     }
   }
 
@@ -225,6 +250,22 @@ class _FeedViewState extends State<FeedView> {
       child: Column(
         children: [
           _buildPostComposer(),
+          if (_hasNewPosts)
+            GestureDetector(
+              onTap: () {
+                _loadFeed();
+                _hasNewPosts = false;
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                color: AppTheme.primary,
+                child: const Text(
+                  'Noves publicacions — Toca per veure',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
+                ),
+              ),
+            ),
           Expanded(
             child: posts.isEmpty
                 ? Center(
@@ -298,7 +339,9 @@ class _FeedViewState extends State<FeedView> {
                                   radius: 24,
                                   backgroundColor: AppTheme.primary.withOpacity(0.1),
                                   backgroundImage: user['avatar'] != null
-                                      ? NetworkImage(user['avatar'])
+                                      ? (user['avatar'].toString().startsWith('data:')
+                                          ? MemoryImage(base64Decode(user['avatar'].toString().split(',').last))
+                                          : NetworkImage(user['avatar']))
                                       : null,
                                   child: user['avatar'] == null
                                       ? Text(
@@ -371,17 +414,26 @@ class _FeedViewState extends State<FeedView> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                InkWell(
-                                  onTap: () => liked ? _unlikePost(post['id']) : _likePost(post['id']),
-                                  borderRadius: BorderRadius.circular(24),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                                    child: Icon(
-                                      liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                      color: liked ? AppTheme.error : Colors.grey[400],
-                                      size: 22,
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    InkWell(
+                                      onTap: () => liked ? _unlikePost(post['id']) : _likePost(post['id']),
+                                      borderRadius: BorderRadius.circular(24),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        child: Icon(
+                                          liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                          color: liked ? AppTheme.error : Colors.grey[400],
+                                          size: 22,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Text(
+                                      '${post['likesCount'] ?? 0}',
+                                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -411,10 +463,6 @@ class _FeedViewState extends State<FeedView> {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: AppTheme.primary.withOpacity(0.1),
-            child: const Icon(Icons.edit_note_rounded, color: AppTheme.primary, size: 20),
-          ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(

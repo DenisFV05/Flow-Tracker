@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
@@ -18,12 +19,38 @@ class _AmicsViewState extends State<AmicsView> {
   List<dynamic> friends = [];
   List<dynamic> requests = [];
   bool loading = true;
+  bool _hasChanges = false;
   String? error;
+  Timer? _pollTimer;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _pollTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      if (!mounted || _hasChanges) return;
+      try {
+        final results = await Future.wait([
+          _friendsApi.getFriends(),
+          _friendsApi.getRequests(),
+        ]);
+        final newFriends = results[0] as List<dynamic>;
+        final newRequests = results[1] as List<dynamic>;
+        if (newFriends.length != friends.length || newRequests.length != requests.length) {
+          if (mounted) setState(() => _hasChanges = true);
+        }
+      } catch (_) {}
+    });
   }
 
   Future<void> _loadData() async {
@@ -41,6 +68,7 @@ class _AmicsViewState extends State<AmicsView> {
       setState(() {
         friends = results[0] as List<dynamic>;
         requests = results[1] as List<dynamic>;
+        _hasChanges = false;
         loading = false;
       });
     } catch (e) {
@@ -148,10 +176,29 @@ class _AmicsViewState extends State<AmicsView> {
                     ],
                   ),
                 )
-              : RefreshIndicator(
-                  onRefresh: _loadData,
-                  color: AppTheme.primary,
-                  child: SingleChildScrollView(
+              : Column(
+                  children: [
+                    if (_hasChanges)
+                      GestureDetector(
+                        onTap: () {
+                          _loadData();
+                          _hasChanges = false;
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          color: AppTheme.primary,
+                          child: const Text(
+                            'Canvis detectats — Toca per veure',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: _loadData,
+                        color: AppTheme.primary,
+                        child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: LayoutBuilder(

@@ -64,6 +64,9 @@ router.get('/', async (req, res) => {
                 likes: {
                     where: { userId },
                     select: { id: true }
+                },
+                _count: {
+                    select: { likes: true }
                 }
             },
             orderBy: { createdAt: 'desc' },
@@ -90,6 +93,7 @@ router.get('/', async (req, res) => {
             habitName: post.habit?.name,
             createdAt: post.createdAt.toISOString(),
             liked: post.likes.length > 0,
+            likesCount: post._count.likes,
             isOwn: post.userId === userId
         }));
 
