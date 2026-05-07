@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../sidebar.dart';
 import '../screens.dart';
-import '../utils.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class MainScreen extends StatelessWidget {
