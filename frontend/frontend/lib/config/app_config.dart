@@ -9,7 +9,7 @@ class AppConfig extends ChangeNotifier {
 
   static AppConfig get instance => _instance;
 
-  String _serverUrl = 'http://localhost:3000';
+  String _serverUrl = 'https://flow-tracker.ieti.site';
   String? _token;
 
   String get serverUrl => _serverUrl;

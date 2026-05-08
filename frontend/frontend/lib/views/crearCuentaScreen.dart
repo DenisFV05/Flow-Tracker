@@ -20,7 +20,6 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _serverUrlController = TextEditingController();
 
   bool _isLoading = false;
   String _errorMessage = '';
@@ -28,10 +27,8 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   bool _confirmPasswordVisible = false;
   bool _acceptedTerms = false;
 
-  @override
   void initState() {
     super.initState();
-    _serverUrlController.text = AppConfig.instance.serverUrl;
   }
 
   @override
@@ -41,7 +38,6 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _serverUrlController.dispose();
     super.dispose();
   }
 
@@ -173,24 +169,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
 
                         const SizedBox(height: 24),
 
-                        TextFormField(
-                          controller: _serverUrlController,
-                          decoration: const InputDecoration(
-                            labelText: 'URL del servidor',
-                            hintText: 'http://localhost:3000',
-                            prefixIcon: Icon(Icons.dns_outlined, color: AppTheme.primary),
-                            filled: true,
-                            fillColor: AppTheme.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(12)),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                          ),
-                          validator: (v) => v!.isEmpty ? "Requerit" : null,
-                        ),
-
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
 
                         Row(
                           children: [

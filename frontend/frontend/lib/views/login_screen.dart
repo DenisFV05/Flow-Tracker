@@ -15,7 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _serverUrlController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -30,8 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loadSettings() async {
-    final config = AppConfig.instance;
-    _serverUrlController.text = config.serverUrl;
+    // URL no longer loaded from settings
   }
 
   Future<void> _login() async {
@@ -51,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       await AppConfig.instance.login(
-        serverUrl: _serverUrlController.text,
+        serverUrl: AppConfig.instance.serverUrl,
         token: token,
       );
 
@@ -147,23 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 28),
-
-                      TextFormField(
-                        controller: _serverUrlController,
-                        decoration: const InputDecoration(
-                          labelText: 'URL del servidor',
-                          hintText: 'http://localhost:3000',
-                          prefixIcon: Icon(Icons.dns_outlined, color: AppTheme.primary),
-                          filled: true,
-                          fillColor: AppTheme.background,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        ),
-                        validator: (value) => value!.isEmpty ? 'Requerit' : null,
-                      ),
 
                       const SizedBox(height: 16),
 
