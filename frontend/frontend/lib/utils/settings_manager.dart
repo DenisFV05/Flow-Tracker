@@ -1,51 +1,31 @@
-import 'dart:io';
-import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsManager {
-  static const String _fileName = 'settings.json';
+  static const String _keyServerUrl = 'serverUrl';
   
   static Future<void> saveSettings({
     required String serverUrl,
   }) async {
     try {
-      final file = await _getSettingsFile();
-      
-      final settings = {
-        'serverUrl': serverUrl,
-      };
-      
-      await file.writeAsString(jsonEncode(settings));
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_keyServerUrl, serverUrl);
     } catch (e) {
       print('Error saving settings: $e');
-      rethrow;
     }
   }
   
   static Future<Map<String, String?>> loadSettings() async {
     try {
-      final file = await _getSettingsFile();
-      
-      if (!await file.exists()) {
-        return {'serverUrl': null};
-      }
-      
-      final contents = await file.readAsString();
-      final Map<String, dynamic> data = jsonDecode(contents);
+      final prefs = await SharedPreferences.getInstance();
+      final serverUrl = prefs.getString(_keyServerUrl);
       
       return {
-        'serverUrl': data['serverUrl'] as String?,
+        'serverUrl': serverUrl,
       };
     } catch (e) {
       print('Error loading settings: $e');
       return {'serverUrl': null};
     }
-  }
-  
-  // Obtener el archivo settings.json
-  static Future<File> _getSettingsFile() async {
-    final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
   }
 }
 

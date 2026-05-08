@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,7 @@ class _perfilViewState extends State<perfilView> {
   final _nameController = TextEditingController();
   final _avatarUrlController = TextEditingController();
   bool _saving = false;
-  File? _selectedImage;
+  io.File? _selectedImage;
   bool _showDebug = false;
 
   @override
@@ -53,16 +54,24 @@ class _perfilViewState extends State<perfilView> {
   Future<void> _pickImage() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
+      withData: true, // Necessari per a la Web
     );
+    
     if (result != null && result.files.isNotEmpty) {
-      final file = File(result.files.first.path!);
-      final bytes = await file.readAsBytes();
-      final base64Image = base64Encode(bytes);
-      final ext = result.files.first.extension?.toLowerCase() ?? 'png';
-      setState(() {
-        _selectedImage = file;
-        _avatarUrlController.text = 'data:image/$ext;base64,$base64Image';
-      });
+      final fileData = result.files.first;
+      final bytes = fileData.bytes;
+      
+      if (bytes != null) {
+        final base64Image = base64Encode(bytes);
+        final ext = fileData.extension?.toLowerCase() ?? 'png';
+        
+        setState(() {
+          if (!kIsWeb && fileData.path != null) {
+            _selectedImage = io.File(fileData.path!);
+          }
+          _avatarUrlController.text = 'data:image/$ext;base64,$base64Image';
+        });
+      }
     }
   }
 
