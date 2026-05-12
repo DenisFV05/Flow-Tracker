@@ -19,15 +19,15 @@ class HabitHeatmap extends StatelessWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -36,12 +36,12 @@ class HabitHeatmap extends StatelessWidget {
         children: [
           Text(
             'Heatmap $year',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildHeatmap(dataMap),
-          const SizedBox(height: 12),
-          _buildLegend(),
+          SizedBox(height: 12),
+          _buildLegend(context),
         ],
       ),
     );
@@ -80,7 +80,7 @@ class HabitHeatmap extends StatelessWidget {
               return Container(
                 width: 14,
                 height: 14,
-                margin: const EdgeInsets.all(2),
+                margin: EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: day.completed ? AppTheme.primary : Colors.grey[200],
                   borderRadius: BorderRadius.circular(3),
@@ -93,14 +93,14 @@ class HabitHeatmap extends StatelessWidget {
     );
   }
 
-  Widget _buildLegend() {
+  Widget _buildLegend(BuildContext context) {
     return Row(
       children: [
-        Container(width: 14, height: 14, color: AppTheme.primary, margin: const EdgeInsets.only(right: 4)),
-        const Text('Completat', style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
-        const SizedBox(width: 16),
-        Container(width: 14, height: 14, color: Colors.grey[200]!, margin: const EdgeInsets.only(right: 4)),
-        const Text('No completat', style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+        Container(width: 14, height: 14, color: AppTheme.primary, margin: EdgeInsets.only(right: 4)),
+        Text('Completat', style: TextStyle(fontSize: 12, color: context.textSecondaryColor)),
+        SizedBox(width: 16),
+        Container(width: 14, height: 14, color: Colors.grey[200]!, margin: EdgeInsets.only(right: 4)),
+        Text('No completat', style: TextStyle(fontSize: 12, color: context.textSecondaryColor)),
       ],
     );
   }

@@ -66,14 +66,14 @@ class _NotificationsViewState extends State<NotificationsView> {
     final notifications = provider.notifications;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Notificacions',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: AppTheme.textPrimary,
+        backgroundColor: context.surfaceColor,
+        foregroundColor: context.textPrimaryColor,
         elevation: 0,
       ),
       body: notifications.isEmpty
@@ -82,27 +82,27 @@ class _NotificationsViewState extends State<NotificationsView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppTheme.surfaceLight,
+                      color: context.surfaceLightColor,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.notifications_off_rounded,
                       size: 48,
                       color: AppTheme.primary,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Cap notificació de moment',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                      color: context.textPrimaryColor,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Les notificacions de likes i amistats apareixeran aquí',
                     style: TextStyle(fontSize: 13, color: Colors.grey[500]),
@@ -112,7 +112,7 @@ class _NotificationsViewState extends State<NotificationsView> {
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               itemCount: notifications.length,
               itemBuilder: (context, index) {
                 final n = notifications[index];
@@ -120,9 +120,9 @@ class _NotificationsViewState extends State<NotificationsView> {
                 final read = n['read'] ?? true;
 
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
+                  margin: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
-                    color: read ? Colors.white : AppTheme.surfaceLight,
+                    color: read ? Colors.white : context.surfaceLightColor,
                     borderRadius: BorderRadius.circular(14),
                     border: read
                         ? null
@@ -137,7 +137,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                   ),
                   child: ListTile(
                     leading: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: _colorForType(type).withOpacity(0.1),
                         shape: BoxShape.circle,
@@ -164,7 +164,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                         : Container(
                             width: 8,
                             height: 8,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: AppTheme.primary,
                               shape: BoxShape.circle,
                             ),

@@ -7,6 +7,7 @@ class HabitProvider extends ChangeNotifier {
   List<dynamic> habits = [];
   Map<String, dynamic> dashboardStats = {};
   Map<String, dynamic> habitStats = {};
+  Map<String, List<dynamic>> habitHeatmaps = {};
   
   bool loading = false;
   String? error;
@@ -24,6 +25,12 @@ class HabitProvider extends ChangeNotifier {
       for (final habit in habits) {
         final id = habit['id'];
         habitStats[id] = await _habitsApi.getHabitStats(id);
+        try {
+          final response = await _habitsApi.getHabitHeatmap(id, year: DateTime.now().year);
+          habitHeatmaps[id] = response['data'] as List<dynamic>;
+        } catch (_) {
+          habitHeatmaps[id] = [];
+        }
       }
     } catch (e) {
       error = e.toString();
@@ -69,20 +76,53 @@ class HabitProvider extends ChangeNotifier {
   }
 
   Future<void> toggleHabit(String id, bool completed) async {
+    // Optimistic update per UI instantània
+    final previousCompleted = habitStats[id]?['completedToday'] == true;
+    if (habitStats[id] != null) {
+      habitStats[id]['completedToday'] = completed;
+      notifyListeners();
+    }
+
     try {
       await _habitsApi.toggleHabit(id, completed);
-      await loadDashboard();
+      
+      // Actualització en segon pla (sense bloquejar ni mostrar loading circular)
+      _habitsApi.getProfileStats().then((stats) {
+        dashboardStats = stats;
+        notifyListeners();
+      }).catchError((_) {});
+
+      _habitsApi.getHabitStats(id).then((stats) {
+        habitStats[id] = stats;
+        notifyListeners();
+      }).catchError((_) {});
+
     } catch (e) {
+      // Revertir si falla
+      if (habitStats[id] != null) {
+        habitStats[id]['completedToday'] = previousCompleted;
+        notifyListeners();
+      }
       error = e.toString();
       notifyListeners();
     }
   }
 
-// Dentro de HabitProvider
   Future<void> logHabit(String id, String date) async {
     try {
       await _habitsApi.logHabit(id, date, true);
-      await loadDashboard(); 
+      
+      // Actualització en segon pla específica per aquest hàbit
+      _habitsApi.getProfileStats().then((stats) {
+        dashboardStats = stats;
+        notifyListeners();
+      }).catchError((_) {});
+
+      _habitsApi.getHabitStats(id).then((stats) {
+        habitStats[id] = stats;
+        notifyListeners();
+      }).catchError((_) {});
+      
     } catch (e) {
       error = e.toString();
       notifyListeners();

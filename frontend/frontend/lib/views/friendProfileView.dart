@@ -57,69 +57,69 @@ class _FriendProfileViewState extends State<FriendProfileView> {
     final avatar = user['avatar'] as String?;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: context.textPrimaryColor),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           name,
-          style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.textPrimaryColor, fontWeight: FontWeight.w600),
         ),
       ),
       body: loading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
           : error != null
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: const BoxDecoration(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
                           color: AppTheme.errorBg,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.error_outline_rounded, size: 48, color: AppTheme.error),
+                        child: Icon(Icons.error_outline_rounded, size: 48, color: AppTheme.error),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
+                      SizedBox(height: 16),
+                      Text(
                         'No s\'han pogut carregar les dades',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        padding: EdgeInsets.symmetric(horizontal: 32),
                         child: Text(
                           error!,
                           style: TextStyle(color: Colors.grey[500]),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       ElevatedButton.icon(
                         onPressed: _loadFriendProfile,
-                        icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: const Text('Reintentar'),
+                        icon: Icon(Icons.refresh_rounded, size: 18),
+                        label: Text('Reintentar'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         ),
                       ),
                     ],
                   ),
                 )
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Column(
                     children: [
                       _buildHeader(name, username, avatar),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       if (profile != null) _buildStats(profile!),
                     ],
                   ),
@@ -129,9 +129,9 @@ class _FriendProfileViewState extends State<FriendProfileView> {
 
   Widget _buildHeader(String name, String username, String? avatar) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -144,14 +144,14 @@ class _FriendProfileViewState extends State<FriendProfileView> {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(4),
+            padding: EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: AppTheme.primary, width: 2),
             ),
             child: CircleAvatar(
               radius: 48,
-              backgroundColor: AppTheme.surfaceLight,
+              backgroundColor: context.surfaceLightColor,
               backgroundImage: avatar != null
                   ? (avatar.startsWith('data:')
                       ? MemoryImage(base64Decode(avatar.split(',').last))
@@ -162,17 +162,17 @@ class _FriendProfileViewState extends State<FriendProfileView> {
               child: avatar == null || (!avatar.startsWith('http') && !avatar.startsWith('data:'))
                   ? Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),
                     )
                   : null,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             name,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             '@$username',
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
@@ -189,30 +189,30 @@ class _FriendProfileViewState extends State<FriendProfileView> {
     final rate = stats['overallCompletionRate'] ?? 0;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Estadístiques',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _statRow(Icons.track_changes_rounded, 'Hàbits totals', '$totalHabits', AppTheme.primary),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.check_circle_rounded, 'Dies completats', '$completedLogs', AppTheme.success),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.local_fire_department_rounded, 'Ratxa màxima', '$longestStreak dies', AppTheme.warning),
           _statRow(Icons.percent_rounded, 'Percentatge global', '${rate.toStringAsFixed(1)}%', AppTheme.purple),
         ],
@@ -224,9 +224,9 @@ class _FriendProfileViewState extends State<FriendProfileView> {
     return Row(
       children: [
         Icon(icon, size: 20, color: color),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         Expanded(child: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14))),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary)),
+        Text(value, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor)),
       ],
     );
   }

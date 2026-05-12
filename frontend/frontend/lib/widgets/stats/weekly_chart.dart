@@ -11,26 +11,26 @@ class WeeklyChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Aquesta setmana',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Expanded(
             child: BarChart(
               BarChartData(
@@ -48,10 +48,10 @@ class WeeklyChart extends StatelessWidget {
                           final date = DateTime.parse(days[index]['date']);
                           return Text(
                             ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'][date.weekday - 1],
-                            style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary),
+                            style: TextStyle(fontSize: 10, color: context.textSecondaryColor),
                           );
                         }
-                        return const Text('');
+                        return Text('');
                       },
                     ),
                   ),
@@ -100,26 +100,26 @@ class MonthlyChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Aquest mes',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Expanded(
             child: BarChart(
               BarChartData(
@@ -137,10 +137,10 @@ class MonthlyChart extends StatelessWidget {
                           final date = DateTime.parse(days[index]['date']);
                           return Text(
                             '${date.day}',
-                            style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary),
+                            style: TextStyle(fontSize: 10, color: context.textSecondaryColor),
                           );
                         }
-                        return const Text('');
+                        return Text('');
                       },
                     ),
                   ),

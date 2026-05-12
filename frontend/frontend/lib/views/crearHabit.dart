@@ -95,7 +95,7 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.primary : Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -124,7 +124,7 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
@@ -135,38 +135,38 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Crear nou habit',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close, color: AppTheme.textSecondary),
+                      icon: Icon(Icons.close, color: context.textSecondaryColor),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
 
                 Text(
                   'Afegeix un nou habit, utilitza les etiquetes per organitzar-ho.',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppTheme.textSecondary,
+                    color: context.textSecondaryColor,
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
-                const Text(
+                Text(
                   "Nom de l'habit",
-                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
                   validator: (value) =>
@@ -174,44 +174,44 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
                   decoration: InputDecoration(
                     hintText: 'exemple: Correr al matí',
                     filled: true,
-                    fillColor: AppTheme.background,
+                    fillColor: context.backgroundColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
 
-                const Text(
+                Text(
                   'Descripció (opcional)',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _descripcioController,
                   maxLines: 3,
                   decoration: InputDecoration(
                     hintText: 'exemple: 1 hora de camí tots els dies.',
                     filled: true,
-                    fillColor: AppTheme.background,
+                    fillColor: context.backgroundColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
 
-                const Text(
+                Text(
                   'Etiquetes',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Wrap(
                   spacing: 8,
@@ -221,7 +221,7 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
                       .toList(),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 Row(
                   children: [
@@ -231,50 +231,50 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
                         decoration: InputDecoration(
                           hintText: 'Afegir una etiqueta custom...',
                           filled: true,
-                          fillColor: AppTheme.background,
+                          fillColor: context.backgroundColor,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: _addCustomTag,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text('Afegir'),
+                      child: Text('Afegir'),
                     ),
                   ],
                 ),
 
                 if (_customTags.isNotEmpty) ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Wrap(
                     spacing: 8,
                     runSpacing: 6,
                     children: _customTags.map((tag) => Chip(
-                      label: Text(tag, style: const TextStyle(fontSize: 13, color: Colors.white)),
+                      label: Text(tag, style: TextStyle(fontSize: 13, color: context.surfaceColor)),
                       backgroundColor: AppTheme.primary,
-                      deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                      deleteIcon: Icon(Icons.close, size: 16, color: context.surfaceColor),
                       onDeleted: () => _removeCustomTag(tag),
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 4),
                     )).toList(),
                   ),
                 ],
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -282,28 +282,28 @@ class _CrearHabitFormState extends State<CrearHabitForm> {
                     OutlinedButton(
                       onPressed: () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.textSecondary,
-                        side: const BorderSide(color: AppTheme.textSecondary),
+                        foregroundColor: context.textSecondaryColor,
+                        side: BorderSide(color: context.textSecondaryColor),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
-                      child: const Text('Cancel·lar'),
+                      child: Text('Cancel·lar'),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: _crearHabit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text('Crear Habit'),
+                      child: Text('Crear Habit'),
                     ),
                   ],
                 ),

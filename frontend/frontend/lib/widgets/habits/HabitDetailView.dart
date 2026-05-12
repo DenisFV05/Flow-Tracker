@@ -35,13 +35,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
     final tags = habit['tags'] ?? [];
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.backgroundColor,
 
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: AppTheme.background,
-        foregroundColor: AppTheme.textPrimary,
-        title: const Text(
+        backgroundColor: context.backgroundColor,
+        foregroundColor: context.textPrimaryColor,
+        title: Text(
           "Detalls de l'hàbit",
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -50,7 +50,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
       ),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -58,7 +58,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
             /// HEADER CARD
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
@@ -73,7 +73,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                   BoxShadow(
                     color: AppTheme.primary.withOpacity(0.25),
                     blurRadius: 18,
-                    offset: const Offset(0, 6),
+                    offset: Offset(0, 6),
                   ),
                 ],
               ),
@@ -83,65 +83,65 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 
                   /// ICON
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.18),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.track_changes_rounded,
                       color: Colors.white,
                       size: 34,
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   /// NAME
                   Text(
                     habit['name'] ?? '',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
 
                   /// DESCRIPTION
                   Text(
                     habit['description'] ?? 'Sense descripció',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       color: Colors.white70,
                       height: 1.4,
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   /// STREAK
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.orange.withOpacity(0.18),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.local_fire_department,
                           color: Colors.orange,
                         ),
                       ),
 
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
 
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             "Racha actual",
                             style: TextStyle(
                               color: Colors.white70,
@@ -151,7 +151,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 
                           Text(
                             "$streak dies",
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -165,19 +165,19 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               ),
             ),
 
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
 
             /// PROGRESS CARD
             Container(
-              padding: const EdgeInsets.all(22),
+              padding: EdgeInsets.all(22),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: AppTheme.primary.withOpacity(0.06),
                     blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
@@ -187,7 +187,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                 children: [
 
                   Row(
-                    children: const [
+                    children: [
                       Icon(
                         Icons.bar_chart_rounded,
                         color: AppTheme.primary,
@@ -200,13 +200,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
@@ -219,13 +219,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                     ),
                   ),
 
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
 
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
                       "${(progress * 100).toInt()}%",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primary,
                       ),
@@ -235,20 +235,20 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               ),
             ),
 
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
 
             /// TAGS
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(22),
+              padding: EdgeInsets.all(22),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: AppTheme.primary.withOpacity(0.06),
                     blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
@@ -258,7 +258,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                 children: [
 
                   Row(
-                    children: const [
+                    children: [
                       Icon(
                         Icons.sell_rounded,
                         color: AppTheme.primary,
@@ -271,13 +271,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   Wrap(
                     spacing: 10,
@@ -289,7 +289,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                                 : tag.toString();
 
                             return Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 10,
                               ),
@@ -301,7 +301,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                               ),
                               child: Text(
                                 name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppTheme.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -310,7 +310,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                           }).toList()
                         : [
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 10,
                               ),
@@ -319,7 +319,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                                 borderRadius:
                                     BorderRadius.circular(14),
                               ),
-                              child: const Text("Sense tags"),
+                              child: Text("Sense tags"),
                             ),
                           ],
                   ),
@@ -327,7 +327,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               ),
             ),
 
-            const SizedBox(height: 36),
+            SizedBox(height: 36),
 
             /// TOGGLE BUTTON
             Builder(builder: (context) {
@@ -370,12 +370,12 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                     ),
                   ),
                   icon: loading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2.4,
-                            color: Colors.white,
+                            color: context.surfaceColor,
                           ),
                         )
                       : Icon(
@@ -384,10 +384,10 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                               : Icons.radio_button_unchecked_rounded,
                         ),
                   label: loading
-                      ? const SizedBox.shrink()
+                      ? SizedBox.shrink()
                       : Text(
                           completedToday ? "Desmarcar" : "Marcar com feta",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -396,7 +396,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               );
             }),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Share to Feed button
             SizedBox(
@@ -406,13 +406,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                 onPressed: () => _showShareDialog(context, habit),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primary,
-                  side: const BorderSide(color: AppTheme.primary),
+                  side: BorderSide(color: AppTheme.primary),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
                 ),
-                icon: const Icon(Icons.share_rounded, size: 18),
-                label: const Text(
+                icon: Icon(Icons.share_rounded, size: 18),
+                label: Text(
                   'Compartir al feed',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
@@ -435,7 +435,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.share_rounded, color: AppTheme.primary),
               SizedBox(width: 8),
@@ -450,13 +450,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               hintText: 'Escriu el teu missatge...',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
-              fillColor: AppTheme.background,
+              fillColor: context.backgroundColor,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel·lar'),
+              child: Text('Cancel·lar'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -476,7 +476,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                         if (ctx.mounted) Navigator.pop(ctx);
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text('Publicat al feed! 🎉'),
                               backgroundColor: AppTheme.success,
                             ),
@@ -487,12 +487,12 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                       }
                     },
               child: posting
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: context.surfaceColor),
                     )
-                  : const Text('Publicar'),
+                  : Text('Publicar'),
             ),
           ],
         ),

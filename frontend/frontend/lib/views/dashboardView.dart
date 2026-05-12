@@ -57,27 +57,27 @@ class _DashboardViewState extends State<DashboardView> {
     final habitStats = provider.habitStats;
 
     return Container(
-      color: AppTheme.background,
+      color: context.backgroundColor,
       child: RefreshIndicator(
         onRefresh: _refresh,
         color: AppTheme.primary,
         child: loading && habits.isEmpty
-            ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+            ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
             : SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildWelcomeHeader(),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     StatsGrid(
                       totalHabits: dashboardStats['totalHabits'] ?? 0,
                       todayCompleted: dashboardStats['todayCompleted'] ?? 0,
                       totalToday: dashboardStats['todayTotal'] ?? 0,
                       longestStreak: dashboardStats['longestStreak'] ?? 0,
                     ),
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final isWide = constraints.maxWidth > 700;
@@ -90,21 +90,21 @@ class _DashboardViewState extends State<DashboardView> {
                                 flex: 2,
                                 child: _buildHabitsList(habits, habitStats),
                               ),
-                              const SizedBox(width: 20),
+                              SizedBox(width: 20),
                               Expanded(
                                 flex: 1,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Progrés d\'avui',
                                         style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
-                                          color: AppTheme.textPrimary,
+                                          color: context.textPrimaryColor,
                                         ),
                                       ),
-                                      const SizedBox(height: 16),
+                                      SizedBox(height: 16),
                                       TodayProgress(
                                         habits: habits,
                                         habitStats: habitStats,
@@ -123,16 +123,16 @@ class _DashboardViewState extends State<DashboardView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildHabitsList(habits, habitStats),
-                              const SizedBox(height: 28),
-                              const Text(
+                              SizedBox(height: 28),
+                              Text(
                                 'Progrés d\'avui',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.textPrimary,
+                                  color: context.textPrimaryColor,
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16),
                               TodayProgress(
                                 habits: habits,
                                 habitStats: habitStats,
@@ -155,10 +155,10 @@ class _DashboardViewState extends State<DashboardView> {
     final hour = DateTime.now().hour;
     String greeting;
     IconData greetingIcon;
-    if (hour < 12) {
+    if (hour >= 6 && hour < 12) {
       greeting = 'Bon dia';
       greetingIcon = Icons.wb_sunny_rounded;
-    } else if (hour < 18) {
+    } else if (hour >= 12 && hour < 20) {
       greeting = 'Bona tarda';
       greetingIcon = Icons.wb_cloudy_rounded;
     } else {
@@ -167,7 +167,7 @@ class _DashboardViewState extends State<DashboardView> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [AppTheme.primary, AppTheme.primaryDarker],
@@ -179,14 +179,14 @@ class _DashboardViewState extends State<DashboardView> {
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.3),
             blurRadius: 16,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
@@ -197,21 +197,21 @@ class _DashboardViewState extends State<DashboardView> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(width: 20),
+          SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   greeting,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
+                SizedBox(height: 4),
+                Text(
                   'Segueix els teus hàbits d\'avui',
                   style: TextStyle(
                     fontSize: 14,
@@ -233,22 +233,22 @@ class _DashboardViewState extends State<DashboardView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Hàbits d\'avui',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: context.textPrimaryColor,
               ),
             ),
             TextButton.icon(
               onPressed: () => showCrearHabitPopup(context),
-              icon: const Icon(Icons.add_circle_outline, size: 20, color: AppTheme.primary),
-              label: const Text('Afegir', style: TextStyle(color: AppTheme.primary)),
+              icon: Icon(Icons.add_circle_outline, size: 20, color: AppTheme.primary),
+              label: Text('Afegir', style: TextStyle(color: AppTheme.primary)),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         if (habits.isEmpty)
           _emptyHabits()
         else
@@ -257,7 +257,7 @@ class _DashboardViewState extends State<DashboardView> {
             final progress = ((stats['completionRate'] ?? 0) / 100).toDouble();
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: EdgeInsets.only(bottom: 10),
               child: HabitCard(
                 title: habit['name'] ?? '',
                 subtitle: habit['description'] ?? '',
@@ -283,14 +283,14 @@ class _DashboardViewState extends State<DashboardView> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      title: const Text('Eliminar hábit'),
+                      title: Text('Eliminar hábit'),
                       content: Text('Segur que vols eliminar "${habit['name'] ?? ''}"? Els registres i publicacions associats també es perdran.'),
                       actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel·lar')),
+                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel·lar')),
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
                           style: TextButton.styleFrom(foregroundColor: Colors.red),
-                          child: const Text('Eliminar'),
+                          child: Text('Eliminar'),
                         ),
                       ],
                     ),
@@ -327,53 +327,53 @@ class _DashboardViewState extends State<DashboardView> {
   Widget _emptyHabits() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 48),
+      padding: EdgeInsets.symmetric(vertical: 48),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight,
+              color: context.surfaceLightColor,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.track_changes_rounded, size: 40, color: AppTheme.primary),
+            child: Icon(Icons.track_changes_rounded, size: 40, color: AppTheme.primary),
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'Encara no tens hàbits',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Crea el teu primer hàbit per començar a fer seguiment',
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: () => showCrearHabitPopup(context),
-            icon: const Icon(Icons.add, size: 18),
-            label: const Text('Crear hàbit'),
+            icon: Icon(Icons.add, size: 18),
+            label: Text('Crear hàbit'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
         ],
@@ -389,7 +389,7 @@ void showCrearHabitPopup(BuildContext context) {
     builder: (context) {
       return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.all(24),
           child: CrearHabitForm(),
         ),

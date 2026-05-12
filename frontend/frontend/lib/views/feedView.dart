@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
-import 'package:flowTracker/models/habit.dart';
 import 'package:flowTracker/providers/feedProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../config/app_theme.dart';
-import '../providers/habitProvider.dart';
 
 class FeedView extends StatefulWidget {
   const FeedView({super.key});
@@ -56,7 +54,9 @@ void initState() {
 
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      provider.loadFeed(cursor: provider.feedNextCursor);
+      if (provider.feedNextCursor != null) {
+        provider.loadFeed(cursor: provider.feedNextCursor);
+      }
     }
   }
 
@@ -98,7 +98,7 @@ void initState() {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Publicació creada!'),
+          content: Text('Publicació creada!'),
           backgroundColor: AppTheme.primary,
         ),
       );
@@ -145,7 +145,7 @@ void initState() {
     final provider = context.watch<FeedProvider>();
 
     if (provider.feedLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: AppTheme.primary),
       );
     }
@@ -164,7 +164,7 @@ void initState() {
         _buildComposer(provider),
         Expanded(
           child: posts.isEmpty
-              ? const Center(child: Text("No hi ha publicacions"))
+              ? Center(child: Text("No hi ha publicacions"))
               : RefreshIndicator(
                   onRefresh: () => provider.loadFeed(),
                   child: ListView.builder(
@@ -187,10 +187,10 @@ void initState() {
 
   Widget _buildComposer(FeedProvider provider) {
     return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -230,7 +230,7 @@ void initState() {
                     _selectedImageBytes!,
                     height: 120,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 Positioned(
@@ -242,12 +242,12 @@ void initState() {
                       _selectedImageBase64 = null;
                     }),
                     child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
                         color: Colors.black54,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.close, color: Colors.white, size: 16),
+                      child: Icon(Icons.close, color: context.surfaceColor, size: 16),
                     ),
                   ),
                 ),
@@ -273,10 +273,10 @@ void initState() {
                   backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
-                icon: const Icon(Icons.send_rounded, size: 16),
-                label: const Text('Publicar'),
+                icon: Icon(Icons.send_rounded, size: 16),
+                label: Text('Publicar'),
               ),
             ],
           ),
@@ -298,10 +298,10 @@ void initState() {
       return CircleAvatar(backgroundImage: NetworkImage(avatar.toString()));
     }
     return CircleAvatar(
-      backgroundColor: AppTheme.surfaceLight,
+      backgroundColor: context.surfaceLightColor,
       child: Text(
         user['name']?[0]?.toUpperCase() ?? '?',
-        style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold),
+        style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -335,7 +335,7 @@ void initState() {
     if (isAchievement) {
       // ─── Achievement card: gradient daurat ───
       return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFFFFF8E1), Color(0xFFFFF3CD)],
@@ -353,20 +353,20 @@ void initState() {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Trophy icon
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFD700).withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.emoji_events_rounded, color: Color(0xFFE65100), size: 26),
+                child: Icon(Icons.emoji_events_rounded, color: Color(0xFFE65100), size: 26),
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,28 +375,28 @@ void initState() {
                       children: [
                         Text(
                           user['name'] ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                         ),
-                        const SizedBox(width: 6),
-                        const Text(
+                        SizedBox(width: 6),
+                        Text(
                           'ha aconseguit un assoliment!',
                           style: TextStyle(fontSize: 13, color: Color(0xFF8D6E63)),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
                       postText,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFFE65100),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
                       timestamp,
-                      style: const TextStyle(fontSize: 11, color: Color(0xFFBCAAA4)),
+                      style: TextStyle(fontSize: 11, color: Color(0xFFBCAAA4)),
                     ),
                   ],
                 ),
@@ -413,7 +413,7 @@ void initState() {
                   ),
                   Text(
                     '${post['likesCount'] ?? 0}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
@@ -425,9 +425,9 @@ void initState() {
 
     // ─── Manual post card: estàndard net ───
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -438,12 +438,12 @@ void initState() {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildAvatarWidget(user),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,63 +452,66 @@ void initState() {
                     children: [
                       Text(
                         user['name'] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                       ),
-                      const SizedBox(width: 6),
+                      SizedBox(width: 6),
                       Text(
                         '@${user['username'] ?? ''}',
                         style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   if (postText.isNotEmpty)
                     Text(
                       postText,
-                      style: const TextStyle(fontSize: 15, height: 1.4),
+                      style: TextStyle(fontSize: 15, height: 1.4),
                     ),
                   if (postImage != null) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Builder(builder: (context) {
                         try {
                           final bytes = base64Decode(postImage.split(',').last);
-                          return Image.memory(
-                            bytes,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                          return ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 300),
+                            child: Image.memory(
+                              bytes,
+                              fit: BoxFit.contain,
+                              width: double.infinity,
+                              errorBuilder: (_, _, _) => SizedBox.shrink(),
+                            ),
                           );
                         } catch (_) {
-                          return const SizedBox.shrink();
+                          return SizedBox.shrink();
                         }
                       }),
                     ),
                   ],
                   if (post['habit'] != null && post['habit']['name'] != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: EdgeInsets.only(top: 8),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceLight,
+                          color: context.surfaceLightColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.track_changes_rounded, size: 14, color: AppTheme.primary),
-                            const SizedBox(width: 4),
+                            Icon(Icons.track_changes_rounded, size: 14, color: AppTheme.primary),
+                            SizedBox(width: 4),
                             Text(
                               post['habit']['name'],
-                              style: const TextStyle(fontSize: 12, color: AppTheme.primary, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 12, color: AppTheme.primary, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Text(
                     timestamp,
                     style: TextStyle(fontSize: 11, color: Colors.grey[400]),
@@ -528,7 +531,7 @@ void initState() {
                 ),
                 Text(
                   '${post['likesCount'] ?? 0}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),

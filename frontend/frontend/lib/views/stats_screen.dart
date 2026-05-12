@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../config/app_theme.dart';
-//import '../models/habitsProvider.dart';
 import '../providers/habitProvider.dart';
+import '../widgets/stats/heatmap.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});
@@ -31,7 +31,7 @@ class _StatsScreenState extends State<StatsScreen> {
     final dashboardStats = provider.dashboardStats;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+      return Center(child: CircularProgressIndicator(color: AppTheme.primary));
     }
 
     final overallRate = dashboardStats['overallCompletionRate'] ?? 0;
@@ -40,30 +40,30 @@ class _StatsScreenState extends State<StatsScreen> {
     final completedLogs = dashboardStats['completedLogs'] ?? 0;
 
     return Container(
-      color: AppTheme.background,
+      color: context.backgroundColor,
       child: habits.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppTheme.surfaceLight,
+                      color: context.surfaceLightColor,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.analytics_outlined, size: 48, color: AppTheme.primary),
+                    child: Icon(Icons.analytics_outlined, size: 48, color: AppTheme.primary),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'No hi ha dades encara',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                      color: context.textPrimaryColor,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Crea hàbits i marca\'ls per veure estadístiques',
                     style: TextStyle(fontSize: 14, color: Colors.grey[500]),
@@ -72,19 +72,19 @@ class _StatsScreenState extends State<StatsScreen> {
               ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Estadístiques',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
+                      color: context.textPrimaryColor,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
@@ -95,7 +95,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           AppTheme.primary,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: _summaryCard(
                           'Hàbits totals',
@@ -106,7 +106,7 @@ class _StatsScreenState extends State<StatsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
@@ -117,7 +117,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           AppTheme.warning,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: _summaryCard(
                           'Dies completats',
@@ -129,17 +129,17 @@ class _StatsScreenState extends State<StatsScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
 
-                  const Text(
+                  Text(
                     'Progrés per hàbit',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
+                      color: context.textPrimaryColor,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   ...habits.map((habit) {
                     final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
@@ -149,16 +149,16 @@ class _StatsScreenState extends State<StatsScreen> {
                     final total = stats['totalDays'] ?? 0;
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
+                      margin: EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardTheme.color ?? Colors.white,
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
                             color: AppTheme.primary.withOpacity(0.06),
                             blurRadius: 12,
-                            offset: const Offset(0, 2),
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
@@ -167,18 +167,18 @@ class _StatsScreenState extends State<StatsScreen> {
                         children: [
                           Text(
                             habit['name'] ?? '',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimary,
+                              color: context.textPrimaryColor,
                             ),
                           ),
                           if ((habit['description'] ?? '').isNotEmpty)
                             Text(
                               habit['description'],
-                              style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
+                              style: TextStyle(fontSize: 13, color: context.textSecondaryColor),
                             ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
 
                           Row(
                             children: [
@@ -188,78 +188,85 @@ class _StatsScreenState extends State<StatsScreen> {
                                   children: [
                                     Text(
                                       '$rate% completat',
-                                      style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                                      style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor),
                                     ),
-                                    const SizedBox(height: 6),
+                                    SizedBox(height: 6),
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(6),
                                       child: LinearProgressIndicator(
                                         value: rate / 100,
                                         minHeight: 8,
                                         backgroundColor: AppTheme.primary.withOpacity(0.12),
-                                        valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              SizedBox(width: 16),
                               Column(
                                 children: [
                                   Text(
                                     '$completed/$total',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: AppTheme.textPrimary,
+                                      color: context.textPrimaryColor,
                                     ),
                                   ),
-                                  const Text(
+                                  Text(
                                     'dies',
-                                    style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                                    style: TextStyle(fontSize: 12, color: context.textSecondaryColor),
                                   ),
                                 ],
                               ),
-                              const SizedBox(width: 16),
+                              SizedBox(width: 16),
                               Column(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.local_fire_department_rounded,
                                     color: AppTheme.warning,
                                     size: 20,
                                   ),
                                   Text(
                                     '$streak',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: AppTheme.textPrimary,
+                                      color: context.textPrimaryColor,
                                     ),
                                   ),
-                                  const Text(
+                                  Text(
                                     'ratxa',
-                                    style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                                    style: TextStyle(fontSize: 12, color: context.textSecondaryColor),
                                   ),
                                 ],
                               ),
                             ],
                           ),
+                          if (provider.habitHeatmaps[habit['id']] != null) ...[
+                            SizedBox(height: 16),
+                            HabitHeatmap(
+                              heatmapData: provider.habitHeatmaps[habit['id']]!,
+                              year: DateTime.now().year,
+                            ),
+                          ],
                         ],
                       ),
                     );
                   }),
 
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
 
-                  const Text(
+                  Text(
                     'Comparativa de ratxes',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
+                      color: context.textPrimaryColor,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   SizedBox(
                     height: 250,
@@ -273,15 +280,15 @@ class _StatsScreenState extends State<StatsScreen> {
 
   Widget _summaryCard(String label, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.08),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -289,23 +296,23 @@ class _StatsScreenState extends State<StatsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
@@ -320,7 +327,7 @@ class _StatsScreenState extends State<StatsScreen> {
 
   Widget _buildStreaksBarChart(List<dynamic> habits, Map<String, dynamic> habitStats) {
     if (habits.isEmpty) {
-      return const Center(child: Text('No hi ha dades'));
+      return Center(child: Text('No hi ha dades'));
     }
 
     final spots = <FlSpot>[];
@@ -345,11 +352,11 @@ class _StatsScreenState extends State<StatsScreen> {
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
               return BarTooltipItem(
                 '${habits[group.x.toInt()]['name']}\n',
-                const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                TextStyle(color: context.surfaceColor, fontWeight: FontWeight.bold),
                 children: [
                   TextSpan(
                     text: '${rod.toY.toInt()} dies',
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                    style: TextStyle(color: context.surfaceColor, fontSize: 12),
                   ),
                 ],
               );
@@ -365,15 +372,15 @@ class _StatsScreenState extends State<StatsScreen> {
                 final index = value.toInt();
                 if (labels.containsKey(index)) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: EdgeInsets.only(top: 4),
                     child: Text(
                       labels[index]!,
-                      style: const TextStyle(fontSize: 9, color: AppTheme.textSecondary),
+                      style: TextStyle(fontSize: 9, color: context.textSecondaryColor),
                       textAlign: TextAlign.center,
                     ),
                   );
                 }
-                return const Text('');
+                return Text('');
               },
             ),
           ),
@@ -382,8 +389,8 @@ class _StatsScreenState extends State<StatsScreen> {
               showTitles: true,
               reservedSize: 30,
               getTitlesWidget: (value, meta) {
-                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10, color: AppTheme.textSecondary));
-                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary));
+                if (value == 0) return Text('0', style: TextStyle(fontSize: 10, color: context.textSecondaryColor));
+                return Text('${value.toInt()}', style: TextStyle(fontSize: 10, color: context.textSecondaryColor));
               },
             ),
           ),

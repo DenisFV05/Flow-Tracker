@@ -14,17 +14,17 @@ class ExampleSidebarX extends StatelessWidget {
     return SidebarX(
       controller: controller,
       theme: SidebarXTheme(
-        margin: const EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppTheme.textPrimary,
+          color: context.sidebarColor,
           borderRadius: BorderRadius.circular(20),
         ),
-        hoverColor: const Color(0xFF2A3547),
-        textStyle: const TextStyle(color: Color(0xFF90A4AE)),
-        selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        hoverTextStyle: const TextStyle(color: Colors.white),
-        itemTextPadding: const EdgeInsets.only(left: 30),
-        selectedItemTextPadding: const EdgeInsets.only(left: 30),
+        hoverColor: Color(0xFF2A3547),
+        textStyle: TextStyle(color: Color(0xFF90A4AE)),
+        selectedTextStyle: TextStyle(color: context.onSidebarColor, fontWeight: FontWeight.w600),
+        hoverTextStyle: TextStyle(color: context.onSidebarColor),
+        itemTextPadding: EdgeInsets.only(left: 30),
+        selectedItemTextPadding: EdgeInsets.only(left: 30),
         itemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -39,28 +39,28 @@ class ExampleSidebarX extends StatelessWidget {
             BoxShadow(
               color: AppTheme.primary.withOpacity(0.3),
               blurRadius: 8,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
-        iconTheme: const IconThemeData(
+        iconTheme: IconThemeData(
           color: Color(0xFF90A4AE),
           size: 20,
         ),
-        selectedIconTheme: const IconThemeData(
-          color: Colors.white,
+        selectedIconTheme: IconThemeData(
+          color: context.onSidebarColor,
           size: 20,
         ),
       ),
-      extendedTheme: const SidebarXTheme(
+      extendedTheme: SidebarXTheme(
         width: 220,
-        decoration: BoxDecoration(color: AppTheme.textPrimary),
+        decoration: BoxDecoration(color: context.sidebarColor),
       ),
-      footerDivider: Divider(color: Colors.white.withOpacity(0.1), height: 1),
+      footerDivider: Divider(color: context.onSidebarColor.withOpacity(0.1), height: 1),
       headerBuilder: (context, extended) => SizedBox(
         height: 100,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -76,22 +76,22 @@ class ExampleSidebarX extends StatelessWidget {
                       BoxShadow(
                         color: AppTheme.primary.withOpacity(0.4),
                         blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
                   child: Icon(
                     Icons.local_fire_department_rounded,
-                    color: Colors.white,
+                    color: context.onSidebarColor,
                     size: extended ? 35 : 25,
                   ),
                 ),
-                if (extended) const SizedBox(width: 8),
+                if (extended) SizedBox(width: 8),
                 if (extended)
-                  const Text(
+                  Text(
                     'Flow Tracker',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: context.onSidebarColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -101,7 +101,7 @@ class ExampleSidebarX extends StatelessWidget {
           ),
         ),
       ),
-      items: const [
+      items: [
         SidebarXItem(icon: Icons.dashboard_rounded, label: 'Dashboard'),
         SidebarXItem(icon: Icons.bar_chart_rounded, label: 'Estadístiques'),
         SidebarXItem(icon: Icons.feed_rounded, label: 'Feed'),
@@ -123,12 +123,12 @@ class ExampleSidebarX extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Tancar sessió', style: TextStyle(color: AppTheme.textPrimary)),
-        content: const Text('Segur que vols tancar la sessió?'),
+        title: Text('Tancar sessió', style: TextStyle(color: context.textPrimaryColor)),
+        content: Text('Segur que vols tancar la sessió?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
+            child: Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -146,7 +146,7 @@ class ExampleSidebarX extends StatelessWidget {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Tancar'),
+            child: Text('Tancar'),
           ),
         ],
       ),

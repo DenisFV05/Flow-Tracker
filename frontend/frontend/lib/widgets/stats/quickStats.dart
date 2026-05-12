@@ -21,51 +21,51 @@ class QuickStats extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Resum",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           StatCard(
             icon: Icons.track_changes_rounded,
             title: "Hàbits",
             value: "$totalHabits",
             color: AppTheme.primary,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           StatCard(
             icon: Icons.today_rounded,
             title: "Avui",
             value: "$todayCompleted/$todayTotal",
             color: AppTheme.success,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           StatCard(
             icon: Icons.speed_rounded,
             title: "Ritme",
             value: "${rate.toStringAsFixed(0)}%",
             color: AppTheme.purple,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           StatCard(
             icon: Icons.local_fire_department_rounded,
             title: "Ratxa",

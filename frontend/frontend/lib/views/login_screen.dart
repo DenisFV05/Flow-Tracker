@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [AppTheme.primary, AppTheme.primaryDarker],
             begin: Alignment.topLeft,
@@ -86,12 +86,12 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 420),
-                padding: const EdgeInsets.all(28),
+                padding: EdgeInsets.all(28),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.surfaceColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -107,9 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [AppTheme.primary, AppTheme.primaryDark],
                           ),
                           borderRadius: BorderRadius.circular(16),
@@ -117,58 +117,59 @@ class _LoginScreenState extends State<LoginScreen> {
                             BoxShadow(
                               color: AppTheme.primary.withOpacity(0.3),
                               blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              offset: Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.local_fire_department_rounded,
                           size: 48,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
+                      SizedBox(height: 16),
+                      Text(
                         'Flow Tracker',
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
+                      SizedBox(height: 4),
+                      Text(
                         'Inicia sessió per continuar',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppTheme.textSecondary,
+                          color: context.textSecondaryColor,
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       TextFormField(
                         controller: _emailController,
                         decoration: inputEstil.base(
+                          context,
                           "Correu",
                           "Introdueix el teu correu",
                         ).copyWith(
-                          prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primary),
+                          prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primary),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) => value!.isEmpty ? 'Requerit' : null,
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       TextFormField(
                         controller: _passwordController,
                         obscureText: !_passwordVisible,
                         decoration: inputEstil
-                            .base("Contrasenya", "Introdueix la teva contrasenya")
+                            .base(context, "Contrasenya", "Introdueix la teva contrasenya")
                             .copyWith(
-                          prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primary),
+                          prefixIcon: Icon(Icons.lock_outline, color: AppTheme.primary),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _passwordVisible
@@ -186,20 +187,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) => value!.isEmpty ? 'Requerit' : null,
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       if (_errorMessage.isNotEmpty)
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: EdgeInsets.all(12),
+                          margin: EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
                             color: AppTheme.errorBg,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
                             _errorMessage,
-                            style: const TextStyle(color: AppTheme.error, fontSize: 13),
+                            style: TextStyle(color: AppTheme.error, fontSize: 13),
                           ),
                         ),
 
@@ -210,28 +211,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           child: _isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: context.surfaceColor,
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   'Iniciar sessió',
                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                                 ),
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       TextButton(
                         onPressed: () {
@@ -242,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                        child: const Text(
+                        child: Text(
                           "No tens un compte? Crea'n un de gratuït",
                           style: TextStyle(color: AppTheme.primary),
                         ),

@@ -7,7 +7,7 @@ class FeedApi {
       {String? cursor, int limit = 20}) async {
     final queryParams = <String, String>{
       'limit': limit.toString(),
-      if (cursor != null) 'cursor': cursor,
+      'cursor': ?cursor,
     };
 
     final data = await _client.get('/api/feed',
@@ -24,7 +24,7 @@ class FeedApi {
     await _client.post('/api/feed',
         body: {
           'content': content,
-          if (habitId != null) 'habitId': habitId,
+          'habitId': ?habitId,
         },
         expectedStatus: 201);
   }

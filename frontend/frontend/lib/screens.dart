@@ -23,7 +23,7 @@ class ScreensExample extends StatelessWidget {
           case 2: return const FeedView();
           case 3: return const AmicsView();
           case 4: return const perfilView();
-          default: return const Center(child: Text('Not found'));
+          default: return Center(child: Text('Not found'));
         }
       },
     );

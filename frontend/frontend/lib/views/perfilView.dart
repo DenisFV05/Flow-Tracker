@@ -11,7 +11,6 @@ import '../providers/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/auth_storage.dart';
 import '../config/app_config.dart';
-import 'inputEstil.dart';
 
 class perfilView extends StatefulWidget {
   const perfilView({super.key});
@@ -93,7 +92,7 @@ class _perfilViewState extends State<perfilView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Perfil actualitzat!'),
+            content: Text('Perfil actualitzat!'),
             backgroundColor: AppTheme.primary,
           ),
         );
@@ -136,8 +135,8 @@ class _perfilViewState extends State<perfilView> {
 
     if (loading && profile.isEmpty) {
       return Container(
-        color: AppTheme.background,
-        child: const Center(child: CircularProgressIndicator(color: AppTheme.primary)),
+        color: context.backgroundColor,
+        child: Center(child: CircularProgressIndicator(color: AppTheme.primary)),
       );
     }
 
@@ -150,9 +149,9 @@ class _perfilViewState extends State<perfilView> {
         : avatar;
 
     return Container(
-      color: AppTheme.background,
+      color: context.backgroundColor,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth > 700;
@@ -165,14 +164,14 @@ class _perfilViewState extends State<perfilView> {
                     flex: 2,
                     child: _buildProfileForm(name, username, email, avatarPreview),
                   ),
-                  const SizedBox(width: 24),
+                  SizedBox(width: 24),
                   Expanded(
                     flex: 1,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildStatsCard(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         _buildDebugPanel(),
                       ],
                     ),
@@ -185,9 +184,9 @@ class _perfilViewState extends State<perfilView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildProfileForm(name, username, email, avatarPreview),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _buildStatsCard(),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _buildDebugPanel(),
               ],
             );
@@ -199,38 +198,38 @@ class _perfilViewState extends State<perfilView> {
 
   Widget _buildProfileForm(String name, String username, String email, String? avatarPreview) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Perfil',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Center(
             child: Stack(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: AppTheme.primary, width: 2),
                   ),
                   child: CircleAvatar(
                     radius: 48,
-                    backgroundColor: AppTheme.surfaceLight,
+                    backgroundColor: context.surfaceLightColor,
                     backgroundImage: avatarPreview != null && avatarPreview.isNotEmpty
                         ? (avatarPreview.startsWith('data:')
                             ? MemoryImage(base64Decode(avatarPreview.split(',').last))
@@ -239,7 +238,7 @@ class _perfilViewState extends State<perfilView> {
                     child: (avatarPreview == null || avatarPreview.isEmpty)
                         ? Text(
                             name.isNotEmpty ? name[0].toUpperCase() : '?',
-                            style: const TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 32, color: AppTheme.primary, fontWeight: FontWeight.bold),
                           )
                         : null,
                   ),
@@ -250,12 +249,12 @@ class _perfilViewState extends State<perfilView> {
                   child: GestureDetector(
                     onTap: _showAvatarOptions,
                     child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
                         color: AppTheme.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                      child: Icon(Icons.camera_alt_rounded, size: 16, color: context.surfaceColor),
                     ),
                   ),
                 ),
@@ -263,68 +262,68 @@ class _perfilViewState extends State<perfilView> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
-          const Text('Nom', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-          const SizedBox(height: 8),
+          Text('Nom', style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          SizedBox(height: 8),
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
               hintText: 'El teu nom',
               filled: true,
-              fillColor: AppTheme.background,
+              fillColor: context.backgroundColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          const Text('Username', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-          const SizedBox(height: 8),
+          Text('Username', style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          SizedBox(height: 8),
           Text(
             '@$username',
             style: TextStyle(fontSize: 15, color: Colors.grey[600]),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          const Text('Email', style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-          const SizedBox(height: 8),
+          Text('Email', style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          SizedBox(height: 8),
           Text(
             email,
             style: TextStyle(fontSize: 15, color: Colors.grey[600]),
           ),
 
-          const SizedBox(height: 24),
-          const Divider(),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 24),
+          Divider(),
+          SizedBox(height: 16),
+          Text(
             'Preferències',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.dark_mode_rounded, color: AppTheme.primary),
-            title: const Text('Mode Fosc'),
+            leading: Icon(Icons.dark_mode_rounded, color: AppTheme.primary),
+            title: Text('Mode Fosc'),
             trailing: Switch(
               value: context.watch<ThemeProvider>().isDarkMode,
               onChanged: (value) => context.read<ThemeProvider>().toggleTheme(),
-              activeColor: AppTheme.primary,
+              activeThumbColor: AppTheme.primary,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.file_download_rounded, color: AppTheme.success),
-            title: const Text('Exportar historial (CSV)'),
+            leading: Icon(Icons.file_download_rounded, color: AppTheme.success),
+            title: Text('Exportar historial (CSV)'),
             onTap: _exportCSV,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           SizedBox(
             width: double.infinity,
@@ -333,19 +332,19 @@ class _perfilViewState extends State<perfilView> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: _saving
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: context.surfaceColor,
                       ),
                     )
-                  : const Text('Guardar canvis'),
+                  : Text('Guardar canvis'),
             ),
           ),
         ],
@@ -356,39 +355,39 @@ class _perfilViewState extends State<perfilView> {
   void _showAvatarOptions() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: EdgeInsets.symmetric(vertical: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Foto de perfil',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: context.textPrimaryColor),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               ListTile(
-                leading: const Icon(Icons.photo_library_rounded, color: AppTheme.primary),
-                title: const Text('Seleccionar imatge'),
+                leading: Icon(Icons.photo_library_rounded, color: AppTheme.primary),
+                title: Text('Seleccionar imatge'),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage();
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.link_rounded, color: AppTheme.primary),
-                title: const Text('URL de la imatge'),
+                leading: Icon(Icons.link_rounded, color: AppTheme.primary),
+                title: Text('URL de la imatge'),
                 onTap: () {
                   Navigator.pop(context);
                   _showAvatarUrlDialog();
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_rounded, color: Colors.red),
-                title: const Text('Eliminar foto', style: TextStyle(color: Colors.red)),
+                leading: Icon(Icons.delete_rounded, color: Colors.red),
+                title: Text('Eliminar foto', style: TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -410,10 +409,10 @@ class _perfilViewState extends State<perfilView> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('URL de la imatge', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('URL de la imatge', style: TextStyle(color: context.textPrimaryColor)),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'https://exemple.com/foto.jpg',
             border: OutlineInputBorder(),
           ),
@@ -421,7 +420,7 @@ class _perfilViewState extends State<perfilView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
+            child: Text('Cancel·lar', style: TextStyle(color: AppTheme.primary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -432,7 +431,7 @@ class _perfilViewState extends State<perfilView> {
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Guardar'),
+            child: Text('Guardar'),
           ),
         ],
       ),
@@ -444,7 +443,7 @@ class _perfilViewState extends State<perfilView> {
     final loading = context.watch<HabitProvider>().loading;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primary));
+      return Center(child: CircularProgressIndicator(color: AppTheme.primary));
     }
 
     final totalHabits = stats['totalHabits'] ?? 0;
@@ -456,36 +455,36 @@ class _perfilViewState extends State<perfilView> {
     final todayTotal = stats['todayTotal'] ?? 0;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Estadístiques',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           _statRow(Icons.track_changes_rounded, 'Hàbits totals', '$totalHabits', AppTheme.primary),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.description_rounded, 'Registres totals', '$totalLogs', AppTheme.success),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.check_circle_rounded, 'Completats', '$completedLogs', AppTheme.purple),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.percent_rounded, 'Percentatge global', '${rate.toStringAsFixed(1)}%', AppTheme.warning),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.local_fire_department_rounded, 'Ratxa màxima', '$longestStreak dies', AppTheme.warning),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _statRow(Icons.today_rounded, 'Avui', '$todayCompleted/$todayTotal', AppTheme.primary),
         ],
       ),
@@ -496,22 +495,22 @@ class _perfilViewState extends State<perfilView> {
     return Row(
       children: [
         Icon(icon, size: 20, color: color),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         Expanded(
           child: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
         ),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary)),
+        Text(value, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor)),
       ],
     );
   }
 
   Widget _buildDebugPanel() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.background,
+        color: context.backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFBBDEFB)),
+        border: Border.all(color: Color(0xFFBBDEFB)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,62 +519,62 @@ class _perfilViewState extends State<perfilView> {
             onTap: () => setState(() => _showDebug = !_showDebug),
             child: Row(
               children: [
-                const Icon(Icons.bug_report_rounded, size: 18, color: AppTheme.primary),
-                const SizedBox(width: 8),
-                const Text(
+                Icon(Icons.bug_report_rounded, size: 18, color: AppTheme.primary),
+                SizedBox(width: 8),
+                Text(
                   'Mode desenvolupador',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimaryColor),
                 ),
-                const Spacer(),
+                Spacer(),
                 Icon(_showDebug ? Icons.expand_less : Icons.expand_more, size: 20, color: Colors.grey[500]),
               ],
             ),
           ),
           if (_showDebug) ...[
-            const SizedBox(height: 12),
-            const Divider(),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 12),
+            Divider(),
+            SizedBox(height: 8),
+            Text(
               'Simular ratxes i registres en dates passades',
-              style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+              style: TextStyle(fontSize: 12, color: context.textSecondaryColor),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               '1. Crea un hàbit al Dashboard si encara no en tens',
-              style: TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+              style: TextStyle(fontSize: 11, color: context.textSecondaryColor),
             ),
-            const Text(
+            Text(
               '2. Usa "Marcar hàbit avui" per registrar el hàbit per avui',
-              style: TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+              style: TextStyle(fontSize: 11, color: context.textSecondaryColor),
             ),
-            const Text(
+            Text(
               '3. Usa els altres botons per crear registres en dies anteriors i augmentar la ratxa',
-              style: TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+              style: TextStyle(fontSize: 11, color: context.textSecondaryColor),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _debugButton('Marcar hàbit avui', AppTheme.success, _markToday),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Registra el primer hàbit de la llista per avui. És el punt de partida per crear ratxes.',
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _debugButton('Afegir registre ahir', AppTheme.primary, _simulatePastDay),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Crea un registre per ahir. Si ja tens un registre avui, la ratxa augmentarà a 2.',
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _debugButton('Afegir registre fa 7 dies', AppTheme.purple, _simulateWeekAgo),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Crea un registre fa 7 dies. No afecta la ratxa actual però omple el heatmap.',
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _debugButton('Crear ratxa de 8 dies', AppTheme.warning, _simulate7DaysAgo),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'Registra el hàbit durant 8 dies seguits (fa 7 dies fins avui). Veurem la ratxa pujar a 8.',
               style: TextStyle(fontSize: 10, color: Colors.grey[500]),
@@ -595,9 +594,9 @@ class _perfilViewState extends State<perfilView> {
           foregroundColor: color,
           side: BorderSide(color: color),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
         ),
-        child: Text(label, style: const TextStyle(fontSize: 13)),
+        child: Text(label, style: TextStyle(fontSize: 13)),
       ),
     );
   }

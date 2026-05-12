@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../config/app_theme.dart';
 import '../services/friends_service.dart';
-import 'inputEstil.dart';
 import 'friendProfileView.dart';
 
 class AmicsView extends StatefulWidget {
@@ -45,8 +44,8 @@ class _AmicsViewState extends State<AmicsView> {
           _friendsApi.getFriends(),
           _friendsApi.getRequests(),
         ]);
-        final newFriends = results[0] as List<dynamic>;
-        final newRequests = results[1] as List<dynamic>;
+        final newFriends = results[0];
+        final newRequests = results[1];
         if (newFriends.length != friends.length || newRequests.length != requests.length) {
           if (mounted) setState(() => _hasChanges = true);
         }
@@ -68,9 +67,9 @@ class _AmicsViewState extends State<AmicsView> {
       ]);
 
       setState(() {
-        friends = results[0] as List<dynamic>;
-        requests = results[1] as List<dynamic>;
-        leaderboard = results[2] as List<dynamic>;
+        friends = results[0];
+        requests = results[1];
+        leaderboard = results[2];
         _hasChanges = false;
         loading = false;
       });
@@ -89,7 +88,7 @@ class _AmicsViewState extends State<AmicsView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Sol·licitud enviada!'),
+            content: Text('Sol·licitud enviada!'),
             backgroundColor: AppTheme.primary,
           ),
         );
@@ -121,14 +120,14 @@ class _AmicsViewState extends State<AmicsView> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Eliminar amic'),
+        title: Text('Eliminar amic'),
         content: Text('Segur que vols eliminar $name com a amic?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel·lar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel·lar')),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text('Eliminar'),
           ),
         ],
       ),
@@ -151,44 +150,44 @@ class _AmicsViewState extends State<AmicsView> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: context.backgroundColor,
         appBar: AppBar(
           toolbarHeight: 0,
           bottom: TabBar(
             indicatorColor: AppTheme.primary,
             labelColor: AppTheme.primary,
             unselectedLabelColor: Colors.grey,
-            tabs: const [
+            tabs: [
               Tab(icon: Icon(Icons.people), text: 'Amics'),
               Tab(icon: Icon(Icons.emoji_events), text: 'Rànquing'),
             ],
           ),
         ),
         body: loading
-            ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+            ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
             : error != null
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-                        const SizedBox(height: 16),
-                        const Text(
+                        SizedBox(height: 16),
+                        Text(
                           'No s\'han pogut carregar les dades',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(error!, style: TextStyle(color: Colors.grey[500])),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: _loadData,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: const Text('Reintentar'),
+                          child: Text('Reintentar'),
                         ),
                       ],
                     ),
@@ -214,11 +213,11 @@ class _AmicsViewState extends State<AmicsView> {
             },
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               color: AppTheme.primary,
-              child: const Text(
+              child: Text(
                 'Canvis detectats — Toca per veure',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
+                style: TextStyle(color: context.surfaceColor, fontWeight: FontWeight.w500, fontSize: 13),
               ),
             ),
           ),
@@ -227,7 +226,7 @@ class _AmicsViewState extends State<AmicsView> {
             onRefresh: _loadData,
             color: AppTheme.primary,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               physics: const AlwaysScrollableScrollPhysics(),
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -238,7 +237,7 @@ class _AmicsViewState extends State<AmicsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(flex: 2, child: _buildFriendsSection()),
-                        const SizedBox(width: 20),
+                        SizedBox(width: 20),
                         Expanded(flex: 1, child: _buildRequestsSection()),
                       ],
                     );
@@ -248,7 +247,7 @@ class _AmicsViewState extends State<AmicsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildFriendsSection(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       _buildRequestsSection(),
                     ],
                   );
@@ -266,7 +265,7 @@ class _AmicsViewState extends State<AmicsView> {
       onRefresh: _loadData,
       color: AppTheme.primary,
       child: ListView.builder(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         itemCount: leaderboard.length,
         itemBuilder: (context, index) {
           final user = leaderboard[index];
@@ -275,9 +274,9 @@ class _AmicsViewState extends State<AmicsView> {
           final rankColors = [const Color(0xFFFFD700), const Color(0xFFC0C0C0), const Color(0xFFCD7F32)];
 
           return Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.surfaceColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -301,9 +300,9 @@ class _AmicsViewState extends State<AmicsView> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   CircleAvatar(
-                    backgroundColor: AppTheme.surfaceLight,
+                    backgroundColor: context.surfaceLightColor,
                     backgroundImage: user['avatar'] != null
                         ? (user['avatar'].toString().startsWith('data:')
                             ? MemoryImage(base64Decode(user['avatar'].toString().split(',').last))
@@ -313,16 +312,16 @@ class _AmicsViewState extends State<AmicsView> {
                   ),
                 ],
               ),
-              title: Text(user['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(user['name'] ?? '', style: TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text('${user['totalHabits'] ?? 0} hàbits'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.local_fire_department, color: Colors.orange),
-                  const SizedBox(width: 4),
+                  Icon(Icons.local_fire_department, color: Colors.orange),
+                  SizedBox(width: 4),
                   Text(
                     '$streak',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ],
               ),
@@ -340,22 +339,22 @@ class _AmicsViewState extends State<AmicsView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Amics',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: context.textPrimaryColor,
               ),
             ),
             TextButton.icon(
               onPressed: _showSearchDialog,
-              icon: const Icon(Icons.person_add, size: 18, color: AppTheme.primary),
-              label: const Text('Afegir', style: TextStyle(color: AppTheme.primary)),
+              icon: Icon(Icons.person_add, size: 18, color: AppTheme.primary),
+              label: Text('Afegir', style: TextStyle(color: AppTheme.primary)),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         if (friends.isEmpty)
           _emptyFriends()
         else
@@ -371,15 +370,15 @@ class _AmicsViewState extends State<AmicsView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Sol·licituds',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimary,
+            color: context.textPrimaryColor,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         if (requests.isEmpty)
           _emptyRequests()
         else
@@ -402,20 +401,20 @@ class _AmicsViewState extends State<AmicsView> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
+        margin: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.surfaceColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
               color: AppTheme.primary.withOpacity(0.06),
               blurRadius: 12,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           leading: CircleAvatar(
             radius: 22,
             backgroundColor: AppTheme.primary.withOpacity(0.1),
@@ -427,7 +426,7 @@ class _AmicsViewState extends State<AmicsView> {
             child: user['avatar'] == null
                 ? Text(
                     user['name']?[0]?.toUpperCase() ?? '?',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.primary,
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
@@ -437,7 +436,7 @@ class _AmicsViewState extends State<AmicsView> {
           ),
           title: Text(
             user['name'] ?? '',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor),
           ),
           subtitle: Text(
             '@${user['username'] ?? ''}',
@@ -446,11 +445,11 @@ class _AmicsViewState extends State<AmicsView> {
           trailing: TextButton(
             onPressed: () => _removeFriend(friendshipId, user['name'] ?? ''),
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text(
+            child: Text(
               'Eliminar',
               style: TextStyle(color: AppTheme.error, fontSize: 13, fontWeight: FontWeight.w500),
             ),
@@ -462,26 +461,26 @@ class _AmicsViewState extends State<AmicsView> {
 
   Widget _requestCard(Map<String, dynamic> user, String id) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: CircleAvatar(
           radius: 22,
-          backgroundColor: AppTheme.surfaceLight,
+          backgroundColor: context.surfaceLightColor,
           child: Text(
             user['name']?[0]?.toUpperCase() ?? '?',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.primary,
               fontWeight: FontWeight.w700,
               fontSize: 16,
@@ -490,7 +489,7 @@ class _AmicsViewState extends State<AmicsView> {
         ),
         title: Text(
           user['name'] ?? '',
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.textPrimary),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor),
         ),
         subtitle: Text(
           '@${user['username'] ?? ''}',
@@ -505,19 +504,19 @@ class _AmicsViewState extends State<AmicsView> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.check, size: 20, color: AppTheme.success),
+                icon: Icon(Icons.check, size: 20, color: AppTheme.success),
                 onPressed: () => _respondRequest(id, 'accept'),
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Container(
               decoration: BoxDecoration(
                 color: AppTheme.errorBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.close, size: 20, color: AppTheme.error),
+                icon: Icon(Icons.close, size: 20, color: AppTheme.error),
                 onPressed: () => _respondRequest(id, 'reject'),
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
@@ -531,48 +530,48 @@ class _AmicsViewState extends State<AmicsView> {
   Widget _emptyFriends() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 48),
+      padding: EdgeInsets.symmetric(vertical: 48),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight,
+              color: context.surfaceLightColor,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.people_outline, size: 40, color: AppTheme.primary),
+            child: Icon(Icons.people_outline, size: 40, color: AppTheme.primary),
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'Encara no tens amics',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Cerca usuaris per connectar',
             style: TextStyle(fontSize: 13, color: Colors.grey[500]),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: _showSearchDialog,
-            icon: const Icon(Icons.search, size: 18),
-            label: const Text('Cercar'),
+            icon: Icon(Icons.search, size: 18),
+            label: Text('Cercar'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
         ],
@@ -583,34 +582,34 @@ class _AmicsViewState extends State<AmicsView> {
   Widget _emptyRequests() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: EdgeInsets.symmetric(vertical: 40),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceLight,
+              color: context.surfaceLightColor,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.mail_outline, size: 40, color: AppTheme.primary),
+            child: Icon(Icons.mail_outline, size: 40, color: AppTheme.primary),
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'Cap sol·licitud',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Les sol·licituds pendents apareixeran aquí',
             style: TextStyle(fontSize: 13, color: Colors.grey[500]),
@@ -633,27 +632,27 @@ class _AmicsViewState extends State<AmicsView> {
             return Dialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
+                    Text(
                       'Cercar usuari',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: context.textPrimaryColor),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextField(
                       controller: controller,
                       decoration: InputDecoration(
                         hintText: 'Escriu el username',
-                        prefixIcon: const Icon(Icons.search, color: AppTheme.primary),
+                        prefixIcon: Icon(Icons.search, color: AppTheme.primary),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: context.backgroundColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       ),
                       onChanged: (value) async {
                         if (value.length >= 2) {
@@ -672,9 +671,9 @@ class _AmicsViewState extends State<AmicsView> {
                         }
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     if (searching)
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary),
                       )
@@ -689,23 +688,23 @@ class _AmicsViewState extends State<AmicsView> {
                             final requestSent = user['requestSent'] ?? false;
 
                             return ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 8),
                               leading: CircleAvatar(
                                 backgroundColor: AppTheme.primary.withOpacity(0.1),
                                 child: Text(
                                   user['name']?[0]?.toUpperCase() ?? '?',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppTheme.primary,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
-                              title: Text(user['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w500)),
+                              title: Text(user['name'] ?? '', style: TextStyle(fontWeight: FontWeight.w500)),
                               subtitle: Text('@${user['username'] ?? ''}', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
                               trailing: isFriend
-                                  ? const Icon(Icons.check_circle, color: AppTheme.success, size: 20)
+                                  ? Icon(Icons.check_circle, color: AppTheme.success, size: 20)
                                   : requestSent
-                                      ? const Text('Enviat', style: TextStyle(color: AppTheme.primary, fontSize: 13, fontWeight: FontWeight.w500))
+                                      ? Text('Enviat', style: TextStyle(color: AppTheme.primary, fontSize: 13, fontWeight: FontWeight.w500))
                                       : TextButton(
                                           onPressed: () {
                                             _sendRequest(user['username']);
@@ -715,20 +714,20 @@ class _AmicsViewState extends State<AmicsView> {
                                             backgroundColor: AppTheme.primary,
                                             foregroundColor: Colors.white,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                           ),
-                                          child: const Text('Afegir', style: TextStyle(fontSize: 13)),
+                                          child: Text('Afegir', style: TextStyle(fontSize: 13)),
                                         ),
                             );
                           },
                         ),
                       ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Tancar', style: TextStyle(color: AppTheme.primary)),
+                        child: Text('Tancar', style: TextStyle(color: AppTheme.primary)),
                       ),
                     ),
                   ],

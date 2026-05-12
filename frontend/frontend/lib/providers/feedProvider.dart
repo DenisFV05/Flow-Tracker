@@ -11,10 +11,16 @@ class FeedProvider extends ChangeNotifier {
   String? error;
 
   Future<void> loadFeed({String? cursor}) async {
+    if (cursor != null && feedLoadingMore) return; // Prevent duplicate infinite scroll requests
+    if (cursor == null && feedLoading) return; // Prevent duplicate initial loads
+
     try {
       if (cursor == null) {
         feedLoading = true;
         notifyListeners();
+      } else {
+        feedLoadingMore = true;
+        // Don't notify here to avoid rebuilding the whole list during scroll
       }
 
       final result = await _feedApi.getFeed(cursor: cursor);

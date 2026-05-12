@@ -37,10 +37,10 @@ class HabitCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: Colors.white,
+          color: context.surfaceColor,
           boxShadow: [
             BoxShadow(
               color: color.withOpacity(0.06),
@@ -58,7 +58,7 @@ class HabitCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),
@@ -70,7 +70,7 @@ class HabitCard extends StatelessWidget {
                   onTap: onToggle != null ? () => onToggle!(!completedToday) : null,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: completedToday
                           ? AppTheme.success.withOpacity(0.12)
@@ -87,11 +87,11 @@ class HabitCard extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
 
                 PopupMenuButton<String>(
                   padding: EdgeInsets.zero,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.more_horiz,
                     size: 20,
                   ),
@@ -105,7 +105,7 @@ class HabitCard extends StatelessWidget {
                       onDelete?.call();
                     }
                   },
-                  itemBuilder: (context) => const [
+                  itemBuilder: (context) => [
                     PopupMenuItem(
                       value: 'edit',
                       child: Row(
@@ -140,17 +140,17 @@ class HabitCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
 
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppTheme.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             if (tags.isNotEmpty)
               Wrap(
@@ -159,31 +159,31 @@ class HabitCard extends StatelessWidget {
                 children: tags.map((tag) {
                   final name = tag is Map ? tag['name'] ?? '' : tag.toString();
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppTheme.surfaceLight,
+                      color: context.surfaceLightColor,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       name,
-                      style: const TextStyle(fontSize: 11, color: AppTheme.primary, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 11, color: AppTheme.primary, fontWeight: FontWeight.w500),
                     ),
                   );
                 }).toList(),
               ),
 
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.local_fire_department_rounded, color: AppTheme.warning, size: 18),
-                    const SizedBox(width: 4),
+                    Icon(Icons.local_fire_department_rounded, color: AppTheme.warning, size: 18),
+                    SizedBox(width: 4),
                     Text(
                       '$streak',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.textPrimary),
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor),
                     ),
                   ],
                 ),
@@ -198,7 +198,7 @@ class HabitCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             ClipRRect(
               borderRadius: BorderRadius.circular(10),

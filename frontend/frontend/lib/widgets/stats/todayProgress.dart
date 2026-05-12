@@ -29,15 +29,15 @@ class TodayProgress extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.06),
             blurRadius: 12,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -47,12 +47,12 @@ class TodayProgress extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Progrés d\'avui',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
               ),
               Text(
@@ -65,10 +65,10 @@ class TodayProgress extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           if (habits.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 'Crea un hàbit per començar',
                 style: TextStyle(fontSize: 13, color: Colors.grey[400]),
@@ -85,19 +85,19 @@ class TodayProgress extends StatelessWidget {
                 doneToday = stats?['completedToday'] == true;
               }
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.only(bottom: 8),
                 child: InkWell(
                   onTap: onToggle != null
                       ? () => onToggle!(habit['id'].toString(), !doneToday)
                       : null,
                   borderRadius: BorderRadius.circular(10),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 2),
                     child: Row(
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.all(4),
+                          padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             color: doneToday
                                 ? AppTheme.successBg
@@ -112,7 +112,7 @@ class TodayProgress extends StatelessWidget {
                             color: doneToday ? AppTheme.success : Colors.grey[400],
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             habit['name'] ?? '',
@@ -120,7 +120,7 @@ class TodayProgress extends StatelessWidget {
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: doneToday
-                                  ? AppTheme.textPrimary
+                                  ? context.textPrimaryColor
                                   : Colors.grey[600],
                             ),
                           ),

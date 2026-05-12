@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 import 'inputEstil.dart';
 import 'login_screen.dart';
-import '../config/app_config.dart';
 
 class CrearCuentaScreen extends StatefulWidget {
   const CrearCuentaScreen({super.key});
@@ -27,6 +26,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   bool _confirmPasswordVisible = false;
   bool _acceptedTerms = false;
 
+  @override
   void initState() {
     super.initState();
   }
@@ -69,7 +69,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Compte creat correctament'),
+            content: Text('Compte creat correctament'),
             backgroundColor: AppTheme.primary,
           ),
         );
@@ -95,7 +95,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [AppTheme.primary, AppTheme.primaryDarker],
             begin: Alignment.topLeft,
@@ -106,12 +106,12 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 child: Container(
                   constraints: const BoxConstraints(maxWidth: 480),
-                  padding: const EdgeInsets.all(28),
+                  padding: EdgeInsets.all(28),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.surfaceColor,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -130,21 +130,21 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10),
+                              padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
+                                gradient: LinearGradient(
                                   colors: [AppTheme.primary, AppTheme.primaryDark],
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.local_fire_department_rounded,
                                 size: 28,
-                                color: Colors.white,
+                                color: context.surfaceColor,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            const Column(
+                            SizedBox(width: 12),
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -152,14 +152,14 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: AppTheme.textPrimary,
+                                    color: context.textPrimaryColor,
                                   ),
                                 ),
                                 Text(
                                   "Omple les teves dades per crear un compte",
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: AppTheme.textSecondary,
+                                    color: context.textSecondaryColor,
                                   ),
                                 ),
                               ],
@@ -167,27 +167,27 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24),
 
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24),
 
                         Row(
                           children: [
                             Expanded(
                               child: TextFormField(
                                 controller: _nameController,
-                                decoration: inputEstil.base("Nom complet", "El teu nom").copyWith(
-                                  prefixIcon: const Icon(Icons.person_outline, color: AppTheme.primary),
+                                decoration: inputEstil.base(context, "Nom complet", "El teu nom").copyWith(
+                                  prefixIcon: Icon(Icons.person_outline, color: AppTheme.primary),
                                 ),
                                 validator: (v) => v!.isEmpty ? "Requerit" : null,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             Expanded(
                               child: TextFormField(
                                 controller: _usernameController,
-                                decoration: inputEstil.base("Username", "@username").copyWith(
-                                  prefixIcon: const Icon(Icons.alternate_email, color: AppTheme.primary),
+                                decoration: inputEstil.base(context, "Username", "@username").copyWith(
+                                  prefixIcon: Icon(Icons.alternate_email, color: AppTheme.primary),
                                 ),
                                 validator: (v) => v!.isEmpty ? "Requerit" : null,
                               ),
@@ -195,26 +195,26 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         TextFormField(
                           controller: _emailController,
-                          decoration: inputEstil.base("Correu electrònic", "elteumail@mail.com").copyWith(
-                            prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primary),
+                          decoration: inputEstil.base(context, "Correu electrònic", "elteumail@mail.com").copyWith(
+                            prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primary),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) => v!.isEmpty ? "Requerit" : null,
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         TextFormField(
                           controller: _passwordController,
                           obscureText: !_passwordVisible,
                           decoration: inputEstil
-                              .base("Contrasenya", "Mínim 6 caràcters")
+                              .base(context, "Contrasenya", "Mínim 6 caràcters")
                               .copyWith(
-                            prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primary),
+                            prefixIcon: Icon(Icons.lock_outline, color: AppTheme.primary),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _passwordVisible ? Icons.visibility : Icons.visibility_off,
@@ -226,15 +226,15 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                           validator: (v) => v!.length < 6 ? "Mínim 6 caràcters" : null,
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         TextFormField(
                           controller: _confirmPasswordController,
                           obscureText: !_confirmPasswordVisible,
                           decoration: inputEstil
-                              .base("Confirma la contrasenya", "Repeteix la contrasenya")
+                              .base(context, "Confirma la contrasenya", "Repeteix la contrasenya")
                               .copyWith(
-                            prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primary),
+                            prefixIcon: Icon(Icons.lock_outline, color: AppTheme.primary),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -248,7 +248,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                               : null,
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         Row(
                           children: [
@@ -258,29 +258,29 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                               onChanged: (value) => setState(() => _acceptedTerms = value!),
                             ),
-                            const Expanded(
+                            Expanded(
                               child: Text(
                                 "Accepto els Termes del servei i la Política de privacitat",
-                                style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                                style: TextStyle(fontSize: 12, color: context.textSecondaryColor),
                               ),
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         if (_errorMessage.isNotEmpty)
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: EdgeInsets.all(12),
+                            margin: EdgeInsets.only(bottom: 16),
                             decoration: BoxDecoration(
                               color: AppTheme.errorBg,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               _errorMessage,
-                              style: const TextStyle(color: AppTheme.error, fontSize: 13),
+                              style: TextStyle(color: AppTheme.error, fontSize: 13),
                             ),
                           ),
 
@@ -291,33 +291,33 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primary,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             child: _isLoading
-                                ? const SizedBox(
+                                ? SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Colors.white,
+                                      color: context.surfaceColor,
                                     ),
                                   )
-                                : const Text(
+                                : Text(
                                     "Crear compte",
                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                                   ),
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         Center(
                           child: TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text(
+                            child: Text(
                               "Ja tens un compte? Inicia sessió",
                               style: TextStyle(color: AppTheme.primary),
                             ),

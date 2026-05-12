@@ -21,9 +21,9 @@ class StatsGrid extends StatelessWidget {
     final rate = totalHabits == 0 ? 0 : ((todayCompleted / totalHabits) * 100).toStringAsFixed(0);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -43,7 +43,7 @@ class StatsGrid extends StatelessWidget {
               color: AppTheme.primary,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: StatCard(
               icon: Icons.today_rounded,
@@ -52,7 +52,7 @@ class StatsGrid extends StatelessWidget {
               color: AppTheme.success,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: StatCard(
               icon: Icons.speed_rounded,
@@ -61,7 +61,7 @@ class StatsGrid extends StatelessWidget {
               color: AppTheme.purple,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: StatCard(
               icon: Icons.local_fire_department_rounded,

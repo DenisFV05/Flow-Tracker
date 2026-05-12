@@ -14,7 +14,7 @@ function localDateStr(d) {
 }
 
 function dateOnlyStr(d) {
-    return d.toISOString().split('T')[0];
+    return localDateStr(d);
 }
 
 function calculateStreak(logs) {
@@ -254,7 +254,6 @@ router.post('/:id/log', async (req, res) => {
         }
 
         const logDate = new Date(date);
-        logDate.setHours(0, 0, 0, 0);
 
         const beforeLogs = await prisma.activityLog.findMany({
             where: { habitId: id },

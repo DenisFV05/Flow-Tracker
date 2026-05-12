@@ -71,3 +71,23 @@ class AppTheme {
     );
   }
 }
+
+extension ThemeColors on BuildContext {
+  bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  Color get backgroundColor => Theme.of(this).scaffoldBackgroundColor;
+  
+  Color get surfaceColor => Theme.of(this).cardTheme.color ?? Colors.white;
+  
+  Color get textPrimaryColor => isDark ? Colors.white : AppTheme.textPrimary;
+  
+  Color get textSecondaryColor => isDark ? Colors.grey[400]! : AppTheme.textSecondary;
+  
+  Color get textDarkColor => isDark ? Colors.white : AppTheme.textDark;
+
+  Color get surfaceLightColor => isDark ? const Color(0xFF2A2A2A) : AppTheme.surfaceLight;
+
+  Color get sidebarColor => isDark ? const Color(0xFF161616) : const Color(0xFF1A2332);
+
+  Color get onSidebarColor => Colors.white;
+}

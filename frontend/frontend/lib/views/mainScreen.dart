@@ -7,9 +7,14 @@ import 'package:sidebarx/sidebarx.dart';
 import '../providers/notifications_provider.dart';
 import 'notificationsView.dart';
 
-class MainScreen extends StatelessWidget {
-  MainScreen({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   final _controller = SidebarXController(selectedIndex: 0, extended: true);
   final _key = GlobalKey<ScaffoldState>();
 
@@ -19,14 +24,6 @@ class MainScreen extends StatelessWidget {
     'Feed',
     'Amics',
     'Perfil',
-  ];
-
-  static const _icons = [
-    Icons.dashboard_rounded,
-    Icons.bar_chart_rounded,
-    Icons.feed_rounded,
-    Icons.people_rounded,
-    Icons.person_rounded,
   ];
 
   String _getTitle(int index) {
@@ -44,23 +41,23 @@ class MainScreen extends StatelessWidget {
       key: _key,
       appBar: isSmallScreen
           ? AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: context.surfaceColor,
               elevation: 0,
               title: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, _) {
                   return Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.local_fire_department_rounded,
                         color: AppTheme.primary,
                         size: 24,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         _getTitle(_controller.selectedIndex),
-                        style: const TextStyle(
-                          color: Colors.black87,
+                        style: TextStyle(
+                          color: context.textPrimaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -70,7 +67,7 @@ class MainScreen extends StatelessWidget {
               ),
               leading: IconButton(
                 onPressed: () => _key.currentState?.openDrawer(),
-                icon: const Icon(Icons.menu, color: Colors.black87),
+                icon: Icon(Icons.menu, color: context.textPrimaryColor),
               ),
               actions: [
                 Consumer<NotificationsProvider>(
@@ -80,11 +77,11 @@ class MainScreen extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.notifications_rounded, color: Colors.black87),
+                          icon: Icon(Icons.notifications_rounded, color: context.textPrimaryColor),
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const NotificationsView()),
+                              MaterialPageRoute(builder: (_) => NotificationsView()),
                             );
                           },
                         ),
@@ -95,14 +92,14 @@ class MainScreen extends StatelessWidget {
                             child: Container(
                               width: 16,
                               height: 16,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: Colors.red,
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
                                 child: Text(
                                   count > 9 ? '9+' : '$count',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,

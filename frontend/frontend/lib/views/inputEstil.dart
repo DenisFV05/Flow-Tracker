@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 
 class inputEstil {
-  static InputDecoration base(String label, String hint) {
+  static InputDecoration base(BuildContext context, String label, String hint) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
-      fillColor: AppTheme.background,
+      fillColor: context.backgroundColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
-      contentPadding: const EdgeInsets.symmetric(
+      contentPadding: EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 14,
       ),
