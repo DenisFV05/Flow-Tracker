@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../config/app_theme.dart';
-import '../models/habitsProvider.dart';
+import '../providers/profileProvider.dart';
+import '../providers/habitProvider.dart';
 import 'inputEstil.dart';
 
 class perfilView extends StatefulWidget {
@@ -30,7 +31,7 @@ class _perfilViewState extends State<perfilView> {
 
   void _loadProfile() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final provider = context.read<HabitProvider>();
+      final provider = context.read<ProfileProvider>();
       await provider.loadProfile();
       if (!mounted) return;
       final profile = provider.userProfile;
@@ -81,7 +82,7 @@ class _perfilViewState extends State<perfilView> {
       final avatar = _avatarUrlController.text.trim().isNotEmpty
           ? _avatarUrlController.text.trim()
           : null;
-      await context.read<HabitProvider>().updateProfile(
+      await context.read<ProfileProvider>().updateProfile(
         name: _nameController.text,
         avatar: avatar,
       );
@@ -106,7 +107,7 @@ class _perfilViewState extends State<perfilView> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<HabitProvider>();
+    final provider = context.watch<ProfileProvider>();
     final profile = provider.userProfile;
     final loading = provider.profileLoading;
 
@@ -583,7 +584,7 @@ class _perfilViewState extends State<perfilView> {
     }
     final habitId = provider.habits.first['id'];
     final yesterday = DateTime.now().subtract(const Duration(days: 1)).toIso8601String().split('T').first;
-    await provider.api.logHabit(habitId, yesterday, true);
+   await provider.logHabit(habitId, yesterday);
     await provider.loadDashboard();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -600,7 +601,7 @@ class _perfilViewState extends State<perfilView> {
     if (provider.habits.isEmpty) return;
     final habitId = provider.habits.first['id'];
     final date = DateTime.now().subtract(const Duration(days: 7)).toIso8601String().split('T').first;
-    await provider.api.logHabit(habitId, date, true);
+    await provider.logHabit(habitId, date);
     await provider.loadDashboard();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -618,7 +619,7 @@ class _perfilViewState extends State<perfilView> {
     final habitId = provider.habits.first['id'];
     for (int i = 7; i >= 0; i--) {
       final date = DateTime.now().subtract(Duration(days: i)).toIso8601String().split('T').first;
-      await provider.api.logHabit(habitId, date, true);
+      await provider.logHabit(habitId, date);
     }
     await provider.loadDashboard();
     if (mounted) {

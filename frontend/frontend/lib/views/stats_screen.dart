@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../config/app_theme.dart';
-import '../models/habitsProvider.dart';
+//import '../models/habitsProvider.dart';
+import '../providers/habitProvider.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});

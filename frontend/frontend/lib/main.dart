@@ -4,7 +4,9 @@ import 'views/mainScreen.dart';
 import 'config/app_config.dart';
 import 'config/app_theme.dart';
 import 'package:provider/provider.dart';
-import 'models/habitsProvider.dart';
+import 'providers/feedProvider.dart';
+import 'providers/profileProvider.dart';
+import 'providers/habitProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: AppConfig.instance),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
+        ChangeNotifierProvider(create: (_) => FeedProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

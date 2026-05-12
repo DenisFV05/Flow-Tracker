@@ -9,7 +9,8 @@ import '../widgets/habits/HabitCard.dart';
 import '../widgets/stats/StatsGrid.dart';
 import '../widgets/stats/todayProgress.dart';
 
-import '../models/habitsProvider.dart';
+//import '../models/habitsProvider.dart';
+import '../providers/habitProvider.dart';
 import 'crearHabit.dart';
 
 class DashboardView extends StatefulWidget {
