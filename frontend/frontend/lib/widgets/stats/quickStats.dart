@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
-import '../../models/habitsProvider.dart';
+import '../../providers/habitProvider.dart';
+
 import 'StatCard.dart';
 
 class QuickStats extends StatelessWidget {
