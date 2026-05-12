@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flowTracker/models/habitsProvider.dart';
 import '../config/app_theme.dart';
+import '../providers/habitProvider.dart';
+
 
 class Editarhabit extends StatefulWidget {
   final String habitId;

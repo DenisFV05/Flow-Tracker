@@ -2,7 +2,7 @@ import 'package:flowTracker/config/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/habitsProvider.dart';
+import '../../providers/habitProvider.dart';
 
 class HabitDetailView extends StatefulWidget {
   final dynamic habit;
