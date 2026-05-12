@@ -72,10 +72,34 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     if (config.isAuthenticated) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => MainScreen()),
-      );
+      try {
+        final profileProvider = context.read<ProfileProvider>();
+        await profileProvider.loadProfile();
+
+        // Si hi ha error carregant el perfil o està buit, el token podria ser invàlid
+        if (profileProvider.error != null || profileProvider.userProfile.isEmpty) {
+          await config.logout();
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+          );
+          return;
+        }
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MainScreen()),
+        );
+      } catch (e) {
+        await config.logout();
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
     } else {
       Navigator.pushReplacement(
         context,
