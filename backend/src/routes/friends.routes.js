@@ -226,6 +226,15 @@ router.post('/request', validateFriendRequest, async (req, res) => {
             }
         });
 
+        // Notify receiver
+        await prisma.notification.create({
+            data: {
+                userId: receiver.id,
+                type: 'friend_request',
+                message: `${req.user.name} t'ha enviat una sol·licitud d'amistat`
+            }
+        }).catch(() => {});
+
         res.status(201).json({
             id: friendship.id,
             status: friendship.status

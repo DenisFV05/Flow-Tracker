@@ -8,6 +8,7 @@ import 'providers/feedProvider.dart';
 import 'providers/profileProvider.dart';
 import 'providers/habitProvider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/notifications_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationsProvider()),
         ChangeNotifierProvider.value(value: AppConfig.instance),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
         ChangeNotifierProvider(create: (_) => FeedProvider()),

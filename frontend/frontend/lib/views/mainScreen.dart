@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../config/app_theme.dart';
 import '../sidebar.dart';
 import '../screens.dart';
 import 'package:sidebarx/sidebarx.dart';
+import '../providers/notifications_provider.dart';
+import 'notificationsView.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
@@ -69,6 +72,50 @@ class MainScreen extends StatelessWidget {
                 onPressed: () => _key.currentState?.openDrawer(),
                 icon: const Icon(Icons.menu, color: Colors.black87),
               ),
+              actions: [
+                Consumer<NotificationsProvider>(
+                  builder: (context, notifProvider, _) {
+                    final count = notifProvider.unreadCount;
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.notifications_rounded, color: Colors.black87),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const NotificationsView()),
+                            );
+                          },
+                        ),
+                        if (count > 0)
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Container(
+                              width: 16,
+                              height: 16,
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  count > 9 ? '9+' : '$count',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ],
             )
           : null,
       drawer: ExampleSidebarX(controller: _controller),

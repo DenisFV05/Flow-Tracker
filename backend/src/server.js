@@ -10,6 +10,7 @@ const tagsRoutes = require('./routes/tags.routes');
 const profileRoutes = require('./routes/profile.routes');
 const friendsRoutes = require('./routes/friends.routes');
 const feedRoutes = require('./routes/feed.routes');
+const notificationsRoutes = require('./routes/notifications.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,7 @@ app.use('/api/tags', tagsRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/friends', friendsRoutes);
 app.use('/api/feed', feedRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // 404 handler
 app.use((req, res) => {

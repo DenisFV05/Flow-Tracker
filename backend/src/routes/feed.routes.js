@@ -113,28 +113,37 @@ router.get('/', async (req, res) => {
 router.post('/', validatePost, async (req, res) => {
     try {
         const userId = req.user.id;
-        const { content } = req.body;
+        const { content, habitId } = req.body;
 
         if (!content) {
             return res.status(400).json({ error: 'Content is required' });
+        }
+
+        // Verify the habit belongs to the user if provided
+        if (habitId) {
+            const habit = await prisma.habit.findFirst({ where: { id: habitId, userId } });
+            if (!habit) return res.status(404).json({ error: 'Habit not found' });
         }
 
         const post = await prisma.post.create({
             data: {
                 userId,
                 type: 'manual',
-                content
+                content,
+                ...(habitId && { habitId })
             },
             include: {
                 user: {
                     select: { id: true, username: true, name: true, avatar: true }
-                }
+                },
+                habit: { select: { name: true } }
             }
         });
 
         res.status(201).json({
             id: post.id,
             user: post.user,
+            habit: post.habit,
             type: post.type,
             content: post.content,
             createdAt: post.createdAt.toISOString(),
@@ -210,8 +219,20 @@ router.post('/:id/like', async (req, res) => {
             data: {
                 userId,
                 postId: id
-            }
+            },
+            include: { user: { select: { name: true } } }
         });
+
+        // Notify post owner (if they are not the one liking)
+        if (post.userId !== userId) {
+            await prisma.notification.create({
+                data: {
+                    userId: post.userId,
+                    type: 'like',
+                    message: `${like.user.name} ha donat like a la teva publicació`
+                }
+            }).catch(() => {}); // Non-blocking
+        }
 
         res.status(201).json(like);
     } catch (error) {

@@ -109,6 +109,8 @@ class _DashboardViewState extends State<DashboardView> {
                                         habits: habits,
                                         habitStats: habitStats,
                                         todayCompletedHabitIds: dashboardStats['todayCompletedHabitIds'],
+                                        onToggle: (id, completed) =>
+                                            context.read<HabitProvider>().toggleHabit(id, completed),
                                       ),
                                     ],
                                   ),
@@ -135,6 +137,8 @@ class _DashboardViewState extends State<DashboardView> {
                                 habits: habits,
                                 habitStats: habitStats,
                                 todayCompletedHabitIds: dashboardStats['todayCompletedHabitIds'],
+                                onToggle: (id, completed) =>
+                                    context.read<HabitProvider>().toggleHabit(id, completed),
                               ),
                           ],
                         );
@@ -261,6 +265,9 @@ class _DashboardViewState extends State<DashboardView> {
                 streak: stats['currentStreak'] ?? 0,
                 tags: habit['tags'] ?? [],
                 color: AppTheme.primary,
+                completedToday: stats['completedToday'] == true,
+                onToggle: (completed) =>
+                    context.read<HabitProvider>().toggleHabit(habit['id'], completed),
 
                 onTap: () {
                   Navigator.push(

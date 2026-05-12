@@ -20,9 +20,13 @@ class FeedApi {
     };
   }
 
-  Future<void> createPost(String content) async {
+  Future<void> createPost(String content, {String? habitId}) async {
     await _client.post('/api/feed',
-        body: {'content': content}, expectedStatus: 201);
+        body: {
+          'content': content,
+          if (habitId != null) 'habitId': habitId,
+        },
+        expectedStatus: 201);
   }
 
   Future<void> likePost(String postId) async {

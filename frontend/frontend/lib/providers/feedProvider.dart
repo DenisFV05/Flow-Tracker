@@ -37,9 +37,9 @@ class FeedProvider extends ChangeNotifier {
 
   Future<void> refreshFeed() => loadFeed();
 
-  Future<void> createPost(String text) async {
+  Future<void> createPost(String text, {String? habitId}) async {
     try {
-      await _feedApi.createPost(text);
+      await _feedApi.createPost(text, habitId: habitId);
       await refreshFeed();
     } catch (e) {
       error = e.toString();

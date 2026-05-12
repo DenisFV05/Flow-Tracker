@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/habitProvider.dart';
+import '../../providers/feedProvider.dart';
 
 class HabitDetailView extends StatefulWidget {
   final dynamic habit;
@@ -328,71 +329,170 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 
             const SizedBox(height: 36),
 
-            /// BUTTON
+            /// TOGGLE BUTTON
+            Builder(builder: (context) {
+              final completedToday = stats['completedToday'] == true;
+              return SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: loading
+                      ? null
+                      : () async {
+                          setState(() => loading = true);
+                          try {
+                            // Toggle: if done today → unmark, if not → mark
+                            await context.read<HabitProvider>().toggleHabit(
+                                  habit['id'],
+                                  !completedToday,
+                                );
+                            if (mounted) Navigator.pop(context);
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Error: $e"),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => loading = false);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: completedToday
+                        ? AppTheme.success
+                        : AppTheme.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  icon: loading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Icon(
+                          completedToday
+                              ? Icons.check_circle_rounded
+                              : Icons.radio_button_unchecked_rounded,
+                        ),
+                  label: loading
+                      ? const SizedBox.shrink()
+                      : Text(
+                          completedToday ? "Desmarcar" : "Marcar com feta",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              );
+            }),
+
+            const SizedBox(height: 12),
+
+            // Share to Feed button
             SizedBox(
               width: double.infinity,
-              height: 56,
-
-              child: ElevatedButton(
-                onPressed: loading
-                    ? null
-                    : () async {
-                        setState(() => loading = true);
-
-                        try {
-                          await context
-                              .read<HabitProvider>()
-                              .toggleHabit(
-                                habit['id'],
-                                true,
-                              );
-
-                          await context
-                              .read<HabitProvider>()
-                              .loadDashboard();
-
-                          if (mounted) Navigator.pop(context);
-
-                        } catch (e) {
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  "Error actualitzant hàbit"),
-                            ),
-                          );
-
-                        } finally {
-                          setState(() => loading = false);
-                        }
-                      },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: () => _showShareDialog(context, habit),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primary,
+                  side: const BorderSide(color: AppTheme.primary),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
                 ),
-
-                child: loading
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.4,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Text(
-                        "Marcar com feta",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                icon: const Icon(Icons.share_rounded, size: 18),
+                label: const Text(
+                  'Compartir al feed',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showShareDialog(BuildContext context, dynamic habit) {
+    final controller = TextEditingController(
+      text: 'Avui he completat el meu hàbit: ${habit['name']}! 💪',
+    );
+    bool posting = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.share_rounded, color: AppTheme.primary),
+              SizedBox(width: 8),
+              Text('Compartir al feed', style: TextStyle(fontSize: 17)),
+            ],
+          ),
+          content: TextField(
+            controller: controller,
+            maxLines: 3,
+            maxLength: 280,
+            decoration: InputDecoration(
+              hintText: 'Escriu el teu missatge...',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: AppTheme.background,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel·lar'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: posting
+                  ? null
+                  : () async {
+                      setDialogState(() => posting = true);
+                      try {
+                        await context.read<FeedProvider>().createPost(
+                              controller.text.trim(),
+                              habitId: habit['id'],
+                            );
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Publicat al feed! 🎉'),
+                              backgroundColor: AppTheme.success,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        setDialogState(() => posting = false);
+                      }
+                    },
+              child: posting
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Publicar'),
             ),
           ],
         ),

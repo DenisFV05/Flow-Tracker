@@ -11,6 +11,9 @@ class HabitCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final bool completedToday;
+  final Function(bool)? onToggle;
+
   const HabitCard({
     super.key,
     required this.title,
@@ -19,10 +22,11 @@ class HabitCard extends StatelessWidget {
     required this.streak,
     required this.tags,
     required this.color,
+    this.completedToday = false,
     this.onTap,
     this.onEdit,
     this.onDelete,
-
+    this.onToggle,
   });
 
   @override
@@ -60,6 +64,30 @@ class HabitCard extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                // Quick toggle button
+                GestureDetector(
+                  onTap: onToggle != null ? () => onToggle!(!completedToday) : null,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: completedToday
+                          ? AppTheme.success.withOpacity(0.12)
+                          : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      completedToday
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      size: 22,
+                      color: completedToday ? AppTheme.success : Colors.grey[400],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 4),
 
                 PopupMenuButton<String>(
                   padding: EdgeInsets.zero,
