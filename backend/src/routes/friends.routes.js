@@ -305,4 +305,77 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+async function getStatsForUser(userId) {
+    const habits = await prisma.habit.findMany({
+        where: { userId },
+        include: { logs: true }
+    });
+
+    let longestStreak = 0;
+    for (const habit of habits) {
+        const completedDates = (habit.logs || [])
+            .filter(l => l.completed)
+            .map(l => new Date(l.date).toISOString().split('T')[0])
+            .sort();
+
+        if (completedDates.length > 0) {
+            let currentStreak = 1;
+            let maxInHabit = 1;
+            for (let i = 1; i < completedDates.length; i++) {
+                const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
+                if (completedDates[i] === prevDate) {
+                    currentStreak++;
+                    maxInHabit = Math.max(maxInHabit, currentStreak);
+                } else {
+                    currentStreak = 1;
+                }
+            }
+            longestStreak = Math.max(longestStreak, maxInHabit);
+        }
+    }
+    return { longestStreak, totalHabits: habits.length };
+}
+
+router.get('/leaderboard', async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Get friends
+        const friendships = await prisma.friendship.findMany({
+            where: {
+                OR: [
+                    { requesterId: userId, status: 'accepted' },
+                    { receiverId: userId, status: 'accepted' }
+                ]
+            },
+            include: {
+                requester: { select: { id: true, username: true, name: true, avatar: true } },
+                receiver: { select: { id: true, username: true, name: true, avatar: true } }
+            }
+        });
+
+        const userIds = [userId, ...friendships.map(f => f.requesterId === userId ? f.receiverId : f.requesterId)];
+        const users = await prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, username: true, name: true, avatar: true }
+        });
+
+        const leaderboard = await Promise.all(users.map(async (user) => {
+            const stats = await getStatsForUser(user.id);
+            return {
+                ...user,
+                longestStreak: stats.longestStreak,
+                totalHabits: stats.totalHabits
+            };
+        }));
+
+        leaderboard.sort((a, b) => b.longestStreak - a.longestStreak);
+
+        res.json(leaderboard);
+    } catch (error) {
+        console.error('[LEADERBOARD ERROR]', error.message);
+        res.status(500).json({ error: 'Error carregant rànquing' });
+    }
+});
+
 module.exports = router;

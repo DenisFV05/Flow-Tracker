@@ -83,6 +83,7 @@ model Post {
   type      String
   content   String?
   habitId   String?
+  habit     Habit?   @relation(fields: [habitId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   likes     Like[]
 }

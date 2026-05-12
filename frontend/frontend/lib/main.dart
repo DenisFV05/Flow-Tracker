@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'providers/feedProvider.dart';
 import 'providers/profileProvider.dart';
 import 'providers/habitProvider.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +15,18 @@ void main() async {
   final config = AppConfig.instance;
   await config.load();
   
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: AppConfig.instance),
+        ChangeNotifierProvider(create: (_) => HabitProvider()),
+        ChangeNotifierProvider(create: (_) => FeedProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,22 +34,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: AppConfig.instance),
-        ChangeNotifierProvider(create: (_) => HabitProvider()),
-        ChangeNotifierProvider(create: (_) => FeedProvider()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flow Tracker',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primary),
-          useMaterial3: true,
-        ),
-        home: const SplashScreen(),
-      ),
+    final themeProvider = context.watch<ThemeProvider>();
+    
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flow Tracker',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
+      home: const SplashScreen(),
     );
   }
 }

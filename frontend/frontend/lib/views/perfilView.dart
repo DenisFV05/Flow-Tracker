@@ -7,6 +7,10 @@ import 'package:provider/provider.dart';
 import '../config/app_theme.dart';
 import '../providers/profileProvider.dart';
 import '../providers/habitProvider.dart';
+import '../providers/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../services/auth_storage.dart';
+import '../config/app_config.dart';
 import 'inputEstil.dart';
 
 class perfilView extends StatefulWidget {
@@ -102,6 +106,25 @@ class _perfilViewState extends State<perfilView> {
       }
     } finally {
       setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _exportCSV() async {
+    final baseUrl = AppConfig.instance.baseUrl;
+    final token = await AuthStorage().getToken();
+    
+    if (token == null) return;
+    
+    final url = Uri.parse('$baseUrl/api/profile/export?token=$token');
+    
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No s\'ha pogut iniciar l\'exportació')),
+        );
+      }
     }
   }
 
@@ -277,6 +300,31 @@ class _perfilViewState extends State<perfilView> {
           ),
 
           const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 16),
+          const Text(
+            'Preferències',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.dark_mode_rounded, color: AppTheme.primary),
+            title: const Text('Mode Fosc'),
+            trailing: Switch(
+              value: context.watch<ThemeProvider>().isDarkMode,
+              onChanged: (value) => context.read<ThemeProvider>().toggleTheme(),
+              activeColor: AppTheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.file_download_rounded, color: AppTheme.success),
+            title: const Text('Exportar historial (CSV)'),
+            onTap: _exportCSV,
+          ),
+          const SizedBox(height: 16),
 
           SizedBox(
             width: double.infinity,

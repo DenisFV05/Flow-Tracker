@@ -18,6 +18,7 @@ class _AmicsViewState extends State<AmicsView> {
   final FriendsApi _friendsApi = FriendsApi();
   List<dynamic> friends = [];
   List<dynamic> requests = [];
+  List<dynamic> leaderboard = [];
   bool loading = true;
   bool _hasChanges = false;
   String? error;
@@ -63,11 +64,13 @@ class _AmicsViewState extends State<AmicsView> {
       final results = await Future.wait([
         _friendsApi.getFriends(),
         _friendsApi.getRequests(),
+        _friendsApi.getLeaderboard(),
       ]);
 
       setState(() {
         friends = results[0] as List<dynamic>;
         requests = results[1] as List<dynamic>;
+        leaderboard = results[2] as List<dynamic>;
         _hasChanges = false;
         loading = false;
       });
@@ -145,92 +148,188 @@ class _AmicsViewState extends State<AmicsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: loading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
-          : error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'No s\'han pogut carregar les dades',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(error!, style: TextStyle(color: Colors.grey[500])),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: _loadData,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: AppTheme.background,
+        appBar: AppBar(
+          toolbarHeight: 0,
+          bottom: TabBar(
+            indicatorColor: AppTheme.primary,
+            labelColor: AppTheme.primary,
+            unselectedLabelColor: Colors.grey,
+            tabs: const [
+              Tab(icon: Icon(Icons.people), text: 'Amics'),
+              Tab(icon: Icon(Icons.emoji_events), text: 'Rànquing'),
+            ],
+          ),
+        ),
+        body: loading
+            ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+            : error != null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'No s\'han pogut carregar les dades',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                         ),
-                        child: const Text('Reintentar'),
-                      ),
+                        const SizedBox(height: 8),
+                        Text(error!, style: TextStyle(color: Colors.grey[500])),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _loadData,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Reintentar'),
+                        ),
+                      ],
+                    ),
+                  )
+                : TabBarView(
+                    children: [
+                      _buildFriendsTab(),
+                      _buildLeaderboardTab(),
                     ],
                   ),
-                )
-              : Column(
-                  children: [
-                    if (_hasChanges)
-                      GestureDetector(
-                        onTap: () {
-                          _loadData();
-                          _hasChanges = false;
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          color: AppTheme.primary,
-                          child: const Text(
-                            'Canvis detectats — Toca per veure',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
-                          ),
-                        ),
-                      ),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: _loadData,
-                        color: AppTheme.primary,
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(20),
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final isWide = constraints.maxWidth > 700;
+      ),
+    );
+  }
 
-                              if (isWide) {
-                                return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(flex: 2, child: _buildFriendsSection()),
-                                    const SizedBox(width: 20),
-                                    Expanded(flex: 1, child: _buildRequestsSection()),
-                                  ],
-                                );
-                              }
+  Widget _buildFriendsTab() {
+    return Column(
+      children: [
+        if (_hasChanges)
+          GestureDetector(
+            onTap: () {
+              _loadData();
+              _hasChanges = false;
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              color: AppTheme.primary,
+              child: const Text(
+                'Canvis detectats — Toca per veure',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
+              ),
+            ),
+          ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _loadData,
+            color: AppTheme.primary,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth > 700;
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildFriendsSection(),
-                                  const SizedBox(height: 24),
-                                  _buildRequestsSection(),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
+                  if (isWide) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 2, child: _buildFriendsSection()),
+                        const SizedBox(width: 20),
+                        Expanded(flex: 1, child: _buildRequestsSection()),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFriendsSection(),
+                      const SizedBox(height: 24),
+                      _buildRequestsSection(),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLeaderboardTab() {
+    return RefreshIndicator(
+      onRefresh: _loadData,
+      color: AppTheme.primary,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(20),
+        itemCount: leaderboard.length,
+        itemBuilder: (context, index) {
+          final user = leaderboard[index];
+          final streak = user['longestStreak'] ?? 0;
+          final isTop = index < 3;
+          final rankColors = [const Color(0xFFFFD700), const Color(0xFFC0C0C0), const Color(0xFFCD7F32)];
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primary.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ListTile(
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 24,
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isTop ? rankColors[index] : Colors.grey,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    backgroundColor: AppTheme.surfaceLight,
+                    backgroundImage: user['avatar'] != null
+                        ? (user['avatar'].toString().startsWith('data:')
+                            ? MemoryImage(base64Decode(user['avatar'].toString().split(',').last))
+                            : NetworkImage(user['avatar']))
+                        : null,
+                    child: user['avatar'] == null ? Text(user['name']?[0] ?? '?') : null,
+                  ),
+                ],
+              ),
+              title: Text(user['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('${user['totalHabits'] ?? 0} hàbits'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.local_fire_department, color: Colors.orange),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$streak',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 

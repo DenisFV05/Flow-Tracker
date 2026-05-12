@@ -3,16 +3,17 @@ const prisma = require('../prisma');
 
 const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
+    let token = null;
 
-    if (!authHeader) {
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+    } else if (req.query.token) {
+        token = req.query.token;
+    }
+
+    if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
-
-    if (!authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Invalid token format' });
-    }
-
-    const token = authHeader.split(' ')[1];
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);

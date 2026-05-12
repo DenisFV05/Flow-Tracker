@@ -38,4 +38,9 @@ class FriendsApi {
         await _client.get('/api/profile/$friendId', expectedStatus: 200);
     return data as Map<String, dynamic>;
   }
+
+  Future<List<dynamic>> getLeaderboard() async {
+    final data = await _client.get('/api/friends/leaderboard', expectedStatus: 200);
+    return data as List<dynamic>;
+  }
 }

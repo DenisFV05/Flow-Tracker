@@ -67,6 +67,9 @@ router.get('/', async (req, res) => {
                 },
                 _count: {
                     select: { likes: true }
+                },
+                habit: {
+                    select: { name: true }
                 }
             },
             orderBy: { createdAt: 'desc' },
