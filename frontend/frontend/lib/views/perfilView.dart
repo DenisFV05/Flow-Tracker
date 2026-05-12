@@ -110,7 +110,7 @@ class _perfilViewState extends State<perfilView> {
   }
 
   Future<void> _exportCSV() async {
-    final baseUrl = AppConfig.instance.baseUrl;
+    final baseUrl = AppConfig.instance.serverUrl;
     final token = await AuthStorage().getToken();
     
     if (token == null) return;
