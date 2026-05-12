@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../config/app_theme.dart';
+import '../../providers/habitProvider.dart';
 
 class TodayProgress extends StatelessWidget {
   final List<dynamic> habits;
@@ -16,13 +19,11 @@ class TodayProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final doneCount = habits.where((h) {
-      final id = h['id']?.toString();
-      if (todayCompletedHabitIds != null) {
-        return todayCompletedHabitIds!.contains(id) || todayCompletedHabitIds!.contains(h['id']);
-      }
       final stats = habitStats[h['id']] as Map<String, dynamic>?;
+
       return stats?['completedToday'] == true;
     }).length;
+
 
     return Container(
       width: double.infinity,
@@ -41,6 +42,7 @@ class TodayProgress extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // HEADER
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -54,7 +56,7 @@ class TodayProgress extends StatelessWidget {
               ),
               Text(
                 '$doneCount/${habits.length}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.primary,
@@ -62,7 +64,10 @@ class TodayProgress extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 14),
+
+          // EMPTY STATE
           if (habits.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -75,33 +80,52 @@ class TodayProgress extends StatelessWidget {
             ...habits.map((habit) {
               final id = habit['id']?.toString();
               final stats = habitStats[habit['id']] as Map<String, dynamic>?;
+
               bool doneToday;
+
               if (todayCompletedHabitIds != null) {
-                doneToday = todayCompletedHabitIds!.contains(id) || todayCompletedHabitIds!.contains(habit['id']);
+                doneToday = todayCompletedHabitIds!.contains(id) ||
+                    todayCompletedHabitIds!.contains(habit['id']);
               } else {
                 doneToday = stats?['completedToday'] == true;
               }
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: doneToday
-                            ? AppTheme.successBg
-                            : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        doneToday
-                            ? Icons.check_circle_rounded
-                            : Icons.radio_button_unchecked_rounded,
-                        size: 20,
-                        color: doneToday ? AppTheme.success : Colors.grey[400],
+                    InkWell(
+                      onTap: () async {
+                        final provider = context.read<HabitProvider>();
+
+                        await provider.toggleHabit(
+                          habit['id'].toString(),
+                          !doneToday,
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: doneToday
+                              ? AppTheme.successBg
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          doneToday
+                              ? Icons.check_circle_rounded
+                              : Icons.radio_button_unchecked_rounded,
+                          size: 20,
+                          color: doneToday
+                              ? AppTheme.success
+                              : Colors.grey[400],
+                        ),
                       ),
                     ),
+
                     const SizedBox(width: 12),
+
+                    // TITLE
                     Expanded(
                       child: Text(
                         habit['name'] ?? '',
@@ -114,6 +138,8 @@ class TodayProgress extends StatelessWidget {
                         ),
                       ),
                     ),
+
+                    // STREAK
                     if (stats != null)
                       Text(
                         '${stats['currentStreak'] ?? 0} dies',
