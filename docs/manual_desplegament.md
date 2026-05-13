@@ -91,7 +91,7 @@ DATABASE_URL="postgresql://flow_tracker:la_teva_contrasenya@localhost:5432/flowt
 JWT_SECRET="una_clau_molt_llarga_i_secreta_de_almenys_32_caracters"
 PORT=3001
 NODE_ENV=production
-ALLOWED_ORIGINS="http://localhost,https://el-teu-domini.cat"
+ALLOWED_ORIGINS="http://localhost,https://flow-tracker.ieti.site"
 ```
 
 > [!IMPORTANT]
@@ -146,7 +146,7 @@ sudo nano /etc/nginx/sites-available/flow-tracker
 ```nginx
 server {
     listen 80;
-    server_name ieticloudpro.ieti.cat;  # o el teu domini
+    server_name flow-tracker.ieti.site;
 
     # Augmentar límit per a imatges en Base64
     client_max_body_size 20M;
