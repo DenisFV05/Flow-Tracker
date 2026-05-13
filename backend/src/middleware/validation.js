@@ -39,7 +39,7 @@ const validateFriendRequest = [
 ];
 
 const validatePost = [
-    body('content').notEmpty().trim().isLength({ max: 1000 }).withMessage('Content is too long (max 1000 chars)'),
+    body('content').notEmpty().trim().isLength({ max: 10000000 }).withMessage('Content is too long'),
     body('habitId').optional().isUUID().withMessage('Invalid habit ID format'),
     handleValidationErrors
 ];
