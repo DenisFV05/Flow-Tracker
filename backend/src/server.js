@@ -15,6 +15,7 @@ const feedRoutes = require('./routes/feed.routes');
 const notificationsRoutes = require('./routes/notifications.routes');
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Nginx, etc.)
 const PORT = process.env.PORT || 3000;
 
 // Rate limiting
