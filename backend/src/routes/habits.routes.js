@@ -219,14 +219,24 @@ router.post('/:id/log', validateUUID('id'), async (req, res) => {
             const ACHIEVEMENT_MILESTONES = [7, 14, 30, 60, 90, 180, 365];
             
             if (ACHIEVEMENT_MILESTONES.includes(newStreak) && newStreak > prevStreak) {
+                const message = `🏆 ¡Enhorabuena! Has alcanzado ${newStreak} días seguidos de ${habit.name}!`;
+                
                 await prisma.post.create({
                     data: {
                         userId,
                         type: 'achievement',
-                        content: `${newStreak} días seguidos de ${habit.name}!`,
+                        content: message,
                         habitId: id
                     }
-                });
+                }).catch(err => console.error('Error creating achievement post:', err));
+
+                await prisma.notification.create({
+                    data: {
+                        userId,
+                        type: 'achievement',
+                        message: message
+                    }
+                }).catch(err => console.error('Error creating achievement notification:', err));
             }
         }
 

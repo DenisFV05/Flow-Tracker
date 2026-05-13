@@ -78,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
                       alignment: Alignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.notifications_rounded, color: context.textPrimaryColor),
+                          icon: Icon(Icons.notifications, color: context.textPrimaryColor),
                           onPressed: () {
                             Navigator.push(
                               context,
