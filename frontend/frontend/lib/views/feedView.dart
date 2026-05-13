@@ -423,7 +423,7 @@ void initState() {
                   ],
                 ),
               ),
-                child: Column(
+                Column(
                   children: [
                     if (post['isOwn'] == true)
                       IconButton(
@@ -447,7 +447,6 @@ void initState() {
                     ),
                   ],
                 ),
-              ),
             ],
           ),
         ),
