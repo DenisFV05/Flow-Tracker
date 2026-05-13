@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
-const { validatePost } = require('../middleware/validation');
+const { validatePost, validateUUID } = require('../middleware/validation');
+const xss = require('xss');
 
 router.use(authMiddleware);
 
@@ -119,6 +120,15 @@ router.post('/', validatePost, async (req, res) => {
             return res.status(400).json({ error: 'Content is required' });
         }
 
+        const sanitizedContent = xss(content, {
+            whiteList: {},
+            stripIgnore: true
+        });
+
+        if (!sanitizedContent || sanitizedContent.trim().length === 0) {
+            return res.status(400).json({ error: 'Content cannot be empty after sanitization' });
+        }
+
         // Verify the habit belongs to the user if provided
         if (habitId) {
             const habit = await prisma.habit.findFirst({ where: { id: habitId, userId } });
@@ -129,7 +139,7 @@ router.post('/', validatePost, async (req, res) => {
             data: {
                 userId,
                 type: 'manual',
-                content,
+                content: sanitizedContent,
                 ...(habitId && { habitId })
             },
             include: {
@@ -156,7 +166,7 @@ router.post('/', validatePost, async (req, res) => {
     }
 });
 
-router.get('/:id/likes', async (req, res) => {
+router.get('/:id/likes', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -189,7 +199,7 @@ router.get('/:id/likes', async (req, res) => {
     }
 });
 
-router.post('/:id/like', async (req, res) => {
+router.post('/:id/like', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -241,7 +251,7 @@ router.post('/:id/like', async (req, res) => {
     }
 });
 
-router.delete('/:id/like', async (req, res) => {
+router.delete('/:id/like', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -270,7 +280,7 @@ router.delete('/:id/like', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;

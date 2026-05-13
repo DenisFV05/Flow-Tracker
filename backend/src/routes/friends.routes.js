@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
-const { validateFriendRequest } = require('../middleware/validation');
+const { validateFriendRequest, validateUUID } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
@@ -245,7 +245,7 @@ router.post('/request', validateFriendRequest, async (req, res) => {
     }
 });
 
-router.put('/request/:id', async (req, res) => {
+router.put('/request/:id', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const { action } = req.body;
@@ -284,7 +284,7 @@ router.put('/request/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;

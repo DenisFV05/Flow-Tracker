@@ -11,6 +11,7 @@ import '../providers/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/auth_storage.dart';
 import '../config/app_config.dart';
+import '../utils/image_validator.dart';
 
 class perfilView extends StatefulWidget {
   const perfilView({super.key});
@@ -66,14 +67,33 @@ class _perfilViewState extends State<perfilView> {
       final bytes = fileData.bytes;
       
       if (bytes != null) {
+        if (bytes.length > 2 * 1024 * 1024) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('La imatge és massa gran (màx. 2MB)')),
+            );
+          }
+          return;
+        }
+        
         final base64Image = base64Encode(bytes);
         final ext = fileData.extension?.toLowerCase() ?? 'png';
+        final fullBase64 = 'data:image/$ext;base64,$base64Image';
+        
+        if (!ImageValidator.isValidBase64Image(fullBase64)) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('El fitxer no és una imatge vàlida')),
+            );
+          }
+          return;
+        }
         
         setState(() {
           if (!kIsWeb && fileData.path != null) {
             _selectedImage = io.File(fileData.path!);
           }
-          _avatarUrlController.text = 'data:image/$ext;base64,$base64Image';
+          _avatarUrlController.text = fullBase64;
         });
       }
     }

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
+const { validateUUID } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
@@ -168,7 +169,7 @@ router.get('/export', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateUUID('id'), async (req, res) => {
     try {
         const friendId = req.params.id;
         const userId = req.user.id;

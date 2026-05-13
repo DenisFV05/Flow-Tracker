@@ -10,7 +10,11 @@ const handleValidationErrors = (req, res, next) => {
 
 const validateRegister = [
     body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password')
+        .isLength({ min: 8, max: 128 })
+        .withMessage('Password must be 8-128 characters')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+$/)
+        .withMessage('Password must contain uppercase, lowercase, number and special character'),
     body('name').notEmpty().trim().withMessage('Name is required'),
     body('username').notEmpty().trim().withMessage('Username is required'),
     handleValidationErrors
@@ -35,7 +39,13 @@ const validateFriendRequest = [
 ];
 
 const validatePost = [
-    body('content').notEmpty().trim().withMessage('Content is required'),
+    body('content').notEmpty().trim().isLength({ max: 1000 }).withMessage('Content is too long (max 1000 chars)'),
+    body('habitId').optional().isUUID().withMessage('Invalid habit ID format'),
+    handleValidationErrors
+];
+
+const validateUUID = (paramName) => [
+    require('express-validator').param(paramName).isUUID().withMessage(`Invalid ${paramName} format`),
     handleValidationErrors
 ];
 
@@ -44,5 +54,6 @@ module.exports = {
     validateLogin,
     validateHabit,
     validateFriendRequest,
-    validatePost
+    validatePost,
+    validateUUID
 };

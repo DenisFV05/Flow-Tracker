@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
-const { validateHabit } = require('../middleware/validation');
+const { validateHabit, validateUUID } = require('../middleware/validation');
 
 router.use(authMiddleware);
 
@@ -140,7 +140,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -161,7 +161,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateUUID('id'), validateHabit, async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, tags } = req.body;
@@ -211,7 +211,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -235,7 +235,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.post('/:id/log', async (req, res) => {
+router.post('/:id/log', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const { date, completed } = req.body;
@@ -336,7 +336,7 @@ router.delete('/:id/log/:date', async (req, res) => {
     }
 });
 
-router.get('/:id/logs', async (req, res) => {
+router.get('/:id/logs', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -370,7 +370,7 @@ router.get('/:id/logs', async (req, res) => {
     }
 });
 
-router.get('/:id/stats', async (req, res) => {
+router.get('/:id/stats', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -423,7 +423,7 @@ router.get('/:id/stats', async (req, res) => {
     }
 });
 
-router.get('/:id/heatmap', async (req, res) => {
+router.get('/:id/heatmap', validateUUID('id'), async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
