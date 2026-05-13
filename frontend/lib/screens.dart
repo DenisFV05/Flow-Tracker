@@ -6,6 +6,7 @@ import 'views/feedView.dart';
 import 'views/amicsView.dart';
 import 'views/perfilView.dart';
 import 'views/stats_screen.dart';
+import 'views/notificationsView.dart';
 
 class ScreensExample extends StatelessWidget {
   const ScreensExample({super.key, required this.controller});
@@ -21,8 +22,9 @@ class ScreensExample extends StatelessWidget {
           case 0: return const DashboardView();
           case 1: return const StatsScreen();
           case 2: return const FeedView();
-          case 3: return const AmicsView();
-          case 4: return const perfilView();
+          case 3: return const NotificationsView();
+          case 4: return const AmicsView();
+          case 5: return const perfilView();
           default: return Center(child: Text('Not found'));
         }
       },

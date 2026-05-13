@@ -22,6 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     'Dashboard',
     'Estadístiques',
     'Feed',
+    'Notificacions',
     'Amics',
     'Perfil',
   ];

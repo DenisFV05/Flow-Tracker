@@ -282,8 +282,8 @@ void initState() {
               // Image picker button
               IconButton(
                 icon: Icon(
-                  Icons.image_rounded,
-                  color: _selectedImageBytes != null ? AppTheme.primary : Colors.grey[400],
+                  Icons.add_photo_alternate_rounded,
+                  color: _selectedImageBytes != null ? AppTheme.primary : Colors.grey[600],
                 ),
                 tooltip: 'Adjuntar imatge',
                 onPressed: _pickImage,
