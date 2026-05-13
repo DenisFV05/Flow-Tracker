@@ -314,7 +314,7 @@ En lloc de paginació per offset (`LIMIT x OFFSET y`), s'usa **cursor-based pagi
 | O04 — Exportació CSV | ✅ Implementat | Inclou metadades d'hàbits |
 | O05 — Ranking entre amics | ✅ Implementat | Leaderboard amb ratxa màxima |
 | Eliminar posts propis | ✅ Nou (no planificat) | Afegit a petició de l'usuari |
-| Notificacions en temps real | ❌ No implementat | Polling cada 60s com a alternativa |
+| Notificacions en temps real | Parcial | Polling cada 60s; notificacions de likes, amistats i assoliments implementades |
 | Tests automatitzats | ❌ Parcial | Proves manuals realitzades |
 
 **Resum:** El projecte ha superat les expectatives inicials. Tots els ítems opcionals han estat implementats, i s'han afegit funcionalitats addicionals no planificades (eliminació de posts, imatges al feed).
@@ -322,3 +322,5 @@ En lloc de paginació per offset (`LIMIT x OFFSET y`), s'usa **cursor-based pagi
 ---
 
 *Flow-Tracker v1.0 — DAM AMS2 — MP13 Crèdit de Síntesi — Maig 2026*
+
+App en producció: https://flow-tracker.ieti.site

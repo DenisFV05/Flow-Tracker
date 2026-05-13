@@ -26,9 +26,16 @@ class ApiClient {
       data = null;
     }
 
-    final errorMsg = data is Map
-        ? (data['error'] as String? ?? 'Request failed')
-        : 'Request failed';
+    String errorMsg = 'Request failed';
+    if (data is Map) {
+      if (data.containsKey('errors') && data['errors'] is List && data['errors'].isNotEmpty) {
+        errorMsg = data['errors'][0]['msg']?.toString() ?? 'Validation failed';
+      } else if (data.containsKey('error')) {
+        errorMsg = data['error']?.toString() ?? 'Request failed';
+      } else if (data.containsKey('message')) {
+        errorMsg = data['message']?.toString() ?? 'Request failed';
+      }
+    }
 
     if (expectedStatus != null && res.statusCode != expectedStatus) {
       throw Exception(errorMsg);

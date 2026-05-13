@@ -1,68 +1,29 @@
-# Flow-Tracker — Documentació del Projecte
+# Flow-Tracker — Índex de Documentació
 
-**Tracker de Hàbits i Xarxa Social** | DAM AMS2 · MP13 Projecte · Crèdit de Síntesi
-**Presentació:** 15 de Maig 2026
+**DAM AMS2 · MP13 Projecte · Crèdit de Síntesi — Maig 2026**
 
----
-
-## Índex de Documentació
-
-| Fitxer | Contingut |
-|--------|-----------|
-| [README.md](./README.md) | Aquest fitxer: índex i visió general |
-| [arquitectura_i_disseny.md](./arquitectura_i_disseny.md) | Disseny, arquitectura, decisions tècniques, dificultats |
-| [manual_desplegament.md](./manual_desplegament.md) | Manual complet de desplegament al servidor |
-| [frontend_docs.md](./frontend_docs.md) | Documentació de l'aplicació Flutter |
-| [backend_api_docs.md](./backend_api_docs.md) | Referència completa de l'API REST |
-| [flow_tracker_planificacio_final.docx.md](./flow_tracker_planificacio_final.docx.md) | Backlog, sprints i calendarització del projecte |
-| [preproyecto_flow_tracker.md](./preproyecto_flow_tracker.md) | Pre-projecte original |
+Aplicació web: [https://flow-tracker.ieti.site](https://flow-tracker.ieti.site)
 
 ---
 
-## Descripció General
+## Documents del Projecte
 
-**Flow-Tracker** és una aplicació de seguiment de hàbits amb component social. Permet als usuaris:
-
-- 🎯 **Crear i gestionar hàbits** amb etiquetes personalitzades
-- ✅ **Registrar el compliment diari** de cada hàbit
-- 📊 **Visualitzar estadístiques** (ratxes, taxes de compleció, heatmaps anuals)
-- 👥 **Connectar amb amics** i veure el seu progrés
-- 📣 **Feed social** amb publicacions i assoliments automàtics
-- 📤 **Exportar dades** en format CSV
-
----
-
-## Pila Tecnològica
-
-| Capa | Tecnologia |
-|------|-----------|
-| **Frontend** | Flutter (Dart) — multiplataforma: Windows, Android, Web |
-| **Backend** | Node.js + Express.js |
-| **Base de Dades** | PostgreSQL + Prisma ORM |
-| **Autenticació** | JWT (JSON Web Tokens) + bcrypt |
-| **Desplegament** | Proxmox LXC + Nginx + PM2 |
-| **Control de versió** | Git / GitHub |
+| Document | Contingut | Destinatari |
+|----------|-----------|-------------|
+| [arquitectura_i_disseny.md](./arquitectura_i_disseny.md) | Arquitectura del sistema, model de dades, decisions tècniques i dificultats | Avaluadors i tècnics |
+| [backend_api_docs.md](./backend_api_docs.md) | Referència completa de tots els endpoints REST | Desenvolupadors |
+| [frontend_docs.md](./frontend_docs.md) | Estructura de l'app Flutter, providers, pantalles | Desenvolupadors |
+| [manual_desplegament.md](./manual_desplegament.md) | Guia pas a pas per desplegar al servidor Proxmox | Administradors / Desenvolupadors |
+| [developer_guide.md](./developer_guide.md) | Guia interna: flux de dades, com funciona tot plegat | Equip de desenvolupament |
+| [flow_tracker_planificacio_final.docx.md](./flow_tracker_planificacio_final.docx.md) | Planificació, sprints i seguiment del projecte | Avaluadors |
 
 ---
 
-## Estructura del Repositori
+## Accés Ràpid
 
-```
-Flow-Tracker/
-├── backend/          # API REST Node.js
-│   ├── src/
-│   │   ├── routes/   # Endpoints de l'API
-│   │   ├── middleware/  # Auth, validació
-│   │   └── server.js
-│   └── prisma/       # Esquema i migracions de BD
-├── frontend/         # App Flutter
-│   └── lib/
-│       ├── views/    # Pantalles de l'app
-│       ├── providers/  # Gestió d'estat (Provider)
-│       ├── services/ # Crides a l'API
-│       └── widgets/  # Components reutilitzables
-└── docs/             # Tota la documentació
-```
+- **App Web**: [https://flow-tracker.ieti.site](https://flow-tracker.ieti.site)
+- **APK Android**: [https://flow-tracker.ieti.site/flow.apk](https://flow-tracker.ieti.site/flow.apk)
+- **Repositori**: [https://github.com/DenisFV05/Flow-Tracker](https://github.com/DenisFV05/Flow-Tracker)
 
 ---
 

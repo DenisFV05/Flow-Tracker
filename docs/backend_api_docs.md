@@ -13,7 +13,7 @@ frontend (Flutter)
   Nginx (reverse proxy :80/:443)
         │
         ▼
-  Node.js / Express (port 3000)
+  Node.js / Express (port 3001)
         │
   ┌─────┴──────┐
   │  Middleware │  helmet · cors · auth (JWT) · validation (express-validator)
@@ -56,7 +56,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/flowtracker"
 JWT_SECRET="clau_secreta_molt_llarga"
 PORT=3000
 NODE_ENV=production
-ALLOWED_ORIGINS="http://localhost,https://tudomini.com"
+ALLOWED_ORIGINS="http://localhost,https://flow-tracker.ieti.site"
 ```
 
 ---
@@ -84,9 +84,11 @@ User ──< Habit ──< ActivityLog
 
 **Friendship** — `id, requesterId, receiverId, status (pending|accepted|rejected)` — Restricció única `[requesterId, receiverId]`
 
-**Post** — `id, userId, type (achievement|manual), content?, habitId?, likes[], createdAt`
+**Post** — `id, userId, type (achievement|manual), content?, habitId?, imageBase64?, likes[], createdAt`
 
 **Like** — `id, userId, postId` — Restricció única `[userId, postId]`
+
+**Notification** — `id, userId, type (like|friend_request|achievement), message, read (bool), createdAt`
 
 ---
 
@@ -229,7 +231,7 @@ Elimina un hàbit i tots els seus registres (ActivityLog) en cascada.
 ---
 
 #### `POST /api/habits/:id/log`
-Registra o actualitza el compliment d'un hàbit per a una data concreta (upsert). Si s'arriba a un fita de ratxa (7, 14, 30, 60, 90, 180, 365 dies), es crea un Post d'assoliment automàticament al feed.
+Registra o actualitza el compliment d'un hàbit per a una data concreta (upsert). Si s'arriba a una fita de ratxa (7, 14, 30, 60, 90, 180, 365 dies), es crea automàticament un `Post` de tipus `achievement` al feed **i una `Notification`** per a l'usuari.
 
 **Body:**
 ```json
@@ -601,7 +603,7 @@ Quan es fa un `POST /api/habits/:id/log` amb `completed: true`, el sistema:
 1. Calcula la ratxa anterior
 2. Guarda el nou log
 3. Recalcula la nova ratxa
-4. Si la nova ratxa és un dels **milestones** `[7, 14, 30, 60, 90, 180, 365]` dies i és major que l'anterior, crea automàticament un `Post` de tipus `achievement` al feed de l'usuari.
+4. Si la nova ratxa supera un dels **milestones** `[7, 14, 30, 60, 90, 180, 365]` dies i és el primer cop que s'assoleix, crea automàticament un `Post` de tipus `achievement` al feed.
 
 ### Paginació del Feed per Cursor
 
@@ -677,15 +679,13 @@ curl http://localhost:3001/health
 ```nginx
 server {
     listen 80;
-    server_name tudomini.com;
-    client_max_body_size 20M;
+    server_name flow-tracker.tudomini.com;
 
     location /api/ {
         proxy_pass http://localhost:3001;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Authorization $http_authorization;
     }
 
