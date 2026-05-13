@@ -11,10 +11,8 @@ const handleValidationErrors = (req, res, next) => {
 const validateRegister = [
     body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
     body('password')
-        .isLength({ min: 8, max: 128 })
-        .withMessage('Password must be 8-128 characters')
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+$/)
-        .withMessage('Password must contain uppercase, lowercase, number and special character'),
+        .isLength({ min: 6, max: 128 })
+        .withMessage('Password must be at least 6 characters'),
     body('name').notEmpty().trim().withMessage('Name is required'),
     body('username').notEmpty().trim().withMessage('Username is required'),
     handleValidationErrors
