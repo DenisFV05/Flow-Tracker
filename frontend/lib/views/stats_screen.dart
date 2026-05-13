@@ -14,11 +14,16 @@ class StatsScreen extends StatefulWidget {
 }
 
 class _StatsScreenState extends State<StatsScreen> {
+  bool _initialized = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HabitProvider>().loadDashboard();
+      if (!_initialized) {
+        _initialized = true;
+        context.read<HabitProvider>().loadDashboard();
+      }
     });
   }
 
@@ -26,12 +31,37 @@ class _StatsScreenState extends State<StatsScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<HabitProvider>();
     final loading = provider.loading;
+    final error = provider.error;
     final habits = provider.habits;
     final habitStats = provider.habitStats;
     final dashboardStats = provider.dashboardStats;
 
-    if (loading) {
+    if (loading && habits.isEmpty) {
       return Center(child: CircularProgressIndicator(color: AppTheme.primary));
+    }
+
+    if (error != null && habits.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+            SizedBox(height: 16),
+            Text('Error carregant dades', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            SizedBox(height: 8),
+            Text(error, style: TextStyle(fontSize: 13, color: Colors.grey[500]), textAlign: TextAlign.center),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => provider.loadDashboard(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: Text('Reintentar'),
+            ),
+          ],
+        ),
+      );
     }
 
     final overallRate = dashboardStats['overallCompletionRate'] ?? 0;
@@ -342,10 +372,16 @@ class _StatsScreenState extends State<StatsScreen> {
       labels[i] = name.length > 6 ? '${name.substring(0, 6)}...' : name;
     }
 
+    if (spots.isEmpty) {
+      return Center(child: Text('No hi ha dades'));
+    }
+
+    final maxYValue = (spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) + 2).toDouble();
+
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: (spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) + 1).toDouble(),
+        maxY: maxYValue,
         barTouchData: BarTouchData(
           enabled: true,
           touchTooltipData: BarTouchTooltipData(

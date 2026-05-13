@@ -3,6 +3,7 @@ const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
 const { validateFriendRequest, validateUUID } = require('../middleware/validation');
+const { calculateMaxStreak } = require('../utils/streak');
 
 router.use(authMiddleware);
 
@@ -322,25 +323,8 @@ async function getStatsForUser(userId) {
 
     let longestStreak = 0;
     for (const habit of habits) {
-        const completedDates = (habit.logs || [])
-            .filter(l => l.completed)
-            .map(l => new Date(l.date).toISOString().split('T')[0])
-            .sort();
-
-        if (completedDates.length > 0) {
-            let currentStreak = 1;
-            let maxInHabit = 1;
-            for (let i = 1; i < completedDates.length; i++) {
-                const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
-                if (completedDates[i] === prevDate) {
-                    currentStreak++;
-                    maxInHabit = Math.max(maxInHabit, currentStreak);
-                } else {
-                    currentStreak = 1;
-                }
-            }
-            longestStreak = Math.max(longestStreak, maxInHabit);
-        }
+        const maxStreakForHabit = calculateMaxStreak(habit.logs || []);
+        longestStreak = Math.max(longestStreak, maxStreakForHabit);
     }
     return { longestStreak, totalHabits: habits.length };
 }

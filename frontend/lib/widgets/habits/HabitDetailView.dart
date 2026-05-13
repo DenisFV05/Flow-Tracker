@@ -23,9 +23,18 @@ class _HabitDetailViewState extends State<HabitDetailView> {
   @override
   Widget build(BuildContext context) {
     final habit = widget.habit;
+    final habitId = habit['id']?.toString();
+
+    if (habitId == null) {
+      return Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(elevation: 0, backgroundColor: context.backgroundColor),
+        body: Center(child: Text('Error: ID d\'hàbit no trobat')),
+      );
+    }
 
     final stats =
-        context.watch<HabitProvider>().habitStats[habit['id'].toString()] ?? {};
+        context.watch<HabitProvider>().habitStats[habitId] ?? {};
 
     final progress =
         ((stats['completionRate'] ?? 0) / 100).toDouble();

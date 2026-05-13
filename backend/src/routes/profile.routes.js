@@ -3,6 +3,7 @@ const router = express.Router();
 const prisma = require('../prisma');
 const authMiddleware = require('../middleware/auth');
 const { validateUUID } = require('../middleware/validation');
+const { calculateMaxStreak } = require('../utils/streak');
 
 router.use(authMiddleware);
 
@@ -16,26 +17,8 @@ function computeStats(habits) {
         const logs = habit.logs || [];
         totalLogs += logs.length;
         completedLogs += logs.filter(l => l.completed).length;
-
-        const completedDates = logs
-            .filter(l => l.completed)
-            .map(l => new Date(l.date).toISOString().split('T')[0])
-            .sort();
-
-        if (completedDates.length > 0) {
-            let currentStreak = 1;
-            let maxInHabit = 1;
-            for (let i = 1; i < completedDates.length; i++) {
-                const prevDate = new Date(new Date(completedDates[i - 1]).getTime() + 86400000).toISOString().split('T')[0];
-                if (completedDates[i] === prevDate) {
-                    currentStreak++;
-                    maxInHabit = Math.max(maxInHabit, currentStreak);
-                } else {
-                    currentStreak = 1;
-                }
-            }
-            longestStreak = Math.max(longestStreak, maxInHabit);
-        }
+        const maxStreakForHabit = calculateMaxStreak(logs);
+        longestStreak = Math.max(longestStreak, maxStreakForHabit);
     }
 
     const overallCompletionRate = totalLogs > 0 
@@ -152,12 +135,23 @@ router.get('/export', async (req, res) => {
             orderBy: { date: 'desc' }
         });
 
+        const escapeCSV = (value) => {
+            if (value == null) return '';
+            const str = String(value);
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        };
+
         let csv = 'Data,Habit,Descripcio,Tags,Completat\n';
         logs.forEach(log => {
             const date = new Date(log.date).toISOString().split('T')[0];
-            const habitDesc = log.habit.description || '';
-            const habitTags = (log.habit.tags || []).join('; ');
-            csv += `${date},"${log.habit.name}","${habitDesc}","${habitTags}",${log.completed ? 'Si' : 'No'}\n`;
+            const habitName = escapeCSV(log.habit.name);
+            const habitDesc = escapeCSV(log.habit.description || '');
+            const habitTags = (log.habit.tags || []).map(tag => tag.name).join('; ');
+            const tagsValue = escapeCSV(habitTags);
+            csv += `${date},${habitName},${habitDesc},${tagsValue},${log.completed ? 'Si' : 'No'}\n`;
         });
 
         res.setHeader('Content-Type', 'text/csv');
