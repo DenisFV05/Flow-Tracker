@@ -122,7 +122,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                 return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
-                    color: read ? Colors.white : context.surfaceLightColor,
+                    color: read ? context.surfaceColor : context.surfaceLightColor,
                     borderRadius: BorderRadius.circular(14),
                     border: read
                         ? null

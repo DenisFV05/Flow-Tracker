@@ -388,9 +388,10 @@ void showCrearHabitPopup(BuildContext context) {
     barrierDismissible: true,
     builder: (context) {
       return Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(16),
           child: CrearHabitForm(),
         ),
       );
