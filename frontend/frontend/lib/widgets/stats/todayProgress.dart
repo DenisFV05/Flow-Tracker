@@ -78,11 +78,10 @@ class TodayProgress extends StatelessWidget {
             ...habits.map((habit) {
               final id = habit['id']?.toString();
               final stats = habitStats[id] as Map<String, dynamic>?;
-              bool doneToday;
-              if (todayCompletedHabitIds != null) {
+              bool doneToday = stats?['completedToday'] == true;
+              // Si no tenim stats individuals, mirem la llista general (back-up)
+              if (stats == null && todayCompletedHabitIds != null) {
                 doneToday = todayCompletedHabitIds!.contains(id) || todayCompletedHabitIds!.contains(habit['id']);
-              } else {
-                doneToday = stats?['completedToday'] == true;
               }
               return Padding(
                 padding: EdgeInsets.only(bottom: 8),

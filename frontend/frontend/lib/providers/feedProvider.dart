@@ -73,4 +73,14 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deletePost(String postId) async {
+    try {
+      await _feedApi.deletePost(postId);
+      await refreshFeed();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
 }

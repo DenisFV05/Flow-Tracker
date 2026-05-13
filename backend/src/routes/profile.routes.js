@@ -147,14 +147,16 @@ router.get('/export', async (req, res) => {
         const userId = req.user.id;
         const logs = await prisma.activityLog.findMany({
             where: { userId },
-            include: { habit: { select: { name: true } } },
+            include: { habit: { select: { name: true, description: true, tags: true } } },
             orderBy: { date: 'desc' }
         });
 
-        let csv = 'Data,Habit,Completat\n';
+        let csv = 'Data,Habit,Descripcio,Tags,Completat\n';
         logs.forEach(log => {
             const date = new Date(log.date).toISOString().split('T')[0];
-            csv += `${date},"${log.habit.name}",${log.completed ? 'Si' : 'No'}\n`;
+            const habitDesc = log.habit.description || '';
+            const habitTags = (log.habit.tags || []).join('; ');
+            csv += `${date},"${log.habit.name}","${habitDesc}","${habitTags}",${log.completed ? 'Si' : 'No'}\n`;
         });
 
         res.setHeader('Content-Type', 'text/csv');

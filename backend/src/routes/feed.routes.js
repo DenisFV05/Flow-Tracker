@@ -270,4 +270,32 @@ router.delete('/:id/like', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const post = await prisma.post.findUnique({
+            where: { id }
+        });
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        if (post.userId !== userId) {
+            return res.status(403).json({ error: 'No autoritzat' });
+        }
+
+        await prisma.post.delete({
+            where: { id }
+        });
+
+        res.json({ message: 'Publicació eliminada' });
+    } catch (error) {
+        console.error('[FEED DELETE ERROR]', error.message);
+        res.status(500).json({ error: 'Error eliminant publicació' });
+    }
+});
+
 module.exports = router;

@@ -124,6 +124,28 @@ void initState() {
     }
   }
 
+  void _showDeletePostDialog(String postId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Eliminar publicació'),
+        content: Text('Segur que vols eliminar aquesta publicació?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel·lar')),
+          TextButton(
+            onPressed: () {
+              context.read<FeedProvider>().deletePost(postId);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _formatTimestamp(String dateStr) {
     try {
       // toLocal() converts UTC server time to the device's local timezone
@@ -401,21 +423,30 @@ void initState() {
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => _likePost(post['id'], liked),
-                    child: Icon(
-                      liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      color: liked ? Colors.red : Colors.grey,
-                      size: 22,
+                child: Column(
+                  children: [
+                    if (post['isOwn'] == true)
+                      IconButton(
+                        icon: Icon(Icons.delete_outline, color: Colors.red.withOpacity(0.5), size: 18),
+                        onPressed: () => _showDeletePostDialog(post['id']),
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                      ),
+                    SizedBox(height: post['isOwn'] == true ? 8 : 0),
+                    GestureDetector(
+                      onTap: () => _likePost(post['id'], liked),
+                      child: Icon(
+                        liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        color: liked ? Colors.red : Colors.grey,
+                        size: 22,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${post['likesCount'] ?? 0}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
+                    Text(
+                      '${post['likesCount'] ?? 0}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -521,6 +552,28 @@ void initState() {
             ),
             Column(
               children: [
+                if (post['isOwn'] == true)
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                    padding: EdgeInsets.zero,
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        _showDeletePostDialog(post['id']);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                            SizedBox(width: 8),
+                            Text('Eliminar', style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 GestureDetector(
                   onTap: () => _likePost(post['id'], liked),
                   child: Icon(

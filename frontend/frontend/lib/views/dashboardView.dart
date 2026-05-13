@@ -267,7 +267,7 @@ class _DashboardViewState extends State<DashboardView> {
                 color: AppTheme.primary,
                 completedToday: stats['completedToday'] == true,
                 onToggle: (completed) =>
-                    context.read<HabitProvider>().toggleHabit(habit['id'], completed),
+                    context.read<HabitProvider>().toggleHabit(habit['id'].toString(), completed),
 
                 onTap: () {
                   Navigator.push(

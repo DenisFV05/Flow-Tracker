@@ -37,6 +37,10 @@ class FeedApi {
     await _client.delete('/api/feed/$postId/like', expectedStatus: 200);
   }
 
+  Future<void> deletePost(String postId) async {
+    await _client.delete('/api/feed/$postId', expectedStatus: 200);
+  }
+
   Future<List<dynamic>> getLikes(String postId) async {
     final data =
         await _client.get('/api/feed/$postId/likes', expectedStatus: 200);
