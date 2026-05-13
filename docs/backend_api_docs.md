@@ -564,7 +564,157 @@ Treu el like d'un post.
 
 ---
 
+#### `DELETE /api/feed/:id`
+Elimina un post propi. Només el propietari del post pot eliminar-lo.
+
+**Resposta `200`:** `{ "message": "Publicació eliminada" }`
+
+- `403` — No ets el propietari del post
+- `404` — Post no trobat
+
+---
+
 ## 6. Endpoint especial: Health Check
+
+#### `GET /health`
+No requereix autenticació. Útil per a monitoring i verificar que el servidor funciona.
+
+**Resposta `200`:** `{ "status": "ok", "timestamp": "2026-05-08T21:00:00.000Z" }`
+
+---
+
+## 7. Lògica de Negoci Clau
+
+### Càlcul de Ratxes
+
+La funció `calculateStreak(logs)` calcula la ratxa actual:
+1. Filtra només els logs `completed = true`
+2. Ordena les dates de més recent a més antiga
+3. Comprova si el primer dia és avui o ahir (si no, ratxa = 0)
+4. Compta dies consecutius cap enrere
+
+La funció `calculateMaxStreak(logs)` calcula la ratxa màxima histèrica de forma similar però recorrent tota la llista.
+
+### Assoliments Automàtics al Feed
+
+Quan es fa un `POST /api/habits/:id/log` amb `completed: true`, el sistema:
+1. Calcula la ratxa anterior
+2. Guarda el nou log
+3. Recalcula la nova ratxa
+4. Si la nova ratxa és un dels **milestones** `[7, 14, 30, 60, 90, 180, 365]` dies i és major que l'anterior, crea automàticament un `Post` de tipus `achievement` al feed de l'usuari.
+
+### Paginació del Feed per Cursor
+
+El feed usa paginació per cursor (cursor-based pagination) en lloc de paginació per offset. El `cursor` és la data de creació (`createdAt`) del darrer post rebut. Això evita duplicats quan es creen posts nous entre pàgines.
+
+---
+
+## 8. Gestió d'Errors
+
+El servidor té un middleware d'errors global que captura:
+
+| Tipus d'error | Codi HTTP | Resposta |
+|---------------|-----------|----------|
+| JSON invàlid al body | 400 | `{ "error": "Invalid JSON in request body" }` |
+| Error Prisma (BD) | 400 | `{ "error": "Database error", "code": "P2002" }` |
+| Error validació Prisma | 400 | `{ "error": "Invalid request data" }` |
+| Qualsevol altre error | 500 | `{ "error": "Internal server error" }` |
+| Ruta no trobada | 404 | `{ "error": "Not found" }` |
+
+---
+
+## 9. Instal·lació i Posada en Marxa
+
+### Prerequisits
+- Node.js >= 18
+- PostgreSQL >= 14
+- npm >= 9
+
+### Instal·lació local
+
+```bash
+# 1. Clonar el repositori
+git clone https://github.com/DenisFV05/Flow-Tracker.git
+cd Flow-Tracker/backend
+
+# 2. Instal·lar dependències
+npm install
+
+# 3. Configurar variables d'entorn
+cp .env.example .env
+# Editar .env amb les credencials de la BD i JWT_SECRET
+
+# 4. Crear i migrar la base de dades
+npx prisma migrate dev --name init
+
+# 5. Generar el client Prisma
+npx prisma generate
+
+# 6. Arrencar el servidor de desenvolupament
+npm run dev
+```
+
+### Desplegament en Producció (Proxmox / LXC)
+
+```bash
+# 1. Instal·lar dependències de producció
+npm install --omit=dev
+
+# 2. Aplicar migracions a producció
+npx prisma migrate deploy
+
+# 3. Arrencar amb PM2
+pm2 start src/server.js --name flow-tracker-api
+pm2 save
+pm2 startup
+
+# 4. Verificar que funciona
+curl http://localhost:3001/health
+```
+
+### Configuració Nginx (exemple)
+
+```nginx
+server {
+    listen 80;
+    server_name tudomini.com;
+    client_max_body_size 20M;
+
+    location /api/ {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Authorization $http_authorization;
+    }
+
+    location /health {
+        proxy_pass http://localhost:3001/health;
+    }
+}
+```
+
+---
+
+## 10. Dependències Principals
+
+| Paquet | Versió | Ús |
+|--------|--------|-----|
+| `express` | ^5.x | Framework HTTP |
+| `@prisma/client` | ^5.x | ORM per PostgreSQL |
+| `bcrypt` | ^6.x | Hash de contrasenyes |
+| `jsonwebtoken` | ^9.x | Generació i verificació de JWT |
+| `express-validator` | ^7.x | Validació d'entrades |
+| `helmet` | ^8.x | Headers de seguretat HTTP |
+| `cors` | ^2.x | Control d'origen creuat (CORS) |
+| `hpp` | ^0.x | Protecció contra HTTP Parameter Pollution |
+| `dotenv` | ^17.x | Variables d'entorn |
+
+---
+
+*Documentació actualitzada el 13/05/2026 — Flow-Tracker v1.0 — DAM AMS2 — MP13 Crèdit de Síntesi*
+
 
 #### `GET /health`
 No requereix autenticació. Útil per a monitoring i verificar que el servidor funciona.
