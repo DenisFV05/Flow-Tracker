@@ -142,7 +142,7 @@ class _StatsScreenState extends State<StatsScreen> {
                   SizedBox(height: 16),
 
                   ...habits.map((habit) {
-                    final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+                    final stats = habitStats[habit['id'].toString()] as Map<String, dynamic>? ?? {};
                     final rate = stats['completionRate'] ?? 0.0;
                     final streak = stats['currentStreak'] ?? 0;
                     final completed = stats['completedDays'] ?? 0;
@@ -244,10 +244,10 @@ class _StatsScreenState extends State<StatsScreen> {
                               ),
                             ],
                           ),
-                          if (provider.habitHeatmaps[habit['id']] != null) ...[
+                          if (provider.habitHeatmaps[habit['id'].toString()] != null) ...[
                             SizedBox(height: 16),
                             HabitHeatmap(
-                              heatmapData: provider.habitHeatmaps[habit['id']]!,
+                              heatmapData: provider.habitHeatmaps[habit['id'].toString()]!,
                               year: DateTime.now().year,
                             ),
                           ],

@@ -253,7 +253,7 @@ class _DashboardViewState extends State<DashboardView> {
           _emptyHabits()
         else
           ...habits.map((habit) {
-            final stats = habitStats[habit['id']] as Map<String, dynamic>? ?? {};
+            final stats = habitStats[habit['id'].toString()] as Map<String, dynamic>? ?? {};
             final progress = ((stats['completionRate'] ?? 0) / 100).toDouble();
 
             return Padding(

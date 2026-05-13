@@ -39,7 +39,7 @@ class HabitHeatmap extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor),
           ),
           SizedBox(height: 12),
-          _buildHeatmap(dataMap),
+          _buildHeatmap(context, dataMap),
           SizedBox(height: 12),
           _buildLegend(context),
         ],
@@ -47,12 +47,18 @@ class HabitHeatmap extends StatelessWidget {
     );
   }
 
-  Widget _buildHeatmap(HashMap<String, bool> dataMap) {
+  Widget _buildHeatmap(BuildContext context, HashMap<String, bool> dataMap) {
     final weeks = <List<_DayData>>[];
     var currentWeek = <_DayData>[];
 
     final startDate = DateTime(year, 1, 1);
     final endDate = DateTime(year, 12, 31);
+
+    // Padding for the first week to start on Monday
+    final firstDayWeekday = startDate.weekday;
+    for (int i = 1; i < firstDayWeekday; i++) {
+      currentWeek.add(_DayData(date: startDate.subtract(Duration(days: firstDayWeekday - i)), completed: false, isPadding: true));
+    }
 
     for (var date = startDate; date.isBefore(endDate) || date.isAtSameMomentAs(endDate); date = date.add(const Duration(days: 1))) {
       final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -67,29 +73,90 @@ class HabitHeatmap extends StatelessWidget {
     }
 
     if (currentWeek.isNotEmpty) {
+      // Pad last week to 7 days
+      while (currentWeek.length < 7) {
+        currentWeek.add(_DayData(date: currentWeek.last.date.add(const Duration(days: 1)), completed: false, isPadding: true));
+      }
       weeks.add(currentWeek);
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: weeks.map((week) {
-          return Column(
-            children: week.map((day) {
-              return Container(
-                width: 14,
-                height: 14,
-                margin: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: day.completed ? AppTheme.primary : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(3),
+    final monthLabels = ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Des'];
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Day labels
+        Column(
+          children: [
+            SizedBox(height: 20), // Top padding for month labels
+            ...['Dl', '', 'Dc', '', 'Dv', '', 'Dg'].map((day) => Container(
+              height: 18,
+              alignment: Alignment.center,
+              child: Text(day, style: TextStyle(fontSize: 10, color: context.textSecondaryColor)),
+            )),
+          ],
+        ),
+        SizedBox(width: 8),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Month labels
+                Row(
+                  children: weeks.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final week = entry.value;
+                    final firstDay = week.firstWhere((d) => !d.isPadding, orElse: () => week.first);
+                    
+                    // Show month label if it's the first week of the month
+                    bool showLabel = false;
+                    if (index == 0) {
+                      showLabel = true;
+                    } else {
+                      final prevWeek = weeks[index - 1];
+                      final prevFirstDay = prevWeek.firstWhere((d) => !d.isPadding, orElse: () => prevWeek.first);
+                      if (firstDay.date.month != prevFirstDay.date.month) {
+                        showLabel = true;
+                      }
+                    }
+
+                    return Container(
+                      width: 18, // 14 + 4 margin
+                      height: 20,
+                      child: showLabel 
+                        ? Text(monthLabels[firstDay.date.month - 1], style: TextStyle(fontSize: 10, color: context.textSecondaryColor))
+                        : null,
+                    );
+                  }).toList(),
                 ),
-              );
-            }).toList(),
-          );
-        }).toList(),
-      ),
+                // Heatmap grid
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: weeks.map((week) {
+                    return Column(
+                      children: week.map((day) {
+                        return Container(
+                          width: 14,
+                          height: 14,
+                          margin: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: day.isPadding 
+                              ? Colors.transparent 
+                              : (day.completed ? AppTheme.primary : Colors.grey[200]),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -109,6 +176,7 @@ class HabitHeatmap extends StatelessWidget {
 class _DayData {
   final DateTime date;
   final bool completed;
+  final bool isPadding;
 
-  _DayData({required this.date, required this.completed});
+  _DayData({required this.date, required this.completed, this.isPadding = false});
 }

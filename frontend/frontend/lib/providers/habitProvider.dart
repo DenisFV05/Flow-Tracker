@@ -23,7 +23,7 @@ class HabitProvider extends ChangeNotifier {
       habitStats.clear();
 
       for (final habit in habits) {
-        final id = habit['id'];
+        final id = habit['id'].toString();
         habitStats[id] = await _habitsApi.getHabitStats(id);
         try {
           final response = await _habitsApi.getHabitHeatmap(id, year: DateTime.now().year);
@@ -80,8 +80,27 @@ class HabitProvider extends ChangeNotifier {
     final previousCompleted = habitStats[id]?['completedToday'] == true;
     if (habitStats[id] != null) {
       habitStats[id]['completedToday'] = completed;
-      notifyListeners();
     }
+
+    // Actualitzar també dashboardStats optimísticament per TodayProgress
+    if (dashboardStats['todayCompletedHabitIds'] != null) {
+      final List<dynamic> currentIds = List.from(dashboardStats['todayCompletedHabitIds']);
+      final idStr = id.toString();
+      
+      // Comprovar si hi és com a string o com a int
+      bool exists = currentIds.contains(idStr) || currentIds.contains(int.tryParse(idStr));
+      
+      if (completed) {
+        if (!exists) currentIds.add(idStr);
+      } else {
+        currentIds.remove(idStr);
+        currentIds.remove(int.tryParse(idStr));
+        currentIds.removeWhere((item) => item.toString() == idStr);
+      }
+      dashboardStats['todayCompletedHabitIds'] = currentIds;
+    }
+    
+    notifyListeners();
 
     try {
       await _habitsApi.toggleHabit(id, completed);
@@ -93,7 +112,7 @@ class HabitProvider extends ChangeNotifier {
       }).catchError((_) {});
 
       _habitsApi.getHabitStats(id).then((stats) {
-        habitStats[id] = stats;
+        habitStats[id.toString()] = stats;
         notifyListeners();
       }).catchError((_) {});
 
@@ -119,7 +138,7 @@ class HabitProvider extends ChangeNotifier {
       }).catchError((_) {});
 
       _habitsApi.getHabitStats(id).then((stats) {
-        habitStats[id] = stats;
+        habitStats[id.toString()] = stats;
         notifyListeners();
       }).catchError((_) {});
       

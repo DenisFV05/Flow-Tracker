@@ -25,7 +25,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
     final habit = widget.habit;
 
     final stats =
-        context.watch<HabitProvider>().habitStats[habit['id']] ?? {};
+        context.watch<HabitProvider>().habitStats[habit['id'].toString()] ?? {};
 
     final progress =
         ((stats['completionRate'] ?? 0) / 100).toDouble();
