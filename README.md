@@ -1,11 +1,10 @@
-# Flow-Tracker
+<img width="3000" height="3000" alt="image" src="https://github.com/user-attachments/assets/5b0ead34-cc10-4862-a394-ba651e2f161f" /># Flow-Tracker
 
 > Tracker de Hàbits i Xarxa Social — DAM AMS2 · MP13 Projecte · Crèdit de Síntesi · Maig 2026
 
 Aplicació multiplataforma per registrar hàbits diaris, visualitzar estadístiques i compartir el progrés amb amics.
 
 ---
-
 ## Funcionalitats
 
 - **Crear i gestionar hàbits** amb etiquetes personalitzades
@@ -97,6 +96,10 @@ flutter run -d chrome    # Navegador web
 | **APK Android** | https://flow-tracker.ieti.site/flow.apk |
 
 ---
+
+## DESCARGAR APP PER MOBIL:
+<img width="3000" height="3000" alt="image" src="https://github.com/user-attachments/assets/591e9986-1632-402d-8d98-cb6764f50f47" />
+
 
 ## Documentació
 
