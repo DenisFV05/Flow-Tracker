@@ -52,11 +52,11 @@ frontend (Flutter)
 ## 2. Variables d'Entorn (`.env`)
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/flowtracker"
-JWT_SECRET="clau_secreta_molt_llarga"
+DATABASE_URL="postgresql://TU_URL
+JWT_SECRET="la_clave"
 PORT=3000
 NODE_ENV=production
-ALLOWED_ORIGINS="http://localhost,https://flow-tracker.ieti.site"
+ALLOWED_ORIGINS="tus_ips"
 ```
 
 ---
