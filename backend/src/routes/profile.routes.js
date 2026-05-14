@@ -109,7 +109,7 @@ router.get('/stats', async (req, res) => {
         });
 
         const todayCompleted = todayLogs.filter(l => l.completed).length;
-        const todayTotal = todayLogs.length;
+        const todayTotal = habits.length;
         const todayCompletedHabitIds = todayLogs
             .filter(l => l.completed)
             .map(l => l.habitId);

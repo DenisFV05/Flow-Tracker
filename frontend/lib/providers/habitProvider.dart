@@ -82,30 +82,23 @@ class HabitProvider extends ChangeNotifier {
       habitStats[id]['completedToday'] = completed;
     }
 
-    // Actualitzar també dashboardStats optimísticament per TodayProgress
-    if (dashboardStats['todayCompletedHabitIds'] != null) {
-      final List<dynamic> currentIds = List.from(dashboardStats['todayCompletedHabitIds']);
-      final idStr = id.toString();
-      
-      // Comprovar si hi és com a string o com a int
-      bool exists = currentIds.contains(idStr) || currentIds.contains(int.tryParse(idStr));
-      
-      if (completed) {
-        if (!exists) {
-          currentIds.add(idStr);
-          dashboardStats['todayCompleted'] = (dashboardStats['todayCompleted'] ?? 0) + 1;
-        }
-      } else {
-        if (exists) {
-          currentIds.remove(idStr);
-          currentIds.remove(int.tryParse(idStr));
-          currentIds.removeWhere((item) => item.toString() == idStr);
-          int currentCount = dashboardStats['todayCompleted'] ?? 1;
-          dashboardStats['todayCompleted'] = currentCount > 0 ? currentCount - 1 : 0;
-        }
-      }
-      dashboardStats['todayCompletedHabitIds'] = currentIds;
+    if (dashboardStats['todayCompletedHabitIds'] == null) {
+      dashboardStats['todayCompletedHabitIds'] = [];
     }
+
+    final List<dynamic> currentIds = List.from(dashboardStats['todayCompletedHabitIds']);
+    final String idStr = id.toString();
+    
+    // Eliminem qualsevol versió prèvia de l'ID (per si n'hi ha repetits o de diferents tipus)
+    currentIds.removeWhere((item) => item.toString() == idStr);
+    
+    if (completed) {
+      currentIds.add(idStr);
+    }
+    
+    dashboardStats['todayCompletedHabitIds'] = currentIds;
+    dashboardStats['todayCompleted'] = currentIds.length;
+    dashboardStats['todayTotal'] = habits.length;
     
     notifyListeners();
 
