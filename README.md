@@ -1,4 +1,3 @@
-<img width="3000" height="3000" alt="image" src="https://github.com/user-attachments/assets/5b0ead34-cc10-4862-a394-ba651e2f161f" /># Flow-Tracker
 
 > Tracker de Hàbits i Xarxa Social — DAM AMS2 · MP13 Projecte · Crèdit de Síntesi · Maig 2026
 
@@ -96,6 +95,18 @@ flutter run -d chrome    # Navegador web
 | **APK Android** | https://flow-tracker.ieti.site/flow.apk |
 
 ---
+<div align="center">
+
+<img src="https://github.com/user-attachments/assets/5b0ead34-cc10-4862-a394-ba651e2f161f"
+     width="180"
+     alt="QR Flow Tracker" />
+
+<br><br>
+
+Escaneja el QR per descarregar l'APK Android
+
+</div>
+
  ## Documentació
 
 Tota la documentació es troba a [`/docs`](./docs/):
