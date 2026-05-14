@@ -315,16 +315,6 @@ En lloc de paginació per offset (`LIMIT x OFFSET y`), s'usa **cursor-based pagi
 
 **Solució:** Afegir `app.set('trust proxy', 1)` per indicar a Express que confiï en el primer proxy (Nginx).
 
-### 7.7 Branding i Noms de l'Aplicació
-
-**Problema:** El projecte Flutter va ser iniciat amb el nom genèric `exercici09`. El títol de la finestra Windows, el nom de l'APK i el títol de la web web mostraven aquest nom.
-
-**Solució:** Actualitzar manualment:
-- `windows/CMakeLists.txt` → `set(BINARY_NAME "flow_tracker")`
-- `windows/runner/main.cpp` → `L"Flow-Tracker"`
-- `android/app/src/main/AndroidManifest.xml` → `android:label="Flow-Tracker"`
-- `web/index.html` → `<title>Flow-Tracker</title>`
-
 ---
 
 ## 8. Desviacions Respecte la Planificació
