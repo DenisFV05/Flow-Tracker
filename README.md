@@ -96,12 +96,7 @@ flutter run -d chrome    # Navegador web
 | **APK Android** | https://flow-tracker.ieti.site/flow.apk |
 
 ---
-
-## DESCARGAR APP PER MOBIL:
-<img width="3000" height="3000" alt="image" src="https://github.com/user-attachments/assets/591e9986-1632-402d-8d98-cb6764f50f47" />
-
-
-## Documentació
+ ## Documentació
 
 Tota la documentació es troba a [`/docs`](./docs/):
 
