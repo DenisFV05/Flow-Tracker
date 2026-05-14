@@ -93,17 +93,18 @@ router.get('/stats', async (req, res) => {
 
         const stats = computeStats(habits);
 
-        // Usem string de data local per evitar problemes de fus horari UTC vs local
-        const { localDateStr } = require('../utils/streak');
-        const todayStr = localDateStr(new Date());
+        // Calculem "avui" en UTC per ser consistents amb com Prisma guarda @db.Date
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
 
-        // Obtenim TOTS els logs d'avui comparant com a string de data
+        // Obtenim TOTS els logs de l'usuari
         const allLogs = await prisma.activityLog.findMany({
             where: { userId }
         });
 
         const todayLogs = allLogs.filter(log => {
-            const logDateStr = localDateStr(new Date(log.date));
+            // log.date és un objecte Date que Prisma retorna com a midnight UTC
+            const logDateStr = new Date(log.date).toISOString().split('T')[0];
             return logDateStr === todayStr;
         });
 
@@ -117,7 +118,8 @@ router.get('/stats', async (req, res) => {
             ...stats,
             todayCompleted,
             todayTotal,
-            todayCompletedHabitIds
+            todayCompletedHabitIds,
+            totalHabits: habits.length // Ens assegurem que totalHabits també hi sigui
         });
     } catch (error) {
         console.error('[PROFILE STATS ERROR]', error.message);

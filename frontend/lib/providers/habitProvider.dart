@@ -99,6 +99,7 @@ class HabitProvider extends ChangeNotifier {
     dashboardStats['todayCompletedHabitIds'] = currentIds;
     dashboardStats['todayCompleted'] = currentIds.length;
     dashboardStats['todayTotal'] = habits.length;
+    dashboardStats['totalHabits'] = habits.length;
     
     notifyListeners();
 
