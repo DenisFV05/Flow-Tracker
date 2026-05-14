@@ -93,19 +93,18 @@ router.get('/stats', async (req, res) => {
 
         const stats = computeStats(habits);
 
-        const now = new Date();
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const startOfTomorrow = new Date(startOfToday);
-        startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+        // Usem string de data local per evitar problemes de fus horari UTC vs local
+        const { localDateStr } = require('../utils/streak');
+        const todayStr = localDateStr(new Date());
 
-        const todayLogs = await prisma.activityLog.findMany({
-            where: {
-                userId,
-                date: {
-                    gte: startOfToday,
-                    lt: startOfTomorrow
-                }
-            }
+        // Obtenim TOTS els logs d'avui comparant com a string de data
+        const allLogs = await prisma.activityLog.findMany({
+            where: { userId }
+        });
+
+        const todayLogs = allLogs.filter(log => {
+            const logDateStr = localDateStr(new Date(log.date));
+            return logDateStr === todayStr;
         });
 
         const todayCompleted = todayLogs.filter(l => l.completed).length;
@@ -125,6 +124,7 @@ router.get('/stats', async (req, res) => {
         res.status(500).json({ error: 'Error carregant estadístiques' });
     }
 });
+
 
 router.get('/export', async (req, res) => {
     try {

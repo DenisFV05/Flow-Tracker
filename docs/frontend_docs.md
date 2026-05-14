@@ -61,30 +61,34 @@ frontend/lib/
 │   └── notifications_provider.dart  # Notificacions
 │
 ├── services/               # Capes d'accés a l'API
-│   ├── habit_service.dart       # Crides a /api/habits
+│   ├── api_client.dart          # Client HTTP base (headers JWT, gestió d'errors)
+│   ├── auth_storage.dart        # Persistència del token JWT (SharedPreferences)
+│   ├── habits_service.dart      # Crides a /api/habits i /api/profile/stats
 │   ├── feed_service.dart        # Crides a /api/feed
 │   ├── friends_service.dart     # Crides a /api/friends
 │   └── notifications_service.dart  # Crides a /api/notifications
 │
 ├── views/                  # Pantalles principals
-│   ├── login_screen.dart        # Login + Registre
-│   ├── mainScreen.dart          # Contenidor principal (layout amb sidebar)
-│   ├── dashboardView.dart       # Dashboard: progrés d'avui + heatmap
-│   ├── habitesView.dart         # Llista de tots els hàbits
-│   ├── inputEstil.dart          # Formulari crear/editar hàbit
-│   ├── feedView.dart            # Feed social
-│   ├── amicsView.dart           # Amics i sol·licituds
-│   └── perfilView.dart          # Perfil, stats, exportació CSV
-│
-├── utils/
-│   └── date_utils.dart         # Utilitats de dates
+│   ├── login_screen.dart        # Login + Registre (dues pestanyes)
+│   ├── mainScreen.dart          # Contenidor principal (layout amb sidebar/AppBar)
+│   ├── dashboardView.dart       # Dashboard: progrés d'avui, heatmap, llista d'hàbits
+│   ├── habitesView.dart         # Llista completa de tots els hàbits
+│   ├── editarHabit.dart         # Formulari d'edició d'un hàbit existent
+│   ├── crearHabit.dart          # Formulari de creació d'un nou hàbit
+│   ├── feedView.dart            # Feed social (posts, likes, compositor)
+│   ├── amicsView.dart           # Amics, cercador, sol·licituds pendents
+│   ├── notificationsView.dart   # Llista de notificacions
+│   └── perfilView.dart          # Perfil, stats globals, exportació CSV
 │
 └── widgets/                # Widgets reutilitzables
     ├── habits/
-    │   ├── HabitCard.dart          # Targeta d'un hàbit (llista)
-    │   ├── HabitDetailView.dart    # Detall d'hàbit: stats, gràfiques, heatmap
-    │   └── HabitProgressWidget.dart
-    └── ...
+    │   ├── HabitCard.dart          # Targeta d'un hàbit a la llista del dashboard
+    │   ├── HabitDetailView.dart    # Detall d'hàbit: stats, gràfiques setmanal/mensual, heatmap, historial
+    │   └── HabitProgressWidget.dart # Barra de progrés d'un hàbit individual
+    └── stats/
+        ├── StatsGrid.dart          # Graella de 4 targetes de resum (hàbits, avui, ritme, ratxa)
+        ├── StatCard.dart           # Targeta individual d'estadístiques
+        └── todayProgress.dart      # Llista interactiva de hàbits d'avui amb checkboxes
 ```
 
 ---
