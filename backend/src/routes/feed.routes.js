@@ -53,7 +53,10 @@ router.get('/', async (req, res) => {
         };
 
         if (cursor) {
-            where.createdAt = { lt: new Date(cursor) };
+            const cursorDate = new Date(cursor);
+            if (!isNaN(cursorDate.getTime())) {
+                where.createdAt = { lt: cursorDate };
+            }
         }
 
         const posts = await prisma.post.findMany({

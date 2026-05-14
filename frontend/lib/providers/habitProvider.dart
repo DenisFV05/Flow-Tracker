@@ -91,11 +91,18 @@ class HabitProvider extends ChangeNotifier {
       bool exists = currentIds.contains(idStr) || currentIds.contains(int.tryParse(idStr));
       
       if (completed) {
-        if (!exists) currentIds.add(idStr);
+        if (!exists) {
+          currentIds.add(idStr);
+          dashboardStats['todayCompleted'] = (dashboardStats['todayCompleted'] ?? 0) + 1;
+        }
       } else {
-        currentIds.remove(idStr);
-        currentIds.remove(int.tryParse(idStr));
-        currentIds.removeWhere((item) => item.toString() == idStr);
+        if (exists) {
+          currentIds.remove(idStr);
+          currentIds.remove(int.tryParse(idStr));
+          currentIds.removeWhere((item) => item.toString() == idStr);
+          int currentCount = dashboardStats['todayCompleted'] ?? 1;
+          dashboardStats['todayCompleted'] = currentCount > 0 ? currentCount - 1 : 0;
+        }
       }
       dashboardStats['todayCompletedHabitIds'] = currentIds;
     }
